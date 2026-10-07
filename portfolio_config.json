@@ -6,49 +6,56 @@
       "symbol": "SGOV",
       "market": "US",
       "quantity": 75,
-      "target_weight": 24.9
+      "target_weight": 24.9,
+      "category": "💵 초단기채/현금"
     },
     {
       "name": "엔비디아",
       "symbol": "NVDA",
       "market": "US",
       "quantity": 27,
-      "target_weight": 21.0
+      "target_weight": 21.0,
+      "category": "💻 빅테크/AI 성장주"
     },
     {
       "name": "알파벳 A",
       "symbol": "GOOGL",
       "market": "US",
       "quantity": 18,
-      "target_weight": 20.3
+      "target_weight": 20.3,
+      "category": "💻 빅테크/AI 성장주"
     },
     {
       "name": "AMD",
       "symbol": "AMD",
       "market": "US",
       "quantity": 8,
-      "target_weight": 16.8
+      "target_weight": 16.8,
+      "category": "💻 빅테크/AI 성장주"
     },
     {
       "name": "마이크로소프트",
       "symbol": "MSFT",
       "market": "US",
       "quantity": 4,
-      "target_weight": 6.8
+      "target_weight": 6.8,
+      "category": "💻 빅테크/AI 성장주"
     },
     {
       "name": "SCHD (배당성장)",
       "symbol": "SCHD",
       "market": "US",
       "quantity": 62,
-      "target_weight": 6.7
+      "target_weight": 6.7,
+      "category": "📈 배당 성장주"
     },
     {
       "name": "GLDM (실물 금)",
       "symbol": "GLDM",
       "market": "US",
       "quantity": 13,
-      "target_weight": 3.5
+      "target_weight": 3.5,
+      "category": "🥇 실물 금/원자재"
     }
   ]
 }
