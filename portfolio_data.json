@@ -1,0 +1,163 @@
+{
+  "updated_at": "2026-10-08 00:52:54",
+  "usd_krw_rate": 1339.7,
+  "tnx": {
+    "price": 5.307,
+    "prev_close": 5.269,
+    "change": 0.038000000000000256,
+    "change_pct": 0.72119946858987
+  },
+  "vix": {
+    "price": 15.48,
+    "prev_close": 15.01,
+    "change": 0.47000000000000064,
+    "change_pct": 3.131245836109265
+  },
+  "dxy": {
+    "price": 102.333,
+    "prev_close": 101.833,
+    "change": 0.5,
+    "change_pct": 0.4909999705400018
+  },
+  "total_eval_krw": 40924464.3148,
+  "items": [
+    {
+      "name": "SGOV (초단기채)",
+      "symbol": "SGOV",
+      "market": "US",
+      "quantity": 75,
+      "target_weight": 24.9,
+      "category": "💵 초단기채/현금",
+      "price_krw": 134592.96050000002,
+      "price_usd": 100.465,
+      "change_usd": 0.005000000000009663,
+      "change_pct": 0.004977105315558097,
+      "eval_krw": 10094472.037500001,
+      "current_weight": 24.666106707838857,
+      "weight_diff": -0.23389329216114163
+    },
+    {
+      "name": "엔비디아",
+      "symbol": "NVDA",
+      "market": "US",
+      "quantity": 27,
+      "target_weight": 21.0,
+      "category": "💻 빅테크/AI 성장주",
+      "price_krw": 318513.675,
+      "price_usd": 237.75,
+      "change_usd": -1.490000000000009,
+      "change_pct": -0.6228055509112226,
+      "eval_krw": 8599869.225,
+      "current_weight": 21.014005605175207,
+      "weight_diff": 0.014005605175206881
+    },
+    {
+      "name": "알파벳 A",
+      "symbol": "GOOGL",
+      "market": "US",
+      "quantity": 18,
+      "target_weight": 20.3,
+      "category": "💻 빅테크/AI 성장주",
+      "price_krw": 463871.125,
+      "price_usd": 346.25,
+      "change_usd": -1.4300000000000068,
+      "change_pct": -0.41129774505292416,
+      "eval_krw": 8349680.25,
+      "current_weight": 20.402662294544456,
+      "weight_diff": 0.10266229454445508
+    },
+    {
+      "name": "AMD",
+      "symbol": "AMD",
+      "market": "US",
+      "quantity": 8,
+      "target_weight": 16.8,
+      "category": "💻 빅테크/AI 성장주",
+      "price_krw": 865121.9926000001,
+      "price_usd": 645.758,
+      "change_usd": -3.661999999999921,
+      "change_pct": -0.5638877767854272,
+      "eval_krw": 6920975.940800001,
+      "current_weight": 16.91158590998853,
+      "weight_diff": 0.11158590998853057
+    },
+    {
+      "name": "마이크로소프트",
+      "symbol": "MSFT",
+      "market": "US",
+      "quantity": 4,
+      "target_weight": 6.8,
+      "category": "💻 빅테크/AI 성장주",
+      "price_krw": 707549.158,
+      "price_usd": 528.14,
+      "change_usd": -1.1599999999999682,
+      "change_pct": -0.21915737766861296,
+      "eval_krw": 2830196.632,
+      "current_weight": 6.915659567904185,
+      "weight_diff": 0.11565956790418497
+    },
+    {
+      "name": "SCHD (배당성장)",
+      "symbol": "SCHD",
+      "market": "US",
+      "quantity": 62,
+      "target_weight": 6.7,
+      "category": "📈 배당 성장주",
+      "price_krw": 43801.491500000004,
+      "price_usd": 32.695,
+      "change_usd": -0.15500000000000114,
+      "change_pct": -0.4718417047184205,
+      "eval_krw": 2715692.473,
+      "current_weight": 6.635865657544825,
+      "weight_diff": -0.06413434245517546
+    },
+    {
+      "name": "GLDM (실물 금)",
+      "symbol": "GLDM",
+      "market": "US",
+      "quantity": 13,
+      "target_weight": 3.5,
+      "category": "🥇 실물 금/원자재",
+      "price_krw": 108736.75050000001,
+      "price_usd": 81.165,
+      "change_usd": -1.2849999999999966,
+      "change_pct": -1.5585203153426277,
+      "eval_krw": 1413577.7565000001,
+      "current_weight": 3.4541142570039485,
+      "weight_diff": -0.045885742996051526
+    }
+  ],
+  "categories": {
+    "💵 초단기채/현금": {
+      "eval_krw": 10094472.037500001,
+      "target_weight": 24.9,
+      "symbols": [
+        "SGOV"
+      ]
+    },
+    "💻 빅테크/AI 성장주": {
+      "eval_krw": 26700722.0478,
+      "target_weight": 64.89999999999999,
+      "symbols": [
+        "NVDA",
+        "GOOGL",
+        "AMD",
+        "MSFT"
+      ]
+    },
+    "📈 배당 성장주": {
+      "eval_krw": 2715692.473,
+      "target_weight": 6.7,
+      "symbols": [
+        "SCHD"
+      ]
+    },
+    "🥇 실물 금/원자재": {
+      "eval_krw": 1413577.7565000001,
+      "target_weight": 3.5,
+      "symbols": [
+        "GLDM"
+      ]
+    }
+  }
+}

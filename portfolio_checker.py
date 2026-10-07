@@ -10,7 +10,7 @@ import html
 # matplotlib 지연 임포트 (설치 안 되어 있어도 텍스트 알림은 정상 동작)
 try:
     import matplotlib
-    matplotlib.use('Agg') # GUI 없는 환경(서버/깃허브 액션) 지원
+    matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     HAS_MATPLOTLIB = True
 except Exception:
@@ -127,7 +127,7 @@ def generate_portfolio_chart(item_results, output_path="portfolio_chart.png"):
         colors = ['#38bdf8', '#4ade80', '#facc15', '#f87171', '#c084fc', '#fb923c', '#e879f9']
 
         fig, ax = plt.subplots(figsize=(7, 7), subplot_kw=dict(aspect='equal'))
-        fig.patch.set_facecolor('#0f172a')  # 슬레이트 다크 테마
+        fig.patch.set_facecolor('#0f172a')
 
         wedges, texts, autotexts = ax.pie(
             weights, 
@@ -199,6 +199,25 @@ def send_telegram_photo(token, chat_id, photo_path, caption=""):
             print("텔레그램 원형 차트 이미지 전송 성공!")
     except Exception as e:
         print(f"텔레그램 이미지 전송 실패: {e}")
+
+def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_results, category_summary, json_path="portfolio_data.json"):
+    """대시보드가 즉각 0.01초 만에 렌더링할 수 있도록 사전 계산 데이터 저장"""
+    try:
+        data = {
+            "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "usd_krw_rate": usd_krw_rate,
+            "tnx": tnx,
+            "vix": vix,
+            "dxy": dxy,
+            "total_eval_krw": total_eval_krw,
+            "items": item_results,
+            "categories": category_summary
+        }
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print("portfolio_data.json 사전 계산 파일 생성 완료!")
+    except Exception as e:
+        print(f"JSON 내보내기 실패: {e}")
 
 def main():
     config_path = os.path.join(os.path.dirname(__file__), "portfolio_config.json")
@@ -450,6 +469,9 @@ def main():
         print(msg_text)
     except Exception:
         print("포트폴리오 리포트 생성 완료 (콘솔 출력 중 인코딩 차이 무시)")
+
+    # JSON 데이터 내보내기 (대시보드 즉시 로딩용)
+    export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_results, category_summary)
 
     # 원형 차트 이미지 생성
     chart_path = generate_portfolio_chart(item_results)
