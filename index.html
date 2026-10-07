@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>실시간 주식 포트폴리오 대시보드</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                        cardbg: '#1e293b',
+                        accent: '#38bdf8'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-darkbg text-slate-100 min-h-screen p-4 md:p-8 font-sans">
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold flex items-center gap-3">
+                    <i class="fa-solid fa-chart-pie text-sky-400"></i>
+                    실시간 포트폴리오 & 매크로 대시보드
+                </h1>
+                <p class="text-sm text-slate-400 mt-1">고금리·고변동성 대응 포트폴리오 실시간 모니터링</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span id="last-update" class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700">
+                    <i class="fa-solid fa-clock mr-1 text-sky-400"></i> 실시간 업데이트 중...
+                </span>
+                <button onclick="fetchData()" class="bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
+                    <i class="fa-solid fa-rotate mr-1"></i> 새로고침
+                </button>
+            </div>
+        </header>
+
+        <!-- Top Indicator Cards -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Total Value -->
+            <div class="bg-cardbg p-5 rounded-2xl border border-slate-800 shadow-lg">
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">총 평가금액 (KRW)</div>
+                <div id="total-eval-krw" class="text-xl md:text-2xl font-bold text-sky-400">계산 중...</div>
+                <div id="total-eval-usd" class="text-xs text-slate-400 mt-1">$0.00</div>
+            </div>
+            <!-- Exchange Rate -->
+            <div class="bg-cardbg p-5 rounded-2xl border border-slate-800 shadow-lg">
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">USD/KRW 환율</div>
+                <div id="rate-krw" class="text-xl md:text-2xl font-bold text-emerald-400">1,350.0원</div>
+                <div id="rate-change" class="text-xs text-slate-400 mt-1">변동 -</div>
+            </div>
+            <!-- 10Y Treasury Rate -->
+            <div class="bg-cardbg p-5 rounded-2xl border border-slate-800 shadow-lg">
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">미 10년물 국채금리</div>
+                <div id="tnx-rate" class="text-xl md:text-2xl font-bold text-amber-400">-%</div>
+                <div id="tnx-status" class="text-xs text-slate-400 mt-1">조회 중...</div>
+            </div>
+            <!-- VIX Index -->
+            <div class="bg-cardbg p-5 rounded-2xl border border-slate-800 shadow-lg">
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">VIX 공포지수</div>
+                <div id="vix-index" class="text-xl md:text-2xl font-bold text-rose-400">-</div>
+                <div id="vix-status" class="text-xs text-slate-400 mt-1">조회 중...</div>
+            </div>
+        </div>
+
+        <!-- Cash Reserve & Action Plan Alert -->
+        <div id="action-banner" class="bg-cardbg border-l-4 border-sky-400 p-5 rounded-2xl shadow-lg border border-slate-800 space-y-2">
+            <h3 class="font-bold text-base flex items-center gap-2 text-sky-400">
+                <i class="fa-solid fa-shield-halved"></i> 현금 실탄(SGOV) & 매크로 대응 가이드
+            </h3>
+            <p id="action-text" class="text-sm text-slate-300 leading-relaxed">
+                데이터를 분석하고 있습니다...
+            </p>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Category Chart -->
+            <div class="bg-cardbg p-6 rounded-2xl border border-slate-800 shadow-lg flex flex-col items-center">
+                <h3 class="font-bold text-slate-200 mb-4 text-center w-full text-left flex items-center justify-between">
+                    <span><i class="fa-solid fa-layer-group text-sky-400 mr-2"></i>자산 카테고리별 비중</span>
+                    <span class="text-xs font-normal text-slate-400">목표 자산배분</span>
+                </h3>
+                <div class="w-full max-w-[320px] aspect-square relative">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Stock Chart -->
+            <div class="bg-cardbg p-6 rounded-2xl border border-slate-800 shadow-lg flex flex-col items-center">
+                <h3 class="font-bold text-slate-200 mb-4 text-center w-full text-left flex items-center justify-between">
+                    <span><i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i>개별 종목 비중</span>
+                    <span class="text-xs font-normal text-slate-400">실시간 보유비중</span>
+                </h3>
+                <div class="w-full max-w-[320px] aspect-square relative">
+                    <canvas id="stockChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Summary Table -->
+        <div class="bg-cardbg rounded-2xl border border-slate-800 shadow-lg overflow-hidden p-5">
+            <h3 class="font-bold text-base text-slate-200 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-purple-400"></i> 자산 카테고리별 비중 요약
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="text-xs text-slate-400 uppercase bg-slate-900/60 border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-4">카테고리</th>
+                            <th class="py-3 px-4">구성 종목</th>
+                            <th class="py-3 px-4">평가금액 (KRW)</th>
+                            <th class="py-3 px-4">현재 비중</th>
+                            <th class="py-3 px-4">목표 비중</th>
+                            <th class="py-3 px-4">상태</th>
+                        </tr>
+                    </thead>
+                    <tbody id="category-table-body">
+                        <!-- JS Insert -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Detailed Holdings Table -->
+        <div class="bg-cardbg rounded-2xl border border-slate-800 shadow-lg overflow-hidden p-5">
+            <h3 class="font-bold text-base text-slate-200 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-table text-sky-400"></i> 개별 보유 종목 상세 현황
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="text-xs text-slate-400 uppercase bg-slate-900/60 border-b border-slate-800">
+                        <tr>
+                            <th class="py-3 px-4">종목명 (티커)</th>
+                            <th class="py-3 px-4">수량</th>
+                            <th class="py-3 px-4">현재가 ($ / 원)</th>
+                            <th class="py-3 px-4">전일대비 변동</th>
+                            <th class="py-3 px-4">평가금액 (원)</th>
+                            <th class="py-3 px-4">현재 비중 (목표)</th>
+                            <th class="py-3 px-4">이탈 상태</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-table-body">
+                        <!-- JS Insert -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        const portfolioConfig = [
+            { name: "SGOV (초단기채)", symbol: "SGOV", quantity: 75, target_weight: 24.9, category: "💵 초단기채/현금" },
+            { name: "엔비디아", symbol: "NVDA", quantity: 27, target_weight: 21.0, category: "💻 빅테크/AI 성장주" },
+            { name: "알파벳 A", symbol: "GOOGL", quantity: 18, target_weight: 20.3, category: "💻 빅테크/AI 성장주" },
+            { name: "AMD", symbol: "AMD", quantity: 8, target_weight: 16.8, category: "💻 빅테크/AI 성장주" },
+            { name: "마이크로소프트", symbol: "MSFT", quantity: 4, target_weight: 6.8, category: "💻 빅테크/AI 성장주" },
+            { name: "SCHD (배당성장)", symbol: "SCHD", quantity: 62, target_weight: 6.7, category: "📈 배당 성장주" },
+            { name: "GLDM (실물 금)", symbol: "GLDM", quantity: 13, target_weight: 3.5, category: "🥇 실물 금/원자재" }
+        ];
+
+        let categoryChartInst = null;
+        let stockChartInst = null;
+
+        // Yahoo Finance Proxy or API query
+        async function fetchYahooQuote(symbol) {
+            try {
+                const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}`;
+                const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                const data = await res.json();
+                const meta = data.chart.result[0].meta;
+                const price = meta.regularMarketPrice;
+                const prev = meta.chartPreviousClose || meta.previousClose || price;
+                const change = price - prev;
+                const pct = prev !== 0 ? (change / prev) * 100 : 0;
+                return { price, prev, change, pct };
+            } catch (e) {
+                console.error(`Quote error for ${symbol}:`, e);
+                return null;
+            }
+        }
+
+        async function fetchData() {
+            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> 시세 동기화 중...`;
+
+            // 1. 환율 및 매크로 지표 조회
+            const rateData = await fetchYahooQuote("KRW=X") || { price: 1350.0, pct: 0 };
+            const tnxData = await fetchYahooQuote("^TNX") || { price: 5.3, pct: 0, change: 0 };
+            const vixData = await fetchYahooQuote("^VIX") || { price: 15.7, pct: 0 };
+
+            const usdKrw = rateData.price;
+
+            document.getElementById('rate-krw').innerText = `${usdKrw.toLocaleString('ko-KR', {maximumFractionDigits: 1})}원`;
+            document.getElementById('rate-change').innerText = `전일대비 ${rateData.pct >= 0 ? '+' : ''}${rateData.pct.toFixed(2)}%`;
+            document.getElementById('rate-change').className = `text-xs mt-1 ${rateData.pct >= 0 ? 'text-rose-400' : 'text-emerald-400'}`;
+
+            document.getElementById('tnx-rate').innerText = `${tnxData.price.toFixed(2)}%`;
+            document.getElementById('tnx-status').innerText = `전일대비 ${tnxData.change >= 0 ? '+' : ''}${tnxData.change.toFixed(2)}%p`;
+
+            const vixVal = vixData.price;
+            document.getElementById('vix-index').innerText = vixVal.toFixed(2);
+            let vixStatusText = "안정 (20 미만)";
+            let vixColorClass = "text-emerald-400";
+            if (vixVal >= 30) { vixStatusText = "🚨 공포 (패닉 셀)"; vixColorClass = "text-rose-500 font-bold"; }
+            else if (vixVal >= 25) { vixStatusText = "⚠️ 경고 (투매 기회)"; vixColorClass = "text-amber-400 font-bold"; }
+            else if (vixVal >= 20) { vixStatusText = "경계 (변동성 확대)"; vixColorClass = "text-yellow-400"; }
+            document.getElementById('vix-status').innerText = vixStatusText;
+            document.getElementById('vix-status').className = `text-xs mt-1 ${vixColorClass}`;
+
+            // 2. 종목 가격 수집 및 평가금 계산
+            let totalEvalKrw = 0;
+            const itemResults = [];
+
+            for (const item of portfolioConfig) {
+                const quote = await fetchYahooQuote(item.symbol);
+                const priceUsd = quote ? quote.price : 0;
+                const changePct = quote ? quote.pct : 0;
+                const changeUsd = quote ? quote.change : 0;
+                const evalKrw = priceUsd * usdKrw * item.quantity;
+                totalEvalKrw += evalKrw;
+
+                itemResults.push({
+                    ...item,
+                    priceUsd,
+                    changePct,
+                    changeUsd,
+                    evalKrw
+                });
+            }
+
+            document.getElementById('total-eval-krw').innerText = `${Math.round(totalEvalKrw).toLocaleString('ko-KR')}원`;
+            document.getElementById('total-eval-usd').innerText = `약 $${(totalEvalKrw / usdKrw).toLocaleString('en-US', {maximumFractionDigits: 2})}`;
+
+            // 3. 비중 산출 & 카테고리 집계
+            const categoryMap = {};
+            let sgovDiff = 0;
+
+            itemResults.forEach(item => {
+                item.currentWeight = totalEvalKrw > 0 ? (item.evalKrw / totalEvalKrw) * 100 : 0;
+                item.weightDiff = item.currentWeight - item.target_weight;
+
+                if (item.symbol === "SGOV") sgovDiff = item.weightDiff;
+
+                const cat = item.category;
+                if (!categoryMap[cat]) {
+                    categoryMap[cat] = { evalKrw: 0, targetWeight: 0, symbols: [] };
+                }
+                categoryMap[cat].evalKrw += item.evalKrw;
+                categoryMap[cat].targetWeight += item.target_weight;
+                categoryMap[cat].symbols.push(item.symbol);
+            });
+
+            // 4. 액션 가이드 배너 업데이트
+            let actionHtml = "";
+            if (vixVal >= 30) {
+                actionHtml = `<span class="text-rose-400 font-bold">🔥 [강력 저가 매수 시그널]</span> VIX 지수 30 이상 (패닉 장세)! 과매도된 핵심 빅테크(NVDA/GOOGL/AMD) 저가 매수를 위해 SGOV 현금 실탄 20~30% 집행 고려.`;
+            } else if (vixVal >= 25 || sgovDiff >= 5.0) {
+                actionHtml = `<span class="text-amber-400 font-bold">🛒 [분할 매수 시그널]</span> 시장 조정으로 SGOV(현금) 비중이 커졌습니다. 하락한 종목 저가 분할 매수를 위해 SGOV 실탄 사용 고려.`;
+            } else {
+                actionHtml = `<span class="text-emerald-400 font-bold">🛡️ [실탄 대기 (HOLD)]</span> 현재 시장 변동성 및 비중이 안정적입니다. SGOV 현금 실탄을 온전히 보존하며 연 5%대 이자 수익을 수취하세요.`;
+            }
+            document.getElementById('action-text').innerHTML = actionHtml;
+
+            // 5. 테이블 및 차트 렌더링
+            renderCategoryTable(categoryMap, totalEvalKrw);
+            renderStockTable(itemResults);
+            renderCharts(itemResults, categoryMap);
+
+            const now = new Date();
+            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-clock mr-1 text-emerald-400"></i> ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')} 동기화 완료`;
+        }
+
+        function renderCategoryTable(categoryMap, totalEvalKrw) {
+            const tbody = document.getElementById('category-table-body');
+            tbody.innerHTML = '';
+
+            for (const [catName, data] of Object.entries(categoryMap)) {
+                const curWeight = totalEvalKrw > 0 ? (data.evalKrw / totalEvalKrw) * 100 : 0;
+                const diff = curWeight - data.targetWeight;
+                const statusBadge = Math.abs(diff) >= 5.0 
+                    ? `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded text-xs">⚠️ 이탈 (${diff > 0 ? '+' : ''}${diff.toFixed(1)}%)</span>`
+                    : `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-xs">🟢 정상</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-800/60 hover:bg-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-slate-200">${catName}</td>
+                    <td class="py-3 px-4 text-xs text-slate-400">${data.symbols.join(', ')}</td>
+                    <td class="py-3 px-4 font-mono">${Math.round(data.evalKrw).toLocaleString('ko-KR')}원</td>
+                    <td class="py-3 px-4 font-bold text-sky-400">${curWeight.toFixed(1)}%</td>
+                    <td class="py-3 px-4 text-slate-400">${data.targetWeight.toFixed(1)}%</td>
+                    <td class="py-3 px-4">${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function renderStockTable(items) {
+            const tbody = document.getElementById('stock-table-body');
+            tbody.innerHTML = '';
+
+            items.forEach(item => {
+                const changeColor = item.changePct > 0 ? 'text-rose-400' : (item.changePct < 0 ? 'text-emerald-400' : 'text-slate-400');
+                const changeIcon = item.changePct > 0 ? '▲' : (item.changePct < 0 ? '▼' : '─');
+                const statusBadge = Math.abs(item.weightDiff) >= 5.0 
+                    ? `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded text-xs">⚠️ ${item.weightDiff > 0 ? '초과' : '미달'}</span>`
+                    : `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-xs">🟢 정상</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-800/60 hover:bg-slate-800/40 transition";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-slate-200">${item.name} <span class="text-xs text-slate-400 font-normal">(${item.symbol})</span></td>
+                    <td class="py-3 px-4 font-mono">${item.quantity}주</td>
+                    <td class="py-3 px-4 font-mono">$${item.priceUsd.toFixed(2)}</td>
+                    <td class="py-3 px-4 font-mono ${changeColor}">${changeIcon} ${item.changePct.toFixed(2)}% ($${Math.abs(item.changeUsd).toFixed(2)})</td>
+                    <td class="py-3 px-4 font-mono">${Math.round(item.evalKrw).toLocaleString('ko-KR')}원</td>
+                    <td class="py-3 px-4 font-mono"><strong class="text-sky-400">${item.currentWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(${item.target_weight}%)</span></td>
+                    <td class="py-3 px-4">${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderCharts(items, categoryMap) {
+            // Colors
+            const palette = ['#38bdf8', '#4ade80', '#facc15', '#f87171', '#c084fc', '#fb923c', '#e879f9'];
+
+            // 1. Category Donut
+            const catLabels = Object.keys(categoryMap);
+            const catWeights = Object.values(categoryMap).map(d => (d.evalKrw / items.reduce((a,b)=>a+b.evalKrw,0))*100);
+
+            if (categoryChartInst) categoryChartInst.destroy();
+            categoryChartInst = new Chart(document.getElementById('categoryChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: catLabels,
+                    datasets: [{
+                        data: catWeights,
+                        backgroundColor: ['#38bdf8', '#4ade80', '#facc15', '#c084fc'],
+                        borderWidth: 2,
+                        borderColor: '#0f172a'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } }
+                    }
+                }
+            });
+
+            // 2. Stock Donut
+            const stockLabels = items.map(i => i.symbol);
+            const stockWeights = items.map(i => i.currentWeight);
+
+            if (stockChartInst) stockChartInst.destroy();
+            stockChartInst = new Chart(document.getElementById('stockChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: stockLabels,
+                    datasets: [{
+                        data: stockWeights,
+                        backgroundColor: palette,
+                        borderWidth: 2,
+                        borderColor: '#0f172a'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 11 } } }
+                    }
+                }
+            });
+        }
+
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', fetchData);
+    </script>
+</body>
+</html>
