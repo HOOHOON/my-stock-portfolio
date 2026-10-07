@@ -7,15 +7,6 @@ import xml.etree.ElementTree as ET
 import datetime
 import html
 
-# matplotlib 지연 임포트 (설치 안 되어 있어도 텍스트 알림은 정상 동작)
-try:
-    import matplotlib
-    matplotlib.use('Agg')
-    import matplotlib.pyplot as plt
-    HAS_MATPLOTLIB = True
-except Exception:
-    HAS_MATPLOTLIB = False
-
 # 윈도우 콘솔 출력 한글 및 이모지 깨짐 방지
 if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
     try:
@@ -115,44 +106,6 @@ def get_krx_stock_detail(symbol):
             "change_pct": change_pct
         }
 
-def generate_portfolio_chart(item_results, output_path="portfolio_chart.png"):
-    """실시간 포트폴리오 비중 원형(도넛) 그래프 생성"""
-    if not HAS_MATPLOTLIB:
-        print("matplotlib 미설치로 차트 작성을 스킵합니다.")
-        return None
-
-    try:
-        labels = [f"{item['symbol']}\n{item['current_weight']:.1f}%" for item in item_results]
-        weights = [item['current_weight'] for item in item_results]
-        colors = ['#38bdf8', '#4ade80', '#facc15', '#f87171', '#c084fc', '#fb923c', '#e879f9']
-
-        fig, ax = plt.subplots(figsize=(7, 7), subplot_kw=dict(aspect='equal'))
-        fig.patch.set_facecolor('#0f172a')
-
-        wedges, texts, autotexts = ax.pie(
-            weights, 
-            labels=labels, 
-            autopct='%1.1f%%',
-            pctdistance=0.75,
-            startangle=140,
-            colors=colors[:len(weights)],
-            textprops=dict(color='#f8fafc', fontsize=10, weight='bold'),
-            wedgeprops=dict(width=0.42, edgecolor='#0f172a', linewidth=2.5)
-        )
-
-        for autotext in autotexts:
-            autotext.set_color('#ffffff')
-
-        ax.set_title('Real-time Portfolio Weight (%)', color='#ffffff', fontsize=14, pad=15, weight='bold')
-        plt.tight_layout()
-        plt.savefig(output_path, dpi=200, facecolor=fig.get_facecolor(), edgecolor='none')
-        plt.close()
-        print("포트폴리오 원형 차트 이미지 생성 완료!")
-        return output_path
-    except Exception as e:
-        print(f"차트 생성 실패: {e}")
-        return None
-
 def send_telegram_message(token, chat_id, text):
     """텔레그램 텍스트 메시지 전송"""
     url = f"https://api.telegram.org/bot{token}/sendMessage"
@@ -170,41 +123,11 @@ def send_telegram_message(token, chat_id, text):
     except Exception as e:
         print(f"텔레그램 텍스트 전송 실패: {e}")
 
-def send_telegram_photo(token, chat_id, photo_path, caption=""):
-    """텔레그램으로 시각화 이미지 전송"""
-    if not photo_path or not os.path.exists(photo_path):
-        return
-    url = f"https://api.telegram.org/bot{token}/sendPhoto"
-    boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW"
-    
-    try:
-        with open(photo_path, 'rb') as f:
-            photo_bytes = f.read()
-
-        body = []
-        body.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{chat_id}\r\n".encode('utf-8'))
-        if caption:
-            body.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"caption\"\r\n\r\n{caption}\r\n".encode('utf-8'))
-        body.append(f"--{boundary}\r\nContent-Disposition: form-data; name=\"photo\"; filename=\"{os.path.basename(photo_path)}\"\r\nContent-Type: image/png\r\n\r\n".encode('utf-8'))
-        body.append(photo_bytes)
-        body.append(f"\r\n--{boundary}--\r\n".encode('utf-8'))
-
-        payload = b''.join(body)
-        req = urllib.request.Request(
-            url,
-            data=payload,
-            headers={'Content-Type': f'multipart/form-data; boundary={boundary}'}
-        )
-        with urllib.request.urlopen(req, timeout=15) as res:
-            print("텔레그램 원형 차트 이미지 전송 성공!")
-    except Exception as e:
-        print(f"텔레그램 이미지 전송 실패: {e}")
-
 def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_results, category_summary, json_path="portfolio_data.json"):
-    """대시보드가 즉각 0.01초 만에 렌더링할 수 있도록 사전 계산 데이터 저장"""
+    """대시보드가 즉각 로딩할 수 있도록 데이터 저장"""
     try:
         data = {
-            "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
             "usd_krw_rate": usd_krw_rate,
             "tnx": tnx,
             "vix": vix,
@@ -215,7 +138,7 @@ def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_resu
         }
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        print("portfolio_data.json 사전 계산 파일 생성 완료!")
+        print("portfolio_data.json 계산 파일 생성 완료!")
     except Exception as e:
         print(f"JSON 내보내기 실패: {e}")
 
@@ -463,6 +386,10 @@ def main():
             "👉 **액션 플랜**: 별도의 매매 없이 현재 비중 포지션을 그대로 유지(Hold)하세요."
         )
 
+    lines.append("----------------------------------------")
+    lines.append("📱 *[실시간 대시보드 웹페이지]*")
+    lines.append("👉 [핸드폰으로 실시간 도넛 차트 & 대시보드 보기](https://hoohoon.github.io/my-stock-portfolio/)")
+
     msg_text = "\n".join(lines)
     
     try:
@@ -473,17 +400,12 @@ def main():
     # JSON 데이터 내보내기 (대시보드 즉시 로딩용)
     export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_results, category_summary)
 
-    # 원형 차트 이미지 생성
-    chart_path = generate_portfolio_chart(item_results)
-
-    # 텔레그램 전송
+    # 텔레그램 텍스트 전송 (이미지 첨부 제거)
     telegram_token = os.environ.get("TELEGRAM_TOKEN")
     telegram_chat_id = os.environ.get("TELEGRAM_CHAT_ID")
 
     if telegram_token and telegram_chat_id:
         send_telegram_message(telegram_token, telegram_chat_id, msg_text)
-        if chart_path:
-            send_telegram_photo(telegram_token, telegram_chat_id, chart_path, caption="📊 실시간 포트폴리오 비중 시각화 차트")
     else:
         print("\n[안내] TELEGRAM_TOKEN 및 TELEGRAM_CHAT_ID 환경변수가 설정되지 않아 콘솔 출력만 진행했습니다.")
 
