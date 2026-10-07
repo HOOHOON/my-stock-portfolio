@@ -1,0 +1,26 @@
+{
+  "rebalance_threshold_percent": 5.0,
+  "portfolio": [
+    {
+      "name": "삼성전자",
+      "symbol": "005930",
+      "market": "KRX",
+      "quantity": 50,
+      "target_weight": 40.0
+    },
+    {
+      "name": "SK하이닉스",
+      "symbol": "000660",
+      "market": "KRX",
+      "quantity": 20,
+      "target_weight": 30.0
+    },
+    {
+      "name": "애플 (AAPL)",
+      "symbol": "AAPL",
+      "market": "US",
+      "quantity": 10,
+      "target_weight": 30.0
+    }
+  ]
+}

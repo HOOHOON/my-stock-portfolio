@@ -1,0 +1,29 @@
+name: 주식 포트폴리오 비중 실시간 감시
+
+on:
+  schedule:
+    # 월~금 한국시간 15:30 (장 마감 시각) - UTC 06:30
+    - cron: '30 6 * * 1-5'
+    # 월~금 한국시간 22:00 (미국장 진입 시각) - UTC 13:00
+    - cron: '0 13 * * 1-5'
+  workflow_dispatch: # 깃허브 웹사이트에서 버튼 눌러 수동 실행 버튼 활성화
+
+jobs:
+  check_portfolio:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 환경 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 포트폴리오 체크 & 텔레그램 알림 전송
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python portfolio_checker.py
