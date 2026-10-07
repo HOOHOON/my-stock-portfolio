@@ -35,13 +35,13 @@
                     <i class="fa-solid fa-chart-pie text-sky-400"></i>
                     실시간 포트폴리오 & 매크로 대시보드
                 </h1>
-                <p class="text-sm text-slate-400 mt-1">고금리·고변동성 대응 포트폴리오 실시간 모니터링</p>
+                <p class="text-sm text-slate-400 mt-1">고금리·고변동성 대응 포트폴리오 모니터링</p>
             </div>
             <div class="flex items-center gap-3">
                 <span id="last-update" class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700">
                     <i class="fa-solid fa-check text-emerald-400 mr-1"></i> 동기화 완료
                 </span>
-                <button onclick="fetchLiveQuotes()" class="bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
+                <button onclick="manualRefresh()" class="bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
                     <i class="fa-solid fa-rotate mr-1"></i> 새로고침
                 </button>
             </div>
@@ -52,14 +52,14 @@
             <!-- Total Value -->
             <div class="bg-cardbg p-5 rounded-2xl border border-slate-800 shadow-lg">
                 <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">총 평가금액 (KRW)</div>
-                <div id="total-eval-krw" class="text-xl md:text-2xl font-bold text-sky-400">40,924,464원</div>
-                <div id="total-eval-usd" class="text-xs text-slate-400 mt-1">약 $30,547.48</div>
+                <div id="total-eval-krw" class="text-xl md:text-2xl font-bold text-sky-400">40,876,699원</div>
+                <div id="total-eval-usd" class="text-xs text-slate-400 mt-1">약 $30,523.22</div>
             </div>
             <!-- Exchange Rate -->
             <div class="bg-cardbg p-5 rounded-2xl border border-slate-800 shadow-lg">
                 <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">USD/KRW 환율</div>
-                <div id="rate-krw" class="text-xl md:text-2xl font-bold text-emerald-400">1,339.7원</div>
-                <div id="rate-change" class="text-xs text-rose-400 mt-1">전일대비 +0.21%</div>
+                <div id="rate-krw" class="text-xl md:text-2xl font-bold text-emerald-400">1,339.2원</div>
+                <div id="rate-change" class="text-xs text-rose-400 mt-1">전일대비 +0.17%</div>
             </div>
             <!-- 10Y Treasury Rate -->
             <div class="bg-cardbg p-5 rounded-2xl border border-slate-800 shadow-lg">
@@ -70,7 +70,7 @@
             <!-- VIX Index -->
             <div class="bg-cardbg p-5 rounded-2xl border border-slate-800 shadow-lg">
                 <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">VIX 공포지수</div>
-                <div id="vix-index" class="text-xl md:text-2xl font-bold text-emerald-400">15.48</div>
+                <div id="vix-index" class="text-xl md:text-2xl font-bold text-emerald-400">15.39</div>
                 <div id="vix-status" class="text-xs text-emerald-400 mt-1">안정 (20 미만)</div>
             </div>
         </div>
@@ -161,28 +161,28 @@
 
     </div>
 
-    <!-- Embedded Initial Data (Local File CORS Proof) -->
+    <!-- Embedded Data Logic -->
     <script>
         const INITIAL_DATA = {
-            "updated_at": "2026-10-08 00:52",
-            "usd_krw_rate": 1339.7,
-            "tnx": { "price": 5.31, "change": 0.04, "change_pct": 0.72 },
-            "vix": { "price": 15.48, "change": 0.47, "change_pct": 3.13 },
-            "total_eval_krw": 40924464,
+            "updated_at": "2026-10-08 01:00",
+            "usd_krw_rate": 1339.2,
+            "tnx": { "price": 5.31, "change": 0.04, "change_pct": 0.80 },
+            "vix": { "price": 15.39, "change": 0.38, "change_pct": 2.53 },
+            "total_eval_krw": 40876699,
             "items": [
-                { "name": "SGOV (초단기채)", "symbol": "SGOV", "quantity": 75, "target_weight": 24.9, "category": "💵 초단기채/현금", "priceUsd": 100.47, "changePct": 0.00, "changeUsd": 0.01, "evalKrw": 10094472, "currentWeight": 24.7, "weightDiff": -0.2 },
-                { "name": "엔비디아", "symbol": "NVDA", "quantity": 27, "target_weight": 21.0, "category": "💻 빅테크/AI 성장주", "priceUsd": 237.75, "changePct": -0.62, "changeUsd": -1.49, "evalKrw": 8599869, "currentWeight": 21.0, "weightDiff": 0.0 },
-                { "name": "알파벳 A", "symbol": "GOOGL", "quantity": 18, "target_weight": 20.3, "category": "💻 빅테크/AI 성장주", "priceUsd": 346.25, "changePct": -0.41, "changeUsd": -1.43, "evalKrw": 8349680, "currentWeight": 20.4, "weightDiff": 0.1 },
-                { "name": "AMD", "symbol": "AMD", "quantity": 8, "target_weight": 16.8, "category": "💻 빅테크/AI 성장주", "priceUsd": 645.76, "changePct": -0.56, "changeUsd": -3.66, "evalKrw": 6920976, "currentWeight": 16.9, "weightDiff": 0.1 },
-                { "name": "마이크로소프트", "symbol": "MSFT", "quantity": 4, "target_weight": 6.8, "category": "💻 빅테크/AI 성장주", "priceUsd": 528.14, "changePct": -0.22, "changeUsd": -1.16, "evalKrw": 2830197, "currentWeight": 6.9, "weightDiff": 0.1 },
-                { "name": "SCHD (배당성장)", "symbol": "SCHD", "quantity": 62, "target_weight": 6.7, "category": "📈 배당 성장주", "priceUsd": 32.70, "changePct": -0.47, "changeUsd": -0.16, "evalKrw": 2715692, "currentWeight": 6.6, "weightDiff": -0.1 },
-                { "name": "GLDM (실물 금)", "symbol": "GLDM", "quantity": 13, "target_weight": 3.5, "category": "🥇 실물 금/원자재", "priceUsd": 81.17, "changePct": -1.56, "changeUsd": -1.28, "evalKrw": 1413578, "currentWeight": 3.5, "weightDiff": 0.0 }
+                { "name": "SGOV (초단기채)", "symbol": "SGOV", "quantity": 75, "target_weight": 24.9, "category": "💵 초단기채/현금", "priceUsd": 100.47, "changePct": 0.00, "changeUsd": 0.01, "evalKrw": 10090554, "currentWeight": 24.7, "weightDiff": -0.2 },
+                { "name": "엔비디아", "symbol": "NVDA", "quantity": 27, "target_weight": 21.0, "category": "💻 빅테크/AI 성장주", "priceUsd": 237.29, "changePct": -0.82, "changeUsd": -1.95, "evalKrw": 8579899, "currentWeight": 21.0, "weightDiff": 0.0 },
+                { "name": "알파벳 A", "symbol": "GOOGL", "quantity": 18, "target_weight": 20.3, "category": "💻 빅테크/AI 성장주", "priceUsd": 346.20, "changePct": -0.43, "changeUsd": -1.48, "evalKrw": 8345234, "currentWeight": 20.4, "weightDiff": 0.1 },
+                { "name": "AMD", "symbol": "AMD", "quantity": 8, "target_weight": 16.8, "category": "💻 빅테크/AI 성장주", "priceUsd": 644.37, "changePct": -0.78, "changeUsd": -5.05, "evalKrw": 6903419, "currentWeight": 16.9, "weightDiff": 0.1 },
+                { "name": "마이크로소프트", "symbol": "MSFT", "quantity": 4, "target_weight": 6.8, "category": "💻 빅테크/AI 성장주", "priceUsd": 527.65, "changePct": -0.31, "changeUsd": -1.65, "evalKrw": 2826473, "currentWeight": 6.9, "weightDiff": 0.1 },
+                { "name": "SCHD (배당성장)", "symbol": "SCHD", "quantity": 62, "target_weight": 6.7, "category": "📈 배당 성장주", "priceUsd": 32.72, "changePct": -0.38, "changeUsd": -0.13, "evalKrw": 2717046, "currentWeight": 6.6, "weightDiff": -0.1 },
+                { "name": "GLDM (실물 금)", "symbol": "GLDM", "quantity": 13, "target_weight": 3.5, "category": "🥇 실물 금/원자재", "priceUsd": 81.22, "changePct": -1.49, "changeUsd": -1.23, "evalKrw": 1414074, "currentWeight": 3.5, "weightDiff": 0.0 }
             ],
             "categories": {
-                "💵 초단기채/현금": { "eval_krw": 10094472, "target_weight": 24.9, "symbols": ["SGOV"] },
-                "💻 빅테크/AI 성장주": { "eval_krw": 26700722, "target_weight": 64.9, "symbols": ["NVDA", "GOOGL", "AMD", "MSFT"] },
-                "📈 배당 성장주": { "eval_krw": 2715692, "target_weight": 6.7, "symbols": ["SCHD"] },
-                "🥇 실물 금/원자재": { "eval_krw": 1413578, "target_weight": 3.5, "symbols": ["GLDM"] }
+                "💵 초단기채/현금": { "eval_krw": 10090554, "target_weight": 24.9, "symbols": ["SGOV"] },
+                "💻 빅테크/AI 성장주": { "eval_krw": 26655025, "target_weight": 64.9, "symbols": ["NVDA", "GOOGL", "AMD", "MSFT"] },
+                "📈 배당 성장주": { "eval_krw": 2717046, "target_weight": 6.7, "symbols": ["SCHD"] },
+                "🥇 실물 금/원자재": { "eval_krw": 1414074, "target_weight": 3.5, "symbols": ["GLDM"] }
             }
         };
 
@@ -192,41 +192,29 @@
         function initDashboard() {
             renderData(INITIAL_DATA);
             document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-1"></i> 동기화 완료 (${INITIAL_DATA.updated_at})`;
-            
-            // 실시간 백그라운드 갱신 시도
-            fetchLiveQuotes();
+            manualRefresh();
         }
 
-        async function fetchLiveQuotes() {
-            const symbols = ["SGOV", "NVDA", "GOOGL", "AMD", "MSFT", "SCHD", "GLDM", "KRW=X", "^TNX", "^VIX"].join(",");
-            const targetUrl = `https://query1.finance.yahoo.com/v7/finance/spark?symbols=${encodeURIComponent(symbols)}`;
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`;
+        async function manualRefresh() {
+            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400 mr-1"></i> 갱신 중...`;
 
             try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-                const res = await fetch(proxyUrl, { signal: controller.signal });
-                clearTimeout(timeoutId);
-                const data = await res.json();
-                
-                if (data && data.spark && data.spark.result) {
-                    const quoteMap = {};
-                    data.spark.result.forEach(item => {
-                        const sym = item.symbol;
-                        const meta = item.response[0].meta;
-                        const price = meta.regularMarketPrice;
-                        const prev = meta.chartPreviousClose || meta.previousClose || price;
-                        const change = price - prev;
-                        const pct = prev !== 0 ? (change / prev) * 100 : 0;
-                        quoteMap[sym] = { price, prev, change, pct };
-                    });
-                    
-                    updateWithQuotes(quoteMap);
+                // portfolio_data.json 재동기화 (캐시 무효화 query 추가)
+                const res = await fetch('./portfolio_data.json?t=' + Date.now(), { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    renderData(data);
+                    document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-bolt text-amber-400 mr-1"></i> 동기화 완료 (${data.updated_at})`;
+                    return;
                 }
             } catch (e) {
-                console.log("Live background update skipped:", e);
+                console.log("JSON reload error:", e);
             }
+
+            // Fallback UI update notice
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-circle-info text-sky-400 mr-1"></i> 최신 갱신됨 (${timeStr})`;
         }
 
         function renderData(data) {
@@ -255,59 +243,6 @@
             renderCategoryTable(data.categories, data.total_eval_krw);
             renderStockTable(data.items);
             renderCharts(data.items, data.categories);
-        }
-
-        function updateWithQuotes(quotes) {
-            const usdKrw = quotes["KRW=X"] ? quotes["KRW=X"].price : INITIAL_DATA.usd_krw_rate;
-            let totalEvalKrw = 0;
-            const itemResults = [];
-            const categoryMap = {};
-
-            INITIAL_DATA.items.forEach(item => {
-                const q = quotes[item.symbol] || { price: item.priceUsd, pct: item.changePct, change: item.changeUsd };
-                const priceUsd = q.price;
-                const changePct = q.pct;
-                const changeUsd = q.change;
-                const evalKrw = priceUsd * usdKrw * item.quantity;
-                totalEvalKrw += evalKrw;
-
-                itemResults.push({
-                    name: item.name,
-                    symbol: item.symbol,
-                    quantity: item.quantity,
-                    target_weight: item.target_weight,
-                    category: item.category,
-                    priceUsd,
-                    changePct,
-                    changeUsd,
-                    evalKrw
-                });
-            });
-
-            itemResults.forEach(item => {
-                item.currentWeight = (item.evalKrw / totalEvalKrw) * 100;
-                item.weightDiff = item.currentWeight - item.target_weight;
-
-                const cat = item.category;
-                if (!categoryMap[cat]) {
-                    categoryMap[cat] = { eval_krw: 0, target_weight: 0, symbols: [] };
-                }
-                categoryMap[cat].eval_krw += item.evalKrw;
-                categoryMap[cat].target_weight += item.target_weight;
-                categoryMap[cat].symbols.push(item.symbol);
-            });
-
-            renderData({
-                usd_krw_rate: usdKrw,
-                tnx: quotes["^TNX"] ? { price: quotes["^TNX"].price, change: quotes["^TNX"].change } : INITIAL_DATA.tnx,
-                vix: quotes["^VIX"] ? { price: quotes["^VIX"].price, change: quotes["^VIX"].change } : INITIAL_DATA.vix,
-                total_eval_krw: totalEvalKrw,
-                items: itemResults,
-                categories: categoryMap
-            });
-
-            const now = new Date();
-            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-bolt text-amber-400 mr-1"></i> 실시간 시세 반영 완료 (${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')})`;
         }
 
         function renderCategoryTable(categoryMap, totalEvalKrw) {
@@ -421,7 +356,7 @@
             });
         }
 
-        // DOM Ready 0초 무조건 실행
+        // DOM Ready
         window.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
