@@ -43,8 +43,8 @@
                 <span id="last-update" class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700">
                     <i class="fa-solid fa-check text-emerald-400 mr-1"></i> 동기화 완료
                 </span>
-                <button onclick="manualRefresh()" class="bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
-                    <i class="fa-solid fa-rotate mr-1"></i> 새로고침
+                <button id="refresh-btn" onclick="manualRefresh()" class="bg-sky-500 hover:bg-sky-600 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
+                    <i id="refresh-icon" class="fa-solid fa-rotate mr-1"></i> 새로고침
                 </button>
             </div>
         </header>
@@ -201,6 +201,8 @@
         }
 
         async function manualRefresh() {
+            const btnIcon = document.getElementById('refresh-icon');
+            if (btnIcon) btnIcon.classList.add('fa-spin');
             document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400 mr-1"></i> 갱신 중...`;
 
             try {
@@ -209,6 +211,7 @@
                     const data = await res.json();
                     renderData(data);
                     document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-bolt text-amber-400 mr-1"></i> 동기화 완료 (${data.updated_at})`;
+                    if (btnIcon) btnIcon.classList.remove('fa-spin');
                     return;
                 }
             } catch (e) {
@@ -218,6 +221,48 @@
             const now = new Date();
             const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
             document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-circle-info text-sky-400 mr-1"></i> 최신 갱신됨 (${timeStr})`;
+            if (btnIcon) btnIcon.classList.remove('fa-spin');
+        }
+
+        function renderActionBanner(data, items) {
+            const vixVal = data.vix ? data.vix.price : 15.0;
+            const sgov = items.find(i => i.symbol === 'SGOV');
+            const sgovDiff = sgov ? (sgov.weight_diff !== undefined ? sgov.weight_diff : (sgov.weightDiff !== undefined ? sgov.weightDiff : 0)) : 0;
+            const threshold = 5.0;
+
+            let cashSignal = "HOLD";
+            let cashReason = [];
+
+            if (vixVal >= 30) {
+                cashSignal = "STRONG_BUY";
+                cashReason.push("🚨 <strong>VIX 30 이상 (패닉 장세)</strong>: 시장 극심한 공포 구간! SGOV의 20~30%를 매도하여 주도주(NVDA/GOOGL/AMD) 저가 매수 고려.");
+            } else if (vixVal >= 25) {
+                cashSignal = "BUY";
+                cashReason.push("⚠️ <strong>VIX 25 이상 (투매 발생)</strong>: 조정을 받는 기술주의 분할 매수를 위해 SGOV 현금 실탄 일부 사용 진입 구간.");
+            }
+
+            if (sgovDiff >= threshold) {
+                if (cashSignal === "HOLD") cashSignal = "BUY";
+                cashReason.push(`📊 <strong>SGOV 비중 초과 (+${sgovDiff.toFixed(1)}%)</strong>: 주가 하락으로 현금 비중이 커졌습니다. 하락 종목 저가 매수 고려.`);
+            } else if (sgovDiff <= -threshold) {
+                cashReason.push(`📊 <strong>SGOV 비중 부족 (${sgovDiff.toFixed(1)}%)</strong>: 현금 자산이 줄었으므로 상승 종목 털어 SGOV 충전 필요.`);
+            }
+
+            const bannerEl = document.getElementById('action-banner');
+            const textEl = document.getElementById('action-text');
+
+            if (!bannerEl || !textEl) return;
+
+            if (cashSignal === "STRONG_BUY") {
+                bannerEl.className = "bg-cardbg border-l-4 border-rose-500 p-5 rounded-2xl shadow-lg border border-slate-800 space-y-2";
+                textEl.innerHTML = `<span class="text-rose-400 font-bold">🔥 [강력 매수 시그널] 현금 실탄 집행 권장!</span><br>${cashReason.join('<br>')}`;
+            } else if (cashSignal === "BUY") {
+                bannerEl.className = "bg-cardbg border-l-4 border-amber-400 p-5 rounded-2xl shadow-lg border border-slate-800 space-y-2";
+                textEl.innerHTML = `<span class="text-amber-400 font-bold">🛒 [분할 매수 시그널] 현금 실탄 일부 사용 고려</span><br>${cashReason.join('<br>')}`;
+            } else {
+                bannerEl.className = "bg-cardbg border-l-4 border-emerald-400 p-5 rounded-2xl shadow-lg border border-slate-800 space-y-2";
+                textEl.innerHTML = `<span class="text-emerald-400 font-bold">🛡️ [실탄 대기 (HOLD)]</span> 현재 시장 변동성 및 비중이 안정적입니다. SGOV 현금 실탄을 온전히 보존하며 연 5%대 이자 수익을 수취하세요.`;
+            }
         }
 
         function renderData(data) {
@@ -243,6 +288,7 @@
                 document.getElementById('vix-status').className = `text-xs mt-1 ${vixColorClass}`;
             }
 
+            renderActionBanner(data, data.items);
             renderCategoryTable(data.categories, data.total_eval_krw);
             renderStockTable(data.items);
             renderCharts(data.items, data.categories);

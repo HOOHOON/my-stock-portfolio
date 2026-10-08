@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+KakaoTalk_*.png
+test_chart.png
+portfolio_chart.png
