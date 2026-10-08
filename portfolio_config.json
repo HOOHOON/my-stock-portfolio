@@ -7,7 +7,8 @@
       "market": "US",
       "quantity": 75,
       "target_weight": 24.9,
-      "category": "💵 초단기채/현금"
+      "category": "💵 초단기채/현금",
+      "buy_price": 100.5996
     },
     {
       "name": "엔비디아",
@@ -15,7 +16,8 @@
       "market": "US",
       "quantity": 27,
       "target_weight": 21.0,
-      "category": "💻 빅테크/AI 성장주"
+      "category": "💻 빅테크/AI 성장주",
+      "buy_price": 212.8844
     },
     {
       "name": "알파벳 A",
@@ -23,7 +25,8 @@
       "market": "US",
       "quantity": 18,
       "target_weight": 20.3,
-      "category": "💻 빅테크/AI 성장주"
+      "category": "💻 빅테크/AI 성장주",
+      "buy_price": 270.8759
     },
     {
       "name": "AMD",
@@ -31,7 +34,8 @@
       "market": "US",
       "quantity": 8,
       "target_weight": 16.8,
-      "category": "💻 빅테크/AI 성장주"
+      "category": "💻 빅테크/AI 성장주",
+      "buy_price": 444.9800
     },
     {
       "name": "마이크로소프트",
@@ -39,7 +43,8 @@
       "market": "US",
       "quantity": 4,
       "target_weight": 6.8,
-      "category": "💻 빅테크/AI 성장주"
+      "category": "💻 빅테크/AI 성장주",
+      "buy_price": 512.9600
     },
     {
       "name": "SCHD (배당성장)",
@@ -47,7 +52,8 @@
       "market": "US",
       "quantity": 62,
       "target_weight": 6.7,
-      "category": "📈 배당 성장주"
+      "category": "📈 배당 성장주",
+      "buy_price": 32.5950
     },
     {
       "name": "GLDM (실물 금)",
@@ -55,7 +61,8 @@
       "market": "US",
       "quantity": 13,
       "target_weight": 3.5,
-      "category": "🥇 실물 금/원자재"
+      "category": "🥇 실물 금/원자재",
+      "buy_price": 81.9400
     }
   ]
 }

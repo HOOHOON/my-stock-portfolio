@@ -123,10 +123,33 @@ def send_telegram_message(token, chat_id, text):
     except Exception as e:
         print(f"텔레그램 텍스트 전송 실패: {e}")
 
-def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_results, category_summary, json_path="portfolio_data.json"):
-    """대시보드가 즉각 로딩할 수 있도록 데이터 저장"""
+def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, total_buy_krw, total_profit_krw, total_profit_pct, item_results, category_summary, json_path="portfolio_data.json"):
+    """대시보드가 즉각 로딩할 수 있도록 데이터 저장 및 일별 누적 데이터 업데이트"""
     try:
         kst_now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=9)
+        today_date = kst_now.strftime("%Y-%m-%d")
+
+        existing_history = []
+        if os.path.exists(json_path):
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    old_data = json.load(f)
+                    existing_history = old_data.get("history", [])
+            except Exception:
+                existing_history = []
+
+        # 오늘 날짜 기존 히스토리 갱신
+        history = [h for h in existing_history if h.get("date") != today_date]
+        history.append({
+            "date": today_date,
+            "total_eval_krw": round(total_eval_krw),
+            "total_buy_krw": round(total_buy_krw),
+            "total_profit_krw": round(total_profit_krw),
+            "total_profit_pct": round(total_profit_pct, 2),
+            "usd_krw_rate": usd_krw_rate
+        })
+        history.sort(key=lambda x: x["date"])
+
         data = {
             "updated_at": kst_now.strftime("%Y-%m-%d %H:%M"),
             "usd_krw_rate": usd_krw_rate,
@@ -134,12 +157,16 @@ def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_resu
             "vix": vix,
             "dxy": dxy,
             "total_eval_krw": total_eval_krw,
+            "total_buy_krw": total_buy_krw,
+            "total_profit_krw": total_profit_krw,
+            "total_profit_pct": total_profit_pct,
             "items": item_results,
-            "categories": category_summary
+            "categories": category_summary,
+            "history": history
         }
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=2)
-        print("portfolio_data.json 계산 파일 생성 완료!")
+        print("portfolio_data.json 계산 파일 및 히스토리 기록 완료!")
     except Exception as e:
         print(f"JSON 내보내기 실패: {e}")
 
@@ -162,6 +189,7 @@ def main():
     now_str = kst_now.strftime("%Y-%m-%d %H:%M")
 
     total_eval_krw = 0
+    total_buy_usd = 0
     item_results = []
 
     for item in portfolio:
@@ -171,6 +199,7 @@ def main():
         quantity = item["quantity"]
         target_weight = item["target_weight"]
         category = item.get("category", "기타")
+        buy_price = item.get("buy_price", 0.0)
 
         try:
             if market == "US":
@@ -189,7 +218,14 @@ def main():
                 price_usd = price_krw / usd_krw_rate
 
             eval_krw = price_krw * quantity
+            eval_usd = price_usd * quantity
+            buy_eval_usd = buy_price * quantity if buy_price > 0 else eval_usd
+            profit_usd = eval_usd - buy_eval_usd
+            profit_krw = profit_usd * usd_krw_rate
+            profit_pct = (profit_usd / buy_eval_usd * 100) if buy_eval_usd > 0 else 0.0
+
             total_eval_krw += eval_krw
+            total_buy_usd += buy_eval_usd
 
             item_results.append({
                 "name": name,
@@ -198,11 +234,17 @@ def main():
                 "quantity": quantity,
                 "target_weight": target_weight,
                 "category": category,
+                "buy_price": buy_price,
                 "price_krw": price_krw,
                 "price_usd": price_usd,
                 "change_usd": change_usd,
                 "change_pct": change_pct,
-                "eval_krw": eval_krw
+                "eval_krw": eval_krw,
+                "eval_usd": eval_usd,
+                "buy_eval_usd": buy_eval_usd,
+                "profit_usd": profit_usd,
+                "profit_krw": profit_krw,
+                "profit_pct": profit_pct
             })
         except Exception as e:
             print(f"[{name}({symbol})] 시세 조회 실패: {e}")
@@ -211,17 +253,23 @@ def main():
         print("포트폴리오 평가금액을 계산할 수 없습니다.")
         return
 
+    total_buy_krw = total_buy_usd * usd_krw_rate
+    total_profit_usd = sum(item["profit_usd"] for item in item_results)
+    total_profit_krw = total_profit_usd * usd_krw_rate
+    total_profit_pct = (total_profit_usd / total_buy_usd * 100) if total_buy_usd > 0 else 0.0
+
     # 실시간 한국어 뉴스 수집
     macro_news = get_google_news("Federal Reserve interest rate inflation market", max_count=2)
     portfolio_news = get_google_news("NVIDIA OR Alphabet OR AMD OR Microsoft stock market", max_count=2)
 
     # 1. 헤더 및 종합 자산 정보
     rate_change_str = f"({rate_detail['change_pct']:+.2f}%)" if rate_detail['change_pct'] != 0 else ""
+    profit_sign = "+" if total_profit_krw >= 0 else ""
     lines = [
         "📊 *[포트폴리오 & 매크로 종합 리포트]*",
         f"⏰ 기준시각: {now_str} KST",
         f"💵 적용 환율: $1 = {usd_krw_rate:,.1f}원 {rate_change_str}",
-        f"💰 *총 평가금액: {total_eval_krw:,.0f}원*",
+        f"💰 *총 평가금액: {total_eval_krw:,.0f}원* (평가손익: *{profit_sign}{total_profit_krw:,.0f}원* / *{total_profit_pct:+.2f}%*)",
         "----------------------------------------"
     ]
 
@@ -266,10 +314,16 @@ def main():
         if cat not in category_summary:
             category_summary[cat] = {
                 "eval_krw": 0,
+                "buy_eval_usd": 0,
+                "profit_usd": 0,
+                "profit_krw": 0,
                 "target_weight": 0.0,
                 "symbols": []
             }
         category_summary[cat]["eval_krw"] += item["eval_krw"]
+        category_summary[cat]["buy_eval_usd"] += item["buy_eval_usd"]
+        category_summary[cat]["profit_usd"] += item["profit_usd"]
+        category_summary[cat]["profit_krw"] += item["profit_krw"]
         category_summary[cat]["target_weight"] += item["target_weight"]
         category_summary[cat]["symbols"].append(item["symbol"])
 
@@ -277,6 +331,8 @@ def main():
         cat_weight = (cat_data["eval_krw"] / total_eval_krw) * 100
         cat_target = cat_data["target_weight"]
         cat_diff = cat_weight - cat_target
+        cat_profit_pct = (cat_data["profit_usd"] / cat_data["buy_eval_usd"] * 100) if cat_data["buy_eval_usd"] > 0 else 0.0
+        cat_data["profit_pct"] = cat_profit_pct
         
         cat_status = "🟢 정상"
         if abs(cat_diff) >= threshold:
@@ -285,7 +341,7 @@ def main():
         sym_list = ", ".join(cat_data["symbols"])
         lines.append(
             f"• *{cat_name}* ({sym_list})\n"
-            f"  • 평가금액: {cat_data['eval_krw']:,.0f}원 | 현재비중: *{cat_weight:.1f}%* (목표 {cat_target:.1f}%) [{cat_status}]"
+            f"  • 평가금액: {cat_data['eval_krw']:,.0f}원 (수익률: {cat_profit_pct:+.1f}%) | 비중: *{cat_weight:.1f}%* (목표 {cat_target:.1f}%) [{cat_status}]"
         )
 
     lines.append("----------------------------------------")
@@ -325,13 +381,15 @@ def main():
 
         if item["market"] == "US":
             price_disp = f"${item['price_usd']:,.2f}"
+            profit_disp = f"총수익: {item['profit_pct']:+.2f}% (${item['profit_usd']:+,.2f})"
         else:
             price_disp = f"{item['price_krw']:,.0f}원"
+            profit_disp = f"총수익: {item['profit_pct']:+.2f}% ({item['profit_krw']:+,.0f}원)"
 
         lines.append(
             f"{status_icon} *{item['name']}* ({item['symbol']})\n"
             f"  • 현재가: {price_disp} | 전일대비: {change_str}\n"
-            f"  • 평가금액: {item['eval_krw']:,.0f}원 | 비중: *{current_weight:.1f}%* (목표 {item['target_weight']:.1f}%)\n"
+            f"  • {profit_disp} | 평가금액: {item['eval_krw']:,.0f}원 | 비중: *{current_weight:.1f}%*\n"
         )
 
     lines.append("----------------------------------------")
@@ -352,7 +410,7 @@ def main():
 
     if sgov_item and sgov_item["weight_diff"] >= threshold:
         cash_signal = "BUY"
-        cash_reason.append(f"📊 **SGOV 비중 초과 (+{sgov_item['weight_diff']:.1f}%)**: 주식 주가 하락으로 현금 비중이 커졌습니다. 하락 종목 저가 매수 고려.")
+        cash_reason.append(f"📊 **SGOV 비중 초과 (+{sgov_item['weight_diff']:.1f}%)**: 주가 하락으로 현금 비중이 커졌습니다. 하락 종목 저가 매수 고려.")
     elif sgov_item and sgov_item["weight_diff"] <= -threshold:
         cash_reason.append(f"📊 **SGOV 비중 부족 ({sgov_item['weight_diff']:.1f}%)**: 현금 자산이 줄었으므로 상승 종목 털어 SGOV 충전 필요.")
 
@@ -400,9 +458,11 @@ def main():
         print("포트폴리오 리포트 생성 완료 (콘솔 출력 중 인코딩 차이 무시)")
 
     # JSON 데이터 내보내기 (대시보드 즉시 로딩용)
-    export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_results, category_summary)
+    export_portfolio_json(
+        usd_krw_rate, tnx, vix, dxy, total_eval_krw, total_buy_krw, total_profit_krw, total_profit_pct, item_results, category_summary
+    )
 
-    # 텔레그램 텍스트 전송 (이미지 첨부 제거)
+    # 텔레그램 텍스트 전송
     telegram_token = os.environ.get("TELEGRAM_TOKEN")
     telegram_chat_id = os.environ.get("TELEGRAM_CHAT_ID")
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>실시간 주식 포트폴리오 대시보드</title>
+    <title>실시간 주식 포트폴리오 & 수익률 대시보드</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -46,12 +46,12 @@
         <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
             <div>
                 <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold flex items-center gap-2">
-                    <i class="fa-solid fa-chart-pie text-sky-400"></i>
-                    <span>포트폴리오 & 매크로 대시보드</span>
+                    <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                    <span>포트폴리오 & 수익률 대시보드</span>
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-400 mt-1 flex flex-wrap items-center gap-2">
-                    <span>고금리·고변동성 대응 모니터링</span> 
-                    <span id="sync-time-sub" class="text-xs bg-sky-500/10 text-sky-400 border border-sky-500/30 px-2.5 py-0.5 rounded-full font-medium whitespace-nowrap">기준 시각: 2026-10-08 09:56 KST</span>
+                    <span>고금리·고변동성 대응 & 수익 추적 모니터링</span> 
+                    <span id="sync-time-sub" class="text-xs bg-sky-500/10 text-sky-400 border border-sky-500/30 px-2.5 py-0.5 rounded-full font-medium whitespace-nowrap">기준 시각: 2026-10-08 17:32 KST</span>
                 </p>
             </div>
             <div class="flex items-center gap-2.5 self-start sm:self-auto pt-1 sm:pt-0">
@@ -64,30 +64,40 @@
             </div>
         </header>
 
-        <!-- Top Indicator Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <!-- Top Indicator Cards (5 Grid) -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
             <!-- Total Value -->
             <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
-                <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">총 평가금액 (KRW)</div>
-                <div id="total-eval-krw" class="text-base sm:text-xl md:text-2xl font-bold text-sky-400 truncate">40,876,699원</div>
-                <div id="total-eval-usd" class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">약 $30,523.22</div>
+                <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">총 평가금액</div>
+                <div id="total-eval-krw" class="text-base sm:text-lg md:text-xl font-bold text-sky-400 truncate">41,037,102원</div>
+                <div id="total-eval-usd" class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">약 $30,620.13</div>
             </div>
+
+            <!-- Total Profit & Loss -->
+            <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-emerald-500/30 shadow-lg flex flex-col justify-between bg-emerald-500/5">
+                <div class="text-[11px] sm:text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-1 whitespace-nowrap">총 평가손익 & 수익률</div>
+                <div id="total-profit-krw" class="text-base sm:text-lg md:text-xl font-bold text-emerald-400 truncate">+5,031,284원</div>
+                <div id="total-profit-pct" class="text-[11px] sm:text-xs text-emerald-300 font-semibold mt-0.5 truncate">총 수익률 +13.97%</div>
+            </div>
+
             <!-- Exchange Rate -->
             <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
                 <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">USD/KRW 환율</div>
-                <div id="rate-krw" class="text-base sm:text-xl md:text-2xl font-bold text-emerald-400 truncate">1,339.2원</div>
-                <div id="rate-change" class="text-[11px] sm:text-xs text-rose-400 mt-0.5 truncate">전일대비 +0.17%</div>
+                <div id="rate-krw" class="text-base sm:text-lg md:text-xl font-bold text-slate-200 truncate">1,340.2원</div>
+                <div id="rate-change" class="text-[11px] sm:text-xs text-rose-400 mt-0.5 truncate">전일대비 +0.06%</div>
             </div>
+
             <!-- 10Y Treasury Rate -->
             <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
                 <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">미 10년물 국채금리</div>
-                <div id="tnx-rate" class="text-base sm:text-xl md:text-2xl font-bold text-amber-400 truncate">5.31%</div>
-                <div id="tnx-status" class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">전일대비 +0.04%p</div>
+                <div id="tnx-rate" class="text-base sm:text-lg md:text-xl font-bold text-amber-400 truncate">5.28%</div>
+                <div id="tnx-status" class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">전일대비 +0.01%p</div>
             </div>
+
             <!-- VIX Index -->
-            <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between col-span-2 sm:col-span-1">
                 <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">VIX 공포지수</div>
-                <div id="vix-index" class="text-base sm:text-xl md:text-2xl font-bold text-emerald-400 truncate">15.39</div>
+                <div id="vix-index" class="text-base sm:text-lg md:text-xl font-bold text-emerald-400 truncate">15.61</div>
                 <div id="vix-status" class="text-[11px] sm:text-xs text-emerald-400 mt-0.5 truncate">안정 (20 미만)</div>
             </div>
         </div>
@@ -102,9 +112,45 @@
             </p>
         </div>
 
-        <!-- Charts Grid -->
+        <!-- Profit & Performance Analytics Section (3 Charts with Tab Controls) -->
+        <div class="bg-cardbg rounded-2xl border border-slate-800 shadow-lg p-4 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+                <h3 class="font-bold text-sm sm:text-base text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-chart-column text-emerald-400"></i> 수익 & 자산 성장 분석 (3대 핵심 차트)
+                </h3>
+                <!-- Tab Buttons -->
+                <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs overflow-x-auto">
+                    <button id="tab-btn-history" onclick="switchPerfTab('history')" class="px-3 py-1.5 rounded-lg font-semibold transition bg-sky-500 text-white whitespace-nowrap">
+                        📈 누적 자산 추이
+                    </button>
+                    <button id="tab-btn-cat" onclick="switchPerfTab('cat')" class="px-3 py-1.5 rounded-lg font-semibold transition text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                        📊 카테고리별 수익률
+                    </button>
+                    <button id="tab-btn-stock" onclick="switchPerfTab('stock')" class="px-3 py-1.5 rounded-lg font-semibold transition text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                        🏆 종목별 손익 순위
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tab 1: History Line Chart -->
+            <div id="perf-tab-history" class="w-full h-[260px] sm:h-[320px] relative">
+                <canvas id="historyChart"></canvas>
+            </div>
+
+            <!-- Tab 2: Category Profit Bar Chart -->
+            <div id="perf-tab-cat" class="w-full h-[260px] sm:h-[320px] relative hidden">
+                <canvas id="catProfitChart"></canvas>
+            </div>
+
+            <!-- Tab 3: Stock Profit Horizontal Bar Chart -->
+            <div id="perf-tab-stock" class="w-full h-[260px] sm:h-[320px] relative hidden">
+                <canvas id="stockProfitChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Asset Allocation Doughnut Charts Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <!-- Category Chart -->
+            <!-- Category Doughnut Chart -->
             <div class="bg-cardbg p-4 sm:p-6 rounded-2xl border border-slate-800 shadow-lg flex flex-col items-center">
                 <h3 class="font-bold text-slate-200 mb-3 text-sm sm:text-base w-full flex items-center justify-between">
                     <span><i class="fa-solid fa-layer-group text-sky-400 mr-2"></i>자산 카테고리별 비중 (%)</span>
@@ -115,11 +161,11 @@
                 </div>
             </div>
 
-            <!-- Stock Chart -->
+            <!-- Stock Doughnut Chart -->
             <div class="bg-cardbg p-4 sm:p-6 rounded-2xl border border-slate-800 shadow-lg flex flex-col items-center">
                 <h3 class="font-bold text-slate-200 mb-3 text-sm sm:text-base w-full flex items-center justify-between">
-                    <span><i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i>개별 종목 비중 (%)</span>
-                    <span class="text-xs font-normal text-slate-400">실시간 보유비중</span>
+                    <span><i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i>개별 종목 보유 비중 (%)</span>
+                    <span class="text-xs font-normal text-slate-400">실시간 비중</span>
                 </h3>
                 <div class="w-full max-w-[320px] sm:max-w-[340px] aspect-square relative">
                     <canvas id="stockChart"></canvas>
@@ -130,7 +176,7 @@
         <!-- Category Summary -->
         <div class="bg-cardbg rounded-2xl border border-slate-800 shadow-lg overflow-hidden p-4 sm:p-5">
             <h3 class="font-bold text-sm sm:text-base text-slate-200 mb-3.5 flex items-center gap-2">
-                <i class="fa-solid fa-list-check text-purple-400"></i> 자산 카테고리별 비중 요약
+                <i class="fa-solid fa-list-check text-purple-400"></i> 자산 카테고리별 비중 & 수익률 요약
             </h3>
             
             <!-- Desktop Table (md:block) -->
@@ -140,9 +186,10 @@
                         <tr>
                             <th class="py-3 px-4">카테고리</th>
                             <th class="py-3 px-4">구성 종목</th>
-                            <th class="py-3 px-4">평가금액 (KRW)</th>
-                            <th class="py-3 px-4">현재 비중</th>
-                            <th class="py-3 px-4">목표 비중</th>
+                            <th class="py-3 px-4">평가금액 (원)</th>
+                            <th class="py-3 px-4">평가손익 (원)</th>
+                            <th class="py-3 px-4">수익률</th>
+                            <th class="py-3 px-4">현재 비중 (목표)</th>
                             <th class="py-3 px-4">상태</th>
                         </tr>
                     </thead>
@@ -161,7 +208,7 @@
         <!-- Detailed Holdings -->
         <div class="bg-cardbg rounded-2xl border border-slate-800 shadow-lg overflow-hidden p-4 sm:p-5">
             <h3 class="font-bold text-sm sm:text-base text-slate-200 mb-3.5 flex items-center gap-2">
-                <i class="fa-solid fa-table text-sky-400"></i> 개별 보유 종목 상세 현황
+                <i class="fa-solid fa-table text-sky-400"></i> 개별 보유 종목 상세 수익 현황
             </h3>
 
             <!-- Desktop Table (md:block) -->
@@ -171,11 +218,14 @@
                         <tr>
                             <th class="py-3 px-4">종목명 (티커)</th>
                             <th class="py-3 px-4">수량</th>
-                            <th class="py-3 px-4">현재가 ($ / 원)</th>
+                            <th class="py-3 px-4">매입단가 ($)</th>
+                            <th class="py-3 px-4">현재가 ($)</th>
                             <th class="py-3 px-4">전일대비 변동</th>
+                            <th class="py-3 px-4">평가손익 ($ / 원)</th>
+                            <th class="py-3 px-4">수익률 (%)</th>
                             <th class="py-3 px-4">평가금액 (원)</th>
-                            <th class="py-3 px-4">현재 비중 (목표)</th>
-                            <th class="py-3 px-4">이탈 상태</th>
+                            <th class="py-3 px-4">비중 (목표)</th>
+                            <th class="py-3 px-4">상태</th>
                         </tr>
                     </thead>
                     <tbody id="stock-table-body">
@@ -198,35 +248,59 @@
         Chart.register(ChartDataLabels);
 
         const INITIAL_DATA = {
-            "updated_at": "2026-10-08 09:56",
-            "usd_krw_rate": 1339.2,
-            "tnx": { "price": 5.31, "change": 0.04, "change_pct": 0.80 },
-            "vix": { "price": 15.39, "change": 0.38, "change_pct": 2.53 },
-            "total_eval_krw": 40876699,
+            "updated_at": "2026-10-08 17:32",
+            "usd_krw_rate": 1340.2,
+            "tnx": { "price": 5.28, "change": 0.01, "change_pct": 0.15 },
+            "vix": { "price": 15.61, "change": 0.53, "change_pct": 3.51 },
+            "total_eval_krw": 41037102,
+            "total_buy_krw": 36005818,
+            "total_profit_krw": 5031284,
+            "total_profit_pct": 13.97,
             "items": [
-                { "name": "SGOV (초단기채)", "symbol": "SGOV", "quantity": 75, "target_weight": 24.9, "category": "💵 초단기채/현금", "priceUsd": 100.47, "changePct": 0.00, "changeUsd": 0.01, "evalKrw": 10090554, "currentWeight": 24.7, "weightDiff": -0.2 },
-                { "name": "엔비디아", "symbol": "NVDA", "quantity": 27, "target_weight": 21.0, "category": "💻 빅테크/AI 성장주", "priceUsd": 237.29, "changePct": -0.82, "changeUsd": -1.95, "evalKrw": 8579899, "currentWeight": 21.0, "weightDiff": 0.0 },
-                { "name": "알파벳 A", "symbol": "GOOGL", "quantity": 18, "target_weight": 20.3, "category": "💻 빅테크/AI 성장주", "priceUsd": 346.20, "changePct": -0.43, "changeUsd": -1.48, "evalKrw": 8345234, "currentWeight": 20.4, "weightDiff": 0.1 },
-                { "name": "AMD", "symbol": "AMD", "quantity": 8, "target_weight": 16.8, "category": "💻 빅테크/AI 성장주", "priceUsd": 644.37, "changePct": -0.78, "changeUsd": -5.05, "evalKrw": 6903419, "currentWeight": 16.9, "weightDiff": 0.1 },
-                { "name": "마이크로소프트", "symbol": "MSFT", "quantity": 4, "target_weight": 6.8, "category": "💻 빅테크/AI 성장주", "priceUsd": 527.65, "changePct": -0.31, "changeUsd": -1.65, "evalKrw": 2826473, "currentWeight": 6.9, "weightDiff": 0.1 },
-                { "name": "SCHD (배당성장)", "symbol": "SCHD", "quantity": 62, "target_weight": 6.7, "category": "📈 배당 성장주", "priceUsd": 32.72, "changePct": -0.38, "changeUsd": -0.13, "evalKrw": 2717046, "currentWeight": 6.6, "weightDiff": -0.1 },
-                { "name": "GLDM (실물 금)", "symbol": "GLDM", "quantity": 13, "target_weight": 3.5, "category": "🥇 실물 금/원자재", "priceUsd": 81.22, "changePct": -1.49, "changeUsd": -1.23, "evalKrw": 1414074, "currentWeight": 3.5, "weightDiff": 0.0 }
+                { "name": "SGOV (초단기채)", "symbol": "SGOV", "quantity": 75, "buy_price": 100.5996, "price_usd": 100.47, "change_pct": 0.01, "change_usd": 0.01, "profit_usd": -9.72, "profit_krw": -13027, "profit_pct": -0.13, "eval_krw": 10098591, "target_weight": 24.9, "category": "💵 초단기채/현금", "current_weight": 24.6, "weight_diff": -0.3 },
+                { "name": "엔비디아", "symbol": "NVDA", "quantity": 27, "buy_price": 212.8844, "price_usd": 237.47, "change_pct": -0.74, "change_usd": -1.77, "profit_usd": 663.81, "profit_krw": 889638, "profit_pct": 11.55, "eval_krw": 8592819, "target_weight": 21.0, "category": "💻 빅테크/AI 성장주", "current_weight": 20.9, "weight_diff": -0.1 },
+                { "name": "알파벳 A", "symbol": "GOOGL", "quantity": 18, "buy_price": 270.8759, "price_usd": 350.50, "change_pct": 0.81, "change_usd": 2.82, "profit_usd": 1433.23, "profit_krw": 1920815, "profit_pct": 29.40, "eval_krw": 8455196, "target_weight": 20.3, "category": "💻 빅테크/AI 성장주", "current_weight": 20.6, "weight_diff": 0.3 },
+                { "name": "AMD", "symbol": "AMD", "quantity": 8, "buy_price": 444.9800, "price_usd": 645.86, "change_pct": -0.55, "change_usd": -3.56, "profit_usd": 1607.04, "profit_krw": 2153755, "profit_pct": 45.14, "eval_krw": 6924549, "target_weight": 16.8, "category": "💻 빅테크/AI 성장주", "current_weight": 16.9, "weight_diff": 0.1 },
+                { "name": "마이크로소프트", "symbol": "MSFT", "quantity": 4, "buy_price": 512.9600, "price_usd": 529.76, "change_pct": 0.09, "change_usd": 0.46, "profit_usd": 67.20, "profit_krw": 90061, "profit_pct": 3.28, "eval_krw": 2839895, "target_weight": 6.8, "category": "💻 빅테크/AI 성장주", "current_weight": 6.9, "weight_diff": 0.1 },
+                { "name": "SCHD (배당성장)", "symbol": "SCHD", "quantity": 62, "buy_price": 32.5950, "price_usd": 32.65, "change_pct": -0.61, "change_usd": -0.20, "profit_usd": 3.41, "profit_krw": 4570, "profit_pct": 0.17, "eval_krw": 2712926, "target_weight": 6.7, "category": "📈 배당 성장주", "current_weight": 6.6, "weight_diff": -0.1 },
+                { "name": "GLDM (실물 금)", "symbol": "GLDM", "quantity": 13, "buy_price": 81.9400, "price_usd": 81.11, "change_pct": -1.63, "change_usd": -1.34, "profit_usd": -10.79, "profit_krw": -14461, "profit_pct": -1.01, "eval_krw": 1413126, "target_weight": 3.5, "category": "🥇 실물 금/원자재", "current_weight": 3.4, "weight_diff": -0.1 }
             ],
             "categories": {
-                "💵 초단기채/현금": { "eval_krw": 10090554, "target_weight": 24.9, "symbols": ["SGOV"] },
-                "💻 빅테크/AI 성장주": { "eval_krw": 26655025, "target_weight": 64.9, "symbols": ["NVDA", "GOOGL", "AMD", "MSFT"] },
-                "📈 배당 성장주": { "eval_krw": 2717046, "target_weight": 6.7, "symbols": ["SCHD"] },
-                "🥇 실물 금/원자재": { "eval_krw": 1414074, "target_weight": 3.5, "symbols": ["GLDM"] }
-            }
+                "💵 초단기채/현금": { "eval_krw": 10098591, "profit_krw": -13027, "profit_pct": -0.13, "target_weight": 24.9, "symbols": ["SGOV"] },
+                "💻 빅테크/AI 성장주": { "eval_krw": 26812459, "profit_krw": 5054269, "profit_pct": 23.23, "target_weight": 64.9, "symbols": ["NVDA", "GOOGL", "AMD", "MSFT"] },
+                "📈 배당 성장주": { "eval_krw": 2712926, "profit_krw": 4570, "profit_pct": 0.17, "target_weight": 6.7, "symbols": ["SCHD"] },
+                "🥇 실물 금/원자재": { "eval_krw": 1413126, "profit_krw": -14461, "profit_pct": -1.01, "target_weight": 3.5, "symbols": ["GLDM"] }
+            },
+            "history": [
+                { "date": "2026-10-08", "total_eval_krw": 41037102, "total_profit_krw": 5031284, "total_profit_pct": 13.97, "usd_krw_rate": 1340.2 }
+            ]
         };
 
         let categoryChartInst = null;
         let stockChartInst = null;
+        let historyChartInst = null;
+        let catProfitChartInst = null;
+        let stockProfitChartInst = null;
 
         function initDashboard() {
             renderData(INITIAL_DATA);
             document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-1"></i> 동기화 완료 (${INITIAL_DATA.updated_at})`;
             manualRefresh();
+        }
+
+        function switchPerfTab(tabName) {
+            const tabs = ['history', 'cat', 'stock'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const container = document.getElementById(`perf-tab-${t}`);
+                if (t === tabName) {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold transition bg-sky-500 text-white whitespace-nowrap shadow";
+                    container.classList.remove('hidden');
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold transition text-slate-400 hover:text-slate-200 whitespace-nowrap";
+                    container.classList.add('hidden');
+                }
+            });
         }
 
         function showToast(message) {
@@ -271,7 +345,7 @@
                     renderData(data);
                     document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-bolt text-emerald-400 mr-1"></i> 동기화 완료 (${timeStr})`;
                     triggerPulseEffect();
-                    showToast(`시세 데이터가 갱신되었습니다 (${timeStr})`);
+                    showToast(`시세 및 수익 데이터가 갱신되었습니다 (${timeStr})`);
                     if (btnIcon) btnIcon.classList.remove('fa-spin');
                     return;
                 }
@@ -281,7 +355,7 @@
 
             document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> 동기화 완료 (${timeStr})`;
             triggerPulseEffect();
-            showToast(`시세 데이터가 갱신되었습니다 (${timeStr})`);
+            showToast(`시세 및 수익 데이터가 갱신되었습니다 (${timeStr})`);
             if (btnIcon) btnIcon.classList.remove('fa-spin');
         }
 
@@ -335,6 +409,16 @@
             const usdKrw = data.usd_krw_rate;
             document.getElementById('total-eval-krw').innerText = `${Math.round(data.total_eval_krw).toLocaleString('ko-KR')}원`;
             document.getElementById('total-eval-usd').innerText = `약 $${(data.total_eval_krw / usdKrw).toLocaleString('en-US', {maximumFractionDigits: 2})}`;
+
+            if (data.total_profit_krw !== undefined) {
+                const profitSign = data.total_profit_krw >= 0 ? '+' : '';
+                const profitColorClass = data.total_profit_krw >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                document.getElementById('total-profit-krw').innerText = `${profitSign}${Math.round(data.total_profit_krw).toLocaleString('ko-KR')}원`;
+                document.getElementById('total-profit-krw').className = `text-base sm:text-lg md:text-xl font-bold truncate ${profitColorClass}`;
+                document.getElementById('total-profit-pct').innerText = `총 수익률 ${profitSign}${data.total_profit_pct.toFixed(2)}%`;
+                document.getElementById('total-profit-pct').className = `text-[11px] sm:text-xs font-semibold mt-0.5 truncate ${profitColorClass}`;
+            }
+
             document.getElementById('rate-krw').innerText = `${usdKrw.toLocaleString('ko-KR', {maximumFractionDigits: 1})}원`;
 
             if (data.tnx) {
@@ -358,6 +442,139 @@
             renderCategoryTable(data.categories, data.total_eval_krw);
             renderStockTable(data.items);
             renderCharts(data.items, data.categories);
+            renderPerformanceCharts(data);
+        }
+
+        function renderPerformanceCharts(data) {
+            // 1. 일별 누적 자산 & 수익 라인 차트
+            const history = data.history && data.history.length > 0 ? data.history : [
+                { date: data.updated_at ? data.updated_at.split(' ')[0] : 'Today', total_eval_krw: data.total_eval_krw, total_profit_krw: data.total_profit_krw || 0 }
+            ];
+
+            const dates = history.map(h => h.date);
+            const evalValues = history.map(h => Math.round(h.total_eval_krw / 10000)); // 만원 단위
+            const profitValues = history.map(h => Math.round((h.total_profit_krw || 0) / 10000)); // 만원 단위
+
+            if (historyChartInst) historyChartInst.destroy();
+            historyChartInst = new Chart(document.getElementById('historyChart'), {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: '총 평가금액 (만원)',
+                            data: evalValues,
+                            borderColor: '#38bdf8',
+                            backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 3,
+                            pointRadius: 4
+                        },
+                        {
+                            label: '누적 평가손익 (만원)',
+                            data: profitValues,
+                            borderColor: '#4ade80',
+                            backgroundColor: 'rgba(74, 222, 128, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            borderWidth: 2,
+                            pointRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 11, weight: 'bold' } } },
+                        datalabels: { display: false }
+                    },
+                    scales: {
+                        x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                        y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 11 } } }
+                    }
+                }
+            });
+
+            // 2. 카테고리별 수익률 바 차트
+            const catMap = data.categories || {};
+            const catNames = Object.keys(catMap);
+            const catProfits = catNames.map(k => catMap[k].profit_pct !== undefined ? catMap[k].profit_pct : 0);
+            const catColors = catProfits.map(v => v >= 0 ? '#4ade80' : '#f87171');
+
+            if (catProfitChartInst) catProfitChartInst.destroy();
+            catProfitChartInst = new Chart(document.getElementById('catProfitChart'), {
+                type: 'bar',
+                data: {
+                    labels: catNames,
+                    datasets: [{
+                        label: '수익률 (%)',
+                        data: catProfits,
+                        backgroundColor: catColors,
+                        borderRadius: 8,
+                        barThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: 12 },
+                            anchor: 'end',
+                            align: 'top',
+                            formatter: (val) => `${val >= 0 ? '+' : ''}${val.toFixed(1)}%`
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11, weight: 'bold' } } },
+                        y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 11 } } }
+                    }
+                }
+            });
+
+            // 3. 개별 종목 손익 순위 가로 바 차트
+            const sortedItems = [...data.items].sort((a,b) => (b.profit_pct || 0) - (a.profit_pct || 0));
+            const stockSymbols = sortedItems.map(i => i.symbol);
+            const stockProfits = sortedItems.map(i => i.profit_pct !== undefined ? i.profit_pct : 0);
+            const stockColors = stockProfits.map(v => v >= 0 ? '#34d399' : '#f87171');
+
+            if (stockProfitChartInst) stockProfitChartInst.destroy();
+            stockProfitChartInst = new Chart(document.getElementById('stockProfitChart'), {
+                type: 'bar',
+                data: {
+                    labels: stockSymbols,
+                    datasets: [{
+                        label: '수익률 (%)',
+                        data: stockProfits,
+                        backgroundColor: stockColors,
+                        borderRadius: 6,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: {
+                            color: '#ffffff',
+                            font: { weight: 'bold', size: 11 },
+                            anchor: 'end',
+                            align: 'right',
+                            formatter: (val) => `${val >= 0 ? '+' : ''}${val.toFixed(1)}%`
+                        }
+                    },
+                    scales: {
+                        x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+                        y: { grid: { display: false }, ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } } }
+                    }
+                }
+            });
         }
 
         function renderCategoryTable(categoryMap, totalEvalKrw) {
@@ -369,6 +586,11 @@
             for (const [catName, data] of Object.entries(categoryMap)) {
                 const curWeight = totalEvalKrw > 0 ? (data.eval_krw / totalEvalKrw) * 100 : 0;
                 const diff = curWeight - data.target_weight;
+                const profitKrw = data.profit_krw !== undefined ? data.profit_krw : 0;
+                const profitPct = data.profit_pct !== undefined ? data.profit_pct : 0;
+                const profitColor = profitKrw >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                const profitSign = profitKrw >= 0 ? '+' : '';
+
                 const statusBadge = Math.abs(diff) >= 5.0 
                     ? `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">⚠️ 이탈 (${diff > 0 ? '+' : ''}${diff.toFixed(1)}%)</span>`
                     : `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">🟢 정상</span>`;
@@ -380,8 +602,9 @@
                     <td class="py-3 px-4 font-semibold text-slate-200 whitespace-nowrap">${catName}</td>
                     <td class="py-3 px-4 text-xs text-slate-400">${data.symbols.join(', ')}</td>
                     <td class="py-3 px-4 font-mono whitespace-nowrap">${Math.round(data.eval_krw).toLocaleString('ko-KR')}원</td>
-                    <td class="py-3 px-4 font-bold text-sky-400 whitespace-nowrap">${curWeight.toFixed(1)}%</td>
-                    <td class="py-3 px-4 text-slate-400 whitespace-nowrap">${data.target_weight.toFixed(1)}%</td>
+                    <td class="py-3 px-4 font-mono ${profitColor} whitespace-nowrap">${profitSign}${Math.round(profitKrw).toLocaleString('ko-KR')}원</td>
+                    <td class="py-3 px-4 font-mono font-bold ${profitColor} whitespace-nowrap">${profitSign}${profitPct.toFixed(1)}%</td>
+                    <td class="py-3 px-4 font-mono whitespace-nowrap"><strong class="text-sky-400">${curWeight.toFixed(1)}%</strong> <span class="text-slate-500">(${data.target_weight.toFixed(1)}%)</span></td>
                     <td class="py-3 px-4 whitespace-nowrap">${statusBadge}</td>
                 `;
                 tbody.appendChild(tr);
@@ -397,8 +620,8 @@
                         </div>
                         <div class="text-xs text-slate-400">구성 종목: ${data.symbols.join(', ')}</div>
                         <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-800/60">
-                            <span class="text-slate-400">평가금액</span>
-                            <span class="font-mono text-slate-100 font-semibold">${Math.round(data.eval_krw).toLocaleString('ko-KR')}원</span>
+                            <span class="text-slate-400">평가금액 (손익)</span>
+                            <span class="font-mono text-slate-100 font-semibold">${Math.round(data.eval_krw).toLocaleString('ko-KR')}원 <span class="${profitColor}">(${profitSign}${profitPct.toFixed(1)}%)</span></span>
                         </div>
                         <div class="flex items-center justify-between text-xs">
                             <span class="text-slate-400">현재 비중 (목표)</span>
@@ -420,13 +643,21 @@
                 const changePct = item.changePct !== undefined ? item.changePct : item.change_pct;
                 const changeUsd = item.changeUsd !== undefined ? item.changeUsd : item.change_usd;
                 const priceUsd = item.priceUsd !== undefined ? item.priceUsd : item.price_usd;
+                const buyPrice = item.buy_price !== undefined ? item.buy_price : priceUsd;
+                const profitUsd = item.profit_usd !== undefined ? item.profit_usd : 0;
+                const profitKrw = item.profit_krw !== undefined ? item.profit_krw : 0;
+                const profitPct = item.profit_pct !== undefined ? item.profit_pct : 0;
                 const currentWeight = item.currentWeight !== undefined ? item.currentWeight : item.current_weight;
                 const weightDiff = item.weightDiff !== undefined ? item.weightDiff : item.weight_diff;
                 const evalKrw = item.evalKrw !== undefined ? item.evalKrw : item.eval_krw;
 
                 const changeColor = changePct > 0 ? 'text-rose-400' : (changePct < 0 ? 'text-emerald-400' : 'text-slate-400');
-                const changeBg = changePct > 0 ? 'bg-rose-500/10 border-rose-500/30' : (changePct < 0 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-slate-800 border-slate-700');
                 const changeIcon = changePct > 0 ? '▲' : (changePct < 0 ? '▼' : '─');
+                
+                const profitColor = profitPct >= 0 ? 'text-emerald-400' : 'text-rose-400';
+                const profitBg = profitPct >= 0 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30';
+                const profitSign = profitPct >= 0 ? '+' : '';
+
                 const statusBadge = Math.abs(weightDiff) >= 5.0 
                     ? `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">⚠️ ${weightDiff > 0 ? '초과' : '미달'}</span>`
                     : `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">🟢 정상</span>`;
@@ -439,8 +670,11 @@
                 tr.innerHTML = `
                     <td class="py-3 px-4 font-semibold text-slate-200 whitespace-nowrap">${item.name} <span class="text-xs text-slate-400 font-normal">(${item.symbol})</span></td>
                     <td class="py-3 px-4 font-mono whitespace-nowrap">${item.quantity}주</td>
+                    <td class="py-3 px-4 font-mono whitespace-nowrap text-slate-400">$${buyPrice.toFixed(2)}</td>
                     <td class="py-3 px-4 font-mono whitespace-nowrap">${priceDisplay}</td>
-                    <td class="py-3 px-4 font-mono ${changeColor} whitespace-nowrap">${changeIcon} ${Math.abs(changePct).toFixed(2)}% ($${Math.abs(changeUsd).toFixed(2)})</td>
+                    <td class="py-3 px-4 font-mono ${changeColor} whitespace-nowrap">${changeIcon} ${Math.abs(changePct).toFixed(2)}%</td>
+                    <td class="py-3 px-4 font-mono ${profitColor} whitespace-nowrap">${profitSign}$${Math.abs(profitUsd).toFixed(2)} <span class="text-xs text-slate-400">(${profitSign}${Math.round(Math.abs(profitKrw)).toLocaleString()}원)</span></td>
+                    <td class="py-3 px-4 font-mono font-bold ${profitColor} whitespace-nowrap">${profitSign}${profitPct.toFixed(2)}%</td>
                     <td class="py-3 px-4 font-mono whitespace-nowrap">${Math.round(evalKrw).toLocaleString('ko-KR')}원</td>
                     <td class="py-3 px-4 font-mono whitespace-nowrap"><strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(${item.target_weight}%)</span></td>
                     <td class="py-3 px-4 whitespace-nowrap">${statusBadge}</td>
@@ -458,23 +692,23 @@
                                     <span>${item.name}</span>
                                     <span class="text-[11px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">${item.symbol}</span>
                                 </div>
-                                <div class="text-xs text-slate-400 mt-1">${item.quantity}주 · ${priceDisplay}</div>
+                                <div class="text-xs text-slate-400 mt-1">${item.quantity}주 · 현재가 ${priceDisplay} <span class="text-[11px] text-slate-500">(평단 $${buyPrice.toFixed(2)})</span></div>
                             </div>
                             <div class="flex flex-col items-end gap-1 whitespace-nowrap">
-                                <span class="text-xs font-mono font-semibold px-2 py-0.5 rounded border ${changeBg} ${changeColor}">
-                                    ${changeIcon} ${Math.abs(changePct).toFixed(2)}%
+                                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded border ${profitBg} ${profitColor}">
+                                    ${profitSign}${profitPct.toFixed(2)}%
                                 </span>
                                 ${statusBadge}
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60 text-xs">
                             <div>
-                                <span class="text-slate-400 block text-[11px]">평가금액</span>
-                                <span class="font-mono font-semibold text-slate-100 text-xs">${Math.round(evalKrw).toLocaleString('ko-KR')}원</span>
+                                <span class="text-slate-400 block text-[11px]">총 평가손익 ($ / 원)</span>
+                                <span class="font-mono font-semibold ${profitColor}">${profitSign}$${Math.abs(profitUsd).toFixed(2)} (${profitSign}${Math.round(Math.abs(profitKrw)).toLocaleString()}원)</span>
                             </div>
                             <div class="text-right">
-                                <span class="text-slate-400 block text-[11px]">현재 비중 (목표)</span>
-                                <span class="font-mono"><strong class="text-sky-400 text-sm">${currentWeight.toFixed(1)}%</strong> <span class="text-slate-500">(${item.target_weight}%)</span></span>
+                                <span class="text-slate-400 block text-[11px]">평가금액 (비중)</span>
+                                <span class="font-mono text-slate-200"><strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong> (${Math.round(evalKrw).toLocaleString('ko-KR')}원)</span>
                             </div>
                         </div>
                     `;
