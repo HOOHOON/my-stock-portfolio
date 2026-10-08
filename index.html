@@ -46,7 +46,10 @@
                     <i class="fa-solid fa-chart-pie text-sky-400"></i>
                     실시간 포트폴리오 & 매크로 대시보드
                 </h1>
-                <p class="text-sm text-slate-400 mt-1">고금리·고변동성 대응 포트폴리오 모니터링</p>
+                <p class="text-sm text-slate-400 mt-1 flex flex-wrap items-center gap-2">
+                    <span>고금리·고변동성 대응 포트폴리오 모니터링</span> 
+                    <span id="sync-time-sub" class="text-xs bg-sky-500/10 text-sky-400 border border-sky-500/30 px-2.5 py-0.5 rounded-full font-medium">기준 시각: 2026-10-08 09:56 KST</span>
+                </p>
             </div>
             <div class="flex items-center gap-3">
                 <span id="last-update" class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700">
@@ -178,7 +181,7 @@
         Chart.register(ChartDataLabels);
 
         const INITIAL_DATA = {
-            "updated_at": "2026-10-08 01:00",
+            "updated_at": "2026-10-08 09:56",
             "usd_krw_rate": 1339.2,
             "tnx": { "price": 5.31, "change": 0.04, "change_pct": 0.80 },
             "vix": { "price": 15.39, "change": 0.38, "change_pct": 2.53 },
@@ -307,6 +310,11 @@
         }
 
         function renderData(data) {
+            if (data.updated_at) {
+                const subEl = document.getElementById('sync-time-sub');
+                if (subEl) subEl.innerText = `기준 시각: ${data.updated_at}`;
+            }
+
             const usdKrw = data.usd_krw_rate;
             document.getElementById('total-eval-krw').innerText = `${Math.round(data.total_eval_krw).toLocaleString('ko-KR')}원`;
             document.getElementById('total-eval-usd').innerText = `약 $${(data.total_eval_krw / usdKrw).toLocaleString('en-US', {maximumFractionDigits: 2})}`;
