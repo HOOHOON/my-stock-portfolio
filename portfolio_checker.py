@@ -126,8 +126,9 @@ def send_telegram_message(token, chat_id, text):
 def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, item_results, category_summary, json_path="portfolio_data.json"):
     """대시보드가 즉각 로딩할 수 있도록 데이터 저장"""
     try:
+        kst_now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=9)
         data = {
-            "updated_at": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
+            "updated_at": kst_now.strftime("%Y-%m-%d %H:%M"),
             "usd_krw_rate": usd_krw_rate,
             "tnx": tnx,
             "vix": vix,
@@ -157,7 +158,8 @@ def main():
     rate_detail = get_krw_usd_rate_detail()
     usd_krw_rate = rate_detail["price"]
     tnx, vix, dxy = get_macro_indicators_detail()
-    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    kst_now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=9)
+    now_str = kst_now.strftime("%Y-%m-%d %H:%M")
 
     total_eval_krw = 0
     item_results = []
