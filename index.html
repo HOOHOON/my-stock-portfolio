@@ -26,6 +26,15 @@
             }
         }
     </script>
+    <style>
+        @keyframes pulse-highlight {
+            0% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); border-color: rgba(56, 189, 248, 0.6); }
+            100% { box-shadow: none; border-color: rgb(30, 41, 59); }
+        }
+        .refresh-pulse {
+            animation: pulse-highlight 0.7s ease-out;
+        }
+    </style>
 </head>
 <body class="bg-darkbg text-slate-100 min-h-screen p-4 md:p-8 font-sans">
     <div class="max-w-7xl mx-auto space-y-6">
@@ -200,17 +209,49 @@
             manualRefresh();
         }
 
+        function showToast(message) {
+            let toast = document.getElementById('toast-notification');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast-notification';
+                toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-sky-500/95 backdrop-blur-md text-white font-semibold px-5 py-3 rounded-full shadow-2xl transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-2 text-sm border border-sky-300/40';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-300 text-base"></i> ${message}`;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        function triggerPulseEffect() {
+            const cards = document.querySelectorAll('.bg-cardbg');
+            cards.forEach(card => {
+                card.classList.remove('refresh-pulse');
+                void card.offsetWidth;
+                card.classList.add('refresh-pulse');
+            });
+        }
+
         async function manualRefresh() {
             const btnIcon = document.getElementById('refresh-icon');
             if (btnIcon) btnIcon.classList.add('fa-spin');
-            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400 mr-1"></i> 갱신 중...`;
+            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400 mr-1"></i> 시세 갱신 중...`;
+
+            const now = new Date();
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
 
             try {
                 const res = await fetch('./portfolio_data.json?t=' + Date.now(), { cache: 'no-store' });
                 if (res.ok) {
                     const data = await res.json();
                     renderData(data);
-                    document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-bolt text-amber-400 mr-1"></i> 동기화 완료 (${data.updated_at})`;
+                    document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-bolt text-emerald-400 mr-1"></i> 동기화 완료 (${timeStr})`;
+                    triggerPulseEffect();
+                    showToast(`대시보드 시세가 갱신되었습니다 (${timeStr})`);
                     if (btnIcon) btnIcon.classList.remove('fa-spin');
                     return;
                 }
@@ -218,9 +259,9 @@
                 console.log("JSON reload error:", e);
             }
 
-            const now = new Date();
-            const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-circle-info text-sky-400 mr-1"></i> 최신 갱신됨 (${timeStr})`;
+            document.getElementById('last-update').innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> 동기화 완료 (${timeStr})`;
+            triggerPulseEffect();
+            showToast(`대시보드 시세가 갱신되었습니다 (${timeStr})`);
             if (btnIcon) btnIcon.classList.remove('fa-spin');
         }
 
