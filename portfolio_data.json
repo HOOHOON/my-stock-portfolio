@@ -1,28 +1,28 @@
 {
-  "updated_at": "2026-10-13 11:42",
-  "usd_krw_rate": 1338.07,
+  "updated_at": "2026-10-14 09:35",
+  "usd_krw_rate": 1340.16,
   "tnx": {
-    "price": 5.24,
-    "prev_close": 5.244,
-    "change": -0.0039999999999995595,
-    "change_pct": -0.07627765064835162
+    "price": 5.217,
+    "prev_close": 5.2400002,
+    "change": -0.023000200000000248,
+    "change_pct": -0.43893509775057354
   },
   "vix": {
-    "price": 15.21,
+    "price": 15.27,
     "prev_close": 14.84,
-    "change": 0.370000000000001,
-    "change_pct": 2.493261455525613
+    "change": 0.4299999999999997,
+    "change_pct": 2.8975741239892163
   },
   "dxy": {
-    "price": 102.409,
-    "prev_close": 102.589,
-    "change": -0.1799999999999926,
-    "change_pct": -0.17545740771427015
+    "price": 102.173,
+    "prev_close": 102.18,
+    "change": -0.007000000000005002,
+    "change_pct": -0.006850655705622432
   },
-  "total_eval_krw": 40210809.8945,
-  "total_buy_krw": 35949130.53834999,
-  "total_profit_krw": 4261679.35615,
-  "total_profit_pct": 11.854749453825326,
+  "total_eval_krw": 40519389.15840001,
+  "total_buy_krw": 36005281.3248,
+  "total_profit_krw": 4514107.8336,
+  "total_profit_pct": 12.53734915408295,
   "items": [
     {
       "name": "SGOV (초단기채)",
@@ -32,18 +32,18 @@
       "target_weight": 24.9,
       "category": "💵 초단기채/현금",
       "buy_price": 100.5996,
-      "price_krw": 134502.7964,
+      "price_krw": 134712.8832,
       "price_usd": 100.52,
-      "change_usd": 0.009999999999990905,
-      "change_pct": 0.009949258780211825,
-      "eval_krw": 10087709.729999999,
+      "change_usd": 0.0,
+      "change_pct": 0.0,
+      "eval_krw": 10103466.24,
       "eval_usd": 7539.0,
       "buy_eval_usd": 7544.969999999999,
       "profit_usd": -5.969999999999345,
-      "profit_krw": -7988.277899999123,
+      "profit_krw": -8000.755199999123,
       "profit_pct": -0.07912556312350275,
-      "current_weight": 25.087059316802733,
-      "weight_diff": 0.1870593168027348
+      "current_weight": 24.93489277566137,
+      "weight_diff": 0.03489277566137261
     },
     {
       "name": "엔비디아",
@@ -53,18 +53,18 @@
       "target_weight": 21.0,
       "category": "💻 빅테크/AI 성장주",
       "buy_price": 212.8844,
-      "price_krw": 302832.0024,
-      "price_usd": 226.32,
-      "change_usd": -2.960000000000008,
-      "change_pct": -1.2909979064898849,
-      "eval_krw": 8176464.0648,
-      "eval_usd": 6110.639999999999,
+      "price_krw": 306253.3632,
+      "price_usd": 228.52,
+      "change_usd": 2.200000000000017,
+      "change_pct": 0.9720749381406932,
+      "eval_krw": 8268840.806400001,
+      "eval_usd": 6170.04,
       "buy_eval_usd": 5747.8788,
-      "profit_usd": 362.761199999999,
-      "profit_krw": 485399.87888399867,
-      "profit_pct": 6.311218670790327,
-      "current_weight": 20.33399497859497,
-      "weight_diff": -0.6660050214050308
+      "profit_usd": 422.16119999999955,
+      "profit_krw": 565763.5537919995,
+      "profit_pct": 7.3446433839210306,
+      "current_weight": 20.407121079923293,
+      "weight_diff": -0.5928789200767071
     },
     {
       "name": "알파벳 A",
@@ -74,18 +74,18 @@
       "target_weight": 20.3,
       "category": "💻 빅테크/AI 성장주",
       "buy_price": 270.8759,
-      "price_krw": 471964.0504,
-      "price_usd": 352.72,
-      "change_usd": 1.0600000000000023,
-      "change_pct": 0.30142751521355915,
-      "eval_krw": 8495352.9072,
-      "eval_usd": 6348.960000000001,
+      "price_krw": 474121.8048,
+      "price_usd": 353.78,
+      "change_usd": 1.0599999999999454,
+      "change_pct": 0.30052166024040183,
+      "eval_krw": 8534192.486399999,
+      "eval_usd": 6368.039999999999,
       "buy_eval_usd": 4875.7662,
-      "profit_usd": 1473.193800000001,
-      "profit_krw": 1971236.4279660012,
-      "profit_pct": 30.214611192800856,
-      "current_weight": 21.12703755405331,
-      "weight_diff": 0.8270375540533088
+      "profit_usd": 1492.273799999999,
+      "profit_krw": 1999885.6558079987,
+      "profit_pct": 30.605934304233024,
+      "current_weight": 21.061996894962544,
+      "weight_diff": 0.7619968949625431
     },
     {
       "name": "AMD",
@@ -95,18 +95,18 @@
       "target_weight": 16.8,
       "category": "💻 빅테크/AI 성장주",
       "buy_price": 444.98,
-      "price_krw": 795134.7167999999,
-      "price_usd": 594.24,
-      "change_usd": -13.860000000000014,
-      "change_pct": -2.2792303897385318,
-      "eval_krw": 6361077.7343999995,
-      "eval_usd": 4753.92,
+      "price_krw": 811507.0848000001,
+      "price_usd": 605.53,
+      "change_usd": 11.289999999999964,
+      "change_pct": 1.8999057619816846,
+      "eval_krw": 6492056.678400001,
+      "eval_usd": 4844.24,
       "buy_eval_usd": 3559.84,
-      "profit_usd": 1194.08,
-      "profit_krw": 1597762.6256,
-      "profit_pct": 33.54308058789159,
-      "current_weight": 15.819322592828605,
-      "weight_diff": -0.9806774071713953
+      "profit_usd": 1284.3999999999996,
+      "profit_krw": 1721301.5039999997,
+      "profit_pct": 36.08027327070879,
+      "current_weight": 16.022099082049323,
+      "weight_diff": -0.777900917950678
     },
     {
       "name": "마이크로소프트",
@@ -116,18 +116,18 @@
       "target_weight": 6.8,
       "category": "💻 빅테크/AI 성장주",
       "buy_price": 512.96,
-      "price_krw": 724096.5804999999,
-      "price_usd": 541.15,
-      "change_usd": 6.079999999999927,
-      "change_pct": 1.136299923374498,
-      "eval_krw": 2896386.3219999997,
-      "eval_usd": 2164.6,
+      "price_krw": 728309.952,
+      "price_usd": 543.45,
+      "change_usd": 2.300000000000068,
+      "change_pct": 0.42502078906034707,
+      "eval_krw": 2913239.808,
+      "eval_usd": 2173.8,
       "buy_eval_usd": 2051.84,
-      "profit_usd": 112.75999999999976,
-      "profit_krw": 150880.77319999968,
-      "profit_pct": 5.495555208983145,
-      "current_weight": 7.203004191159463,
-      "weight_diff": 0.4030041911594635
+      "profit_usd": 121.96000000000004,
+      "profit_krw": 163445.91360000006,
+      "profit_pct": 5.943933250155959,
+      "current_weight": 7.189742660264317,
+      "weight_diff": 0.38974266026431703
     },
     {
       "name": "SCHD (배당성장)",
@@ -137,18 +137,18 @@
       "target_weight": 6.7,
       "category": "📈 배당 성장주",
       "buy_price": 32.595,
-      "price_krw": 44504.208199999994,
-      "price_usd": 33.26,
-      "change_usd": 0.21999999999999886,
-      "change_pct": 0.6658595641646454,
-      "eval_krw": 2759260.9083999996,
-      "eval_usd": 2062.12,
+      "price_krw": 44721.1392,
+      "price_usd": 33.37,
+      "change_usd": 0.10999999999999943,
+      "change_pct": 0.3307276007215858,
+      "eval_krw": 2772710.6303999997,
+      "eval_usd": 2068.94,
       "buy_eval_usd": 2020.8899999999999,
-      "profit_usd": 41.23000000000002,
-      "profit_krw": 55168.62610000002,
-      "profit_pct": 2.040190213222888,
-      "current_weight": 6.8619878973823125,
-      "weight_diff": 0.16198789738231234
+      "profit_usd": 48.05000000000018,
+      "profit_krw": 64394.68800000025,
+      "profit_pct": 2.3776652860868324,
+      "current_weight": 6.842923074582416,
+      "weight_diff": 0.1429230745824155
     },
     {
       "name": "GLDM (실물 금)",
@@ -158,26 +158,26 @@
       "target_weight": 3.5,
       "category": "🥇 실물 금/원자재",
       "buy_price": 81.94,
-      "price_krw": 110350.6329,
-      "price_usd": 82.47,
-      "change_usd": -0.519999999999996,
-      "change_pct": -0.6265815158452778,
-      "eval_krw": 1434558.2277,
-      "eval_usd": 1072.11,
+      "price_krw": 110375.5776,
+      "price_usd": 82.36,
+      "change_usd": -0.10999999999999943,
+      "change_pct": -0.13338183581908503,
+      "eval_krw": 1434882.5088,
+      "eval_usd": 1070.68,
       "buy_eval_usd": 1065.22,
-      "profit_usd": 6.889999999999873,
-      "profit_krw": 9219.302299999828,
-      "profit_pct": 0.6468147424944961,
-      "current_weight": 3.5675934691785893,
-      "weight_diff": 0.06759346917858933
+      "profit_usd": 5.460000000000036,
+      "profit_krw": 7317.27360000005,
+      "profit_pct": 0.5125701732975382,
+      "current_weight": 3.541224432556721,
+      "weight_diff": 0.041224432556720814
     }
   ],
   "categories": {
     "💵 초단기채/현금": {
-      "eval_krw": 10087709.729999999,
+      "eval_krw": 10103466.24,
       "buy_eval_usd": 7544.969999999999,
       "profit_usd": -5.969999999999345,
-      "profit_krw": -7988.277899999123,
+      "profit_krw": -8000.755199999123,
       "target_weight": 24.9,
       "symbols": [
         "SGOV"
@@ -185,10 +185,10 @@
       "profit_pct": -0.07912556312350275
     },
     "💻 빅테크/AI 성장주": {
-      "eval_krw": 25929281.0284,
+      "eval_krw": 26208329.779200003,
       "buy_eval_usd": 16235.325,
-      "profit_usd": 3142.7949999999996,
-      "profit_krw": 4205279.705649999,
+      "profit_usd": 3320.7949999999983,
+      "profit_krw": 4450396.627199998,
       "target_weight": 64.89999999999999,
       "symbols": [
         "NVDA",
@@ -196,29 +196,29 @@
         "AMD",
         "MSFT"
       ],
-      "profit_pct": 19.357758468031896
+      "profit_pct": 20.454133194130687
     },
     "📈 배당 성장주": {
-      "eval_krw": 2759260.9083999996,
+      "eval_krw": 2772710.6303999997,
       "buy_eval_usd": 2020.8899999999999,
-      "profit_usd": 41.23000000000002,
-      "profit_krw": 55168.62610000002,
+      "profit_usd": 48.05000000000018,
+      "profit_krw": 64394.68800000025,
       "target_weight": 6.7,
       "symbols": [
         "SCHD"
       ],
-      "profit_pct": 2.040190213222888
+      "profit_pct": 2.3776652860868324
     },
     "🥇 실물 금/원자재": {
-      "eval_krw": 1434558.2277,
+      "eval_krw": 1434882.5088,
       "buy_eval_usd": 1065.22,
-      "profit_usd": 6.889999999999873,
-      "profit_krw": 9219.302299999828,
+      "profit_usd": 5.460000000000036,
+      "profit_krw": 7317.27360000005,
       "target_weight": 3.5,
       "symbols": [
         "GLDM"
       ],
-      "profit_pct": 0.6468147424944961
+      "profit_pct": 0.5125701732975382
     }
   },
   "history": [
@@ -269,6 +269,14 @@
       "total_profit_krw": 4261679,
       "total_profit_pct": 11.85,
       "usd_krw_rate": 1338.07
+    },
+    {
+      "date": "2026-10-14",
+      "total_eval_krw": 40519389,
+      "total_buy_krw": 36005281,
+      "total_profit_krw": 4514108,
+      "total_profit_pct": 12.54,
+      "usd_krw_rate": 1340.16
     }
   ]
 }
