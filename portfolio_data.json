@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-29 10:12",
+  "updated_at": "2026-10-29 13:49",
   "usd_krw_rate": 1333.28,
   "tnx": {
     "price": 5.045,
@@ -23,6 +23,9 @@
   "total_buy_krw": 35820440.458399996,
   "total_profit_krw": 3098962.703200001,
   "total_profit_pct": 8.651380785780608,
+  "total_after_eval_krw": 38223191.0112,
+  "total_after_profit_krw": 2402750.5528000016,
+  "total_after_profit_pct": 6.7077638411242635,
   "items": [
     {
       "name": "SGOV (초단기채)",
@@ -42,8 +45,20 @@
       "profit_usd": 7.530000000000655,
       "profit_krw": 10039.598400000872,
       "profit_pct": 0.09980158966835728,
+      "after_price_usd": 100.7,
+      "after_price_krw": 134261.296,
+      "after_change_usd": 0.0,
+      "after_change_pct": 0.0,
+      "has_after": true,
+      "after_eval_krw": 10069597.2,
+      "after_eval_usd": 7552.5,
+      "after_profit_usd": 7.530000000000655,
+      "after_profit_krw": 10039.598400000872,
+      "after_profit_pct": 0.09980158966835728,
       "current_weight": 25.872948663136775,
-      "weight_diff": 0.9729486631367763
+      "weight_diff": 0.9729486631367763,
+      "after_weight": 26.344208669154405,
+      "after_weight_diff": 1.4442086691544063
     },
     {
       "name": "엔비디아",
@@ -63,8 +78,20 @@
       "profit_usd": 67.38119999999981,
       "profit_krw": 89838.00633599974,
       "profit_pct": 1.172279415494979,
+      "after_price_usd": 215.38,
+      "after_price_krw": 287161.8464,
+      "after_change_usd": 0.0,
+      "after_change_pct": 0.0,
+      "has_after": true,
+      "after_eval_krw": 7753369.8527999995,
+      "after_eval_usd": 5815.26,
+      "after_profit_usd": 67.38119999999981,
+      "after_profit_krw": 89838.00633599974,
+      "after_profit_pct": 1.172279415494979,
       "current_weight": 19.921605222481663,
-      "weight_diff": -1.0783947775183371
+      "weight_diff": -1.0783947775183371,
+      "after_weight": 20.284465131464664,
+      "after_weight_diff": -0.715534868535336
     },
     {
       "name": "알파벳 A",
@@ -84,8 +111,20 @@
       "profit_usd": 972.2537999999995,
       "profit_krw": 1296286.5464639992,
       "profit_pct": 19.94053365397216,
+      "after_price_usd": 295.88,
+      "after_price_krw": 394490.88639999996,
+      "after_change_usd": -29.00999999999999,
+      "after_change_pct": -8.92917602880975,
+      "has_after": true,
+      "after_eval_krw": 7100835.9552,
+      "after_eval_usd": 5325.84,
+      "after_profit_usd": 450.0738000000001,
+      "after_profit_krw": 600074.3960640002,
+      "after_profit_pct": 9.230832274115198,
       "current_weight": 20.033832670108854,
-      "weight_diff": -0.26616732989114666
+      "weight_diff": -0.26616732989114666,
+      "after_weight": 18.577297623108812,
+      "after_weight_diff": -1.7227023768911884
     },
     {
       "name": "AMD",
@@ -105,8 +144,20 @@
       "profit_usd": 1067.6800000000003,
       "profit_krw": 1423516.3904000004,
       "profit_pct": 29.992359207155385,
+      "after_price_usd": 578.44,
+      "after_price_krw": 771222.4832,
+      "after_change_usd": 0.0,
+      "after_change_pct": 0.0,
+      "has_after": true,
+      "after_eval_krw": 6169779.8656,
+      "after_eval_usd": 4627.52,
+      "after_profit_usd": 1067.6800000000003,
+      "after_profit_krw": 1423516.3904000004,
+      "after_profit_pct": 29.992359207155385,
       "current_weight": 15.852709354205722,
-      "weight_diff": -0.9472906457942791
+      "weight_diff": -0.9472906457942791,
+      "after_weight": 16.141456802474067,
+      "after_weight_diff": -0.6585431975259333
     },
     {
       "name": "마이크로소프트",
@@ -126,8 +177,20 @@
       "profit_usd": 72.19999999999982,
       "profit_krw": 96262.81599999976,
       "profit_pct": 3.518792888334364,
+      "after_price_usd": 531.01,
+      "after_price_krw": 707985.0128,
+      "after_change_usd": 0.0,
+      "after_change_pct": 0.0,
+      "has_after": true,
+      "after_eval_krw": 2831940.0512,
+      "after_eval_usd": 2124.04,
+      "after_profit_usd": 72.19999999999982,
+      "after_profit_krw": 96262.81599999976,
+      "after_profit_pct": 3.518792888334364,
       "current_weight": 7.276422095789346,
-      "weight_diff": 0.4764220957893466
+      "weight_diff": 0.4764220957893466,
+      "after_weight": 7.4089576936949,
+      "after_weight_diff": 0.6089576936948999
     },
     {
       "name": "SCHD (배당성장)",
@@ -147,8 +210,20 @@
       "profit_usd": 154.6900000000005,
       "profit_krw": 206245.08320000066,
       "profit_pct": 7.654548243595668,
+      "after_price_usd": 35.09,
+      "after_price_krw": 46784.7952,
+      "after_change_usd": 0.0,
+      "after_change_pct": 0.0,
+      "has_after": true,
+      "after_eval_krw": 2900657.3024,
+      "after_eval_usd": 2175.5800000000004,
+      "after_profit_usd": 154.6900000000005,
+      "after_profit_krw": 206245.08320000066,
+      "after_profit_pct": 7.654548243595668,
       "current_weight": 7.452985058265092,
-      "weight_diff": 0.7529850582650921
+      "weight_diff": 0.7529850582650921,
+      "after_weight": 7.588736643024024,
+      "after_weight_diff": 0.888736643024024
     },
     {
       "name": "GLDM (실물 금)",
@@ -168,27 +243,51 @@
       "profit_usd": -17.420000000000073,
       "profit_krw": -23225.737600000095,
       "profit_pct": -1.6353429338540462,
+      "after_price_usd": 80.6,
+      "after_price_krw": 107462.36799999999,
+      "after_change_usd": 0.0,
+      "after_change_pct": 0.0,
+      "has_after": true,
+      "after_eval_krw": 1397010.7839999998,
+      "after_eval_usd": 1047.8,
+      "after_profit_usd": -17.420000000000073,
+      "after_profit_krw": -23225.737600000095,
+      "after_profit_pct": -1.6353429338540462,
       "current_weight": 3.58949693601254,
-      "weight_diff": 0.08949693601253994
+      "weight_diff": 0.08949693601253994,
+      "after_weight": 3.6548774370791106,
+      "after_weight_diff": 0.1548774370791106
     }
   ],
   "categories": {
     "💵 초단기채/현금": {
       "eval_krw": 10069597.2,
+      "after_eval_krw": 10069597.2,
       "buy_eval_usd": 7544.969999999999,
       "profit_usd": 7.530000000000655,
       "profit_krw": 10039.598400000872,
+      "after_profit_usd": 7.530000000000655,
+      "after_profit_krw": 10039.598400000872,
       "target_weight": 24.9,
       "symbols": [
         "SGOV"
       ],
-      "profit_pct": 0.09980158966835728
+      "profit_pct": 0.09980158966835728,
+      "after_profit_pct": 0.09980158966835728,
+      "after_change_krw": 0.0,
+      "after_change_pct": 0.0,
+      "current_weight": 25.872948663136775,
+      "after_weight": 26.344208669154405,
+      "after_weight_diff": 1.4442086691544063
     },
     "💻 빅테크/AI 성장주": {
       "eval_krw": 24552137.8752,
+      "after_eval_krw": 23855925.724799998,
       "buy_eval_usd": 16235.325,
       "profit_usd": 2179.5149999999994,
       "profit_krw": 2905903.7591999993,
+      "after_profit_usd": 1657.335,
+      "after_profit_krw": 2209691.6088,
       "target_weight": 64.89999999999999,
       "symbols": [
         "NVDA",
@@ -196,29 +295,53 @@
         "AMD",
         "MSFT"
       ],
-      "profit_pct": 13.42452337726531
+      "profit_pct": 13.42452337726531,
+      "after_profit_pct": 10.208203408308734,
+      "after_change_krw": -696212.1504000016,
+      "after_change_pct": -2.835647771036844,
+      "current_weight": 63.08456934258558,
+      "after_weight": 62.41217725074244,
+      "after_weight_diff": -2.4878227492575533
     },
     "📈 배당 성장주": {
       "eval_krw": 2900657.3024,
+      "after_eval_krw": 2900657.3024,
       "buy_eval_usd": 2020.8899999999999,
       "profit_usd": 154.6900000000005,
       "profit_krw": 206245.08320000066,
+      "after_profit_usd": 154.6900000000005,
+      "after_profit_krw": 206245.08320000066,
       "target_weight": 6.7,
       "symbols": [
         "SCHD"
       ],
-      "profit_pct": 7.654548243595668
+      "profit_pct": 7.654548243595668,
+      "after_profit_pct": 7.654548243595668,
+      "after_change_krw": 0.0,
+      "after_change_pct": 0.0,
+      "current_weight": 7.452985058265092,
+      "after_weight": 7.588736643024024,
+      "after_weight_diff": 0.888736643024024
     },
     "🥇 실물 금/원자재": {
       "eval_krw": 1397010.7839999998,
+      "after_eval_krw": 1397010.7839999998,
       "buy_eval_usd": 1065.22,
       "profit_usd": -17.420000000000073,
       "profit_krw": -23225.737600000095,
+      "after_profit_usd": -17.420000000000073,
+      "after_profit_krw": -23225.737600000095,
       "target_weight": 3.5,
       "symbols": [
         "GLDM"
       ],
-      "profit_pct": -1.6353429338540462
+      "profit_pct": -1.6353429338540462,
+      "after_profit_pct": -1.6353429338540462,
+      "after_change_krw": 0.0,
+      "after_change_pct": 0.0,
+      "current_weight": 3.58949693601254,
+      "after_weight": 3.6548774370791106,
+      "after_weight_diff": 0.1548774370791106
     }
   },
   "history": [
@@ -393,9 +516,12 @@
     {
       "date": "2026-10-29",
       "total_eval_krw": 38919403,
+      "total_after_eval_krw": 38223191,
       "total_buy_krw": 35820440,
       "total_profit_krw": 3098963,
       "total_profit_pct": 8.65,
+      "total_after_profit_krw": 2402751,
+      "total_after_profit_pct": 6.71,
       "usd_krw_rate": 1333.28
     }
   ]

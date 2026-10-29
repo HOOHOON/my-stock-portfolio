@@ -30,22 +30,57 @@ def translate_to_ko(text):
         return text
 
 def fetch_yahoo_market_detail(symbol):
-    """야후 파이낸스 API 가격, 전일종가, 변동폭 및 등락률 조회"""
+    """야후 파이낸스 API 가격, 전일종가, 변동폭, 등락률 및 시간외(애프터/프리) 시세 조회"""
     try:
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(symbol)}"
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{urllib.parse.quote(symbol)}?range=1d&interval=5m&includePrePost=true"
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=10) as res:
             data = json.loads(res.read().decode('utf-8'))
-            meta = data['chart']['result'][0]['meta']
+            result = data['chart']['result'][0]
+            meta = result['meta']
             price = float(meta['regularMarketPrice'])
             prev_close = float(meta.get('chartPreviousClose', meta.get('previousClose', price)))
             change = price - prev_close
             change_pct = (change / prev_close) * 100 if prev_close != 0 else 0
+
+            # 시간외(애프터마켓/프리마켓) 최신 체결가 추출 (정규장 종가 대비 변동 계산)
+            after_price = price
+            has_after = False
+            reg_time = meta.get('regularMarketTime', 0)
+            post_time = meta.get('postMarketTime', 0)
+            pre_time = meta.get('preMarketTime', 0)
+
+            if meta.get('postMarketPrice') and post_time >= reg_time:
+                after_price = float(meta['postMarketPrice'])
+                has_after = True
+            elif meta.get('preMarketPrice') and pre_time >= reg_time:
+                after_price = float(meta['preMarketPrice'])
+                has_after = True
+            else:
+                timestamps = result.get('timestamp') or []
+                quotes = result.get('indicators', {}).get('quote', [{}])
+                closes = quotes[0].get('close', []) if quotes else []
+                reg_end = meta.get('currentTradingPeriod', {}).get('regular', {}).get('end', reg_time)
+
+                for ts, c in zip(reversed(timestamps), reversed(closes)):
+                    if c is not None:
+                        if (reg_end and ts >= reg_end) or (reg_time and ts > reg_time):
+                            after_price = float(c)
+                            has_after = True
+                        break
+
+            after_change = after_price - price
+            after_change_pct = (after_change / price) * 100 if price != 0 else 0.0
+
             return {
                 "price": price,
                 "prev_close": prev_close,
                 "change": change,
-                "change_pct": change_pct
+                "change_pct": change_pct,
+                "after_price": after_price,
+                "after_change": after_change,
+                "after_change_pct": after_change_pct,
+                "has_after": has_after
             }
     except Exception as e:
         print(f"[{symbol}] 상세 정보 조회 실패: {e}")
@@ -123,7 +158,12 @@ def send_telegram_message(token, chat_id, text):
     except Exception as e:
         print(f"텔레그램 텍스트 전송 실패: {e}")
 
-def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, total_buy_krw, total_profit_krw, total_profit_pct, item_results, category_summary, json_path="portfolio_data.json"):
+def export_portfolio_json(
+    usd_krw_rate, tnx, vix, dxy,
+    total_eval_krw, total_buy_krw, total_profit_krw, total_profit_pct,
+    total_after_eval_krw, total_after_profit_krw, total_after_profit_pct,
+    item_results, category_summary, json_path="portfolio_data.json"
+):
     """대시보드가 즉각 로딩할 수 있도록 데이터 저장 및 일별 누적 데이터 업데이트"""
     try:
         kst_now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=9)
@@ -143,9 +183,12 @@ def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, total_buy
         history.append({
             "date": today_date,
             "total_eval_krw": round(total_eval_krw),
+            "total_after_eval_krw": round(total_after_eval_krw),
             "total_buy_krw": round(total_buy_krw),
             "total_profit_krw": round(total_profit_krw),
             "total_profit_pct": round(total_profit_pct, 2),
+            "total_after_profit_krw": round(total_after_profit_krw),
+            "total_after_profit_pct": round(total_after_profit_pct, 2),
             "usd_krw_rate": usd_krw_rate
         })
         history.sort(key=lambda x: x["date"])
@@ -160,6 +203,9 @@ def export_portfolio_json(usd_krw_rate, tnx, vix, dxy, total_eval_krw, total_buy
             "total_buy_krw": total_buy_krw,
             "total_profit_krw": total_profit_krw,
             "total_profit_pct": total_profit_pct,
+            "total_after_eval_krw": total_after_eval_krw,
+            "total_after_profit_krw": total_after_profit_krw,
+            "total_after_profit_pct": total_after_profit_pct,
             "items": item_results,
             "categories": category_summary,
             "history": history
@@ -189,6 +235,7 @@ def main():
     now_str = kst_now.strftime("%Y-%m-%d %H:%M")
 
     total_eval_krw = 0
+    total_after_eval_krw = 0
     total_buy_usd = 0
     item_results = []
 
@@ -210,12 +257,24 @@ def main():
                 change_usd = detail["change"]
                 change_pct = detail["change_pct"]
                 price_krw = price_usd * usd_krw_rate
+
+                after_price_usd = detail.get("after_price", price_usd)
+                after_change_usd = detail.get("after_change", 0.0)
+                after_change_pct = detail.get("after_change_pct", 0.0)
+                has_after = detail.get("has_after", False)
+                after_price_krw = after_price_usd * usd_krw_rate
             else:
                 detail = get_krx_stock_detail(symbol)
                 price_krw = detail["price"]
                 change_usd = detail["change"] / usd_krw_rate
                 change_pct = detail["change_pct"]
                 price_usd = price_krw / usd_krw_rate
+
+                after_price_usd = price_usd
+                after_change_usd = 0.0
+                after_change_pct = 0.0
+                has_after = False
+                after_price_krw = price_krw
 
             eval_krw = price_krw * quantity
             eval_usd = price_usd * quantity
@@ -224,7 +283,14 @@ def main():
             profit_krw = profit_usd * usd_krw_rate
             profit_pct = (profit_usd / buy_eval_usd * 100) if buy_eval_usd > 0 else 0.0
 
+            after_eval_krw = after_price_krw * quantity
+            after_eval_usd = after_price_usd * quantity
+            after_profit_usd = after_eval_usd - buy_eval_usd
+            after_profit_krw = after_profit_usd * usd_krw_rate
+            after_profit_pct = (after_profit_usd / buy_eval_usd * 100) if buy_eval_usd > 0 else 0.0
+
             total_eval_krw += eval_krw
+            total_after_eval_krw += after_eval_krw
             total_buy_usd += buy_eval_usd
 
             item_results.append({
@@ -244,7 +310,17 @@ def main():
                 "buy_eval_usd": buy_eval_usd,
                 "profit_usd": profit_usd,
                 "profit_krw": profit_krw,
-                "profit_pct": profit_pct
+                "profit_pct": profit_pct,
+                "after_price_usd": after_price_usd,
+                "after_price_krw": after_price_krw,
+                "after_change_usd": after_change_usd,
+                "after_change_pct": after_change_pct,
+                "has_after": has_after,
+                "after_eval_krw": after_eval_krw,
+                "after_eval_usd": after_eval_usd,
+                "after_profit_usd": after_profit_usd,
+                "after_profit_krw": after_profit_krw,
+                "after_profit_pct": after_profit_pct
             })
         except Exception as e:
             print(f"[{name}({symbol})] 시세 조회 실패: {e}")
@@ -258,6 +334,12 @@ def main():
     total_profit_krw = total_profit_usd * usd_krw_rate
     total_profit_pct = (total_profit_usd / total_buy_usd * 100) if total_buy_usd > 0 else 0.0
 
+    total_after_profit_usd = sum(item["after_profit_usd"] for item in item_results)
+    total_after_profit_krw = total_after_profit_usd * usd_krw_rate
+    total_after_profit_pct = (total_after_profit_usd / total_buy_usd * 100) if total_buy_usd > 0 else 0.0
+    total_after_diff_krw = total_after_eval_krw - total_eval_krw
+    total_after_diff_pct = (total_after_diff_krw / total_eval_krw * 100) if total_eval_krw > 0 else 0.0
+
     # 실시간 한국어 뉴스 수집
     macro_news = get_google_news("Federal Reserve interest rate inflation market", max_count=2)
     portfolio_news = get_google_news("NVIDIA OR Alphabet OR AMD OR Microsoft stock market", max_count=2)
@@ -265,11 +347,13 @@ def main():
     # 1. 헤더 및 종합 자산 정보
     rate_change_str = f"({rate_detail['change_pct']:+.2f}%)" if rate_detail['change_pct'] != 0 else ""
     profit_sign = "+" if total_profit_krw >= 0 else ""
+    after_profit_sign = "+" if total_after_profit_krw >= 0 else ""
     lines = [
         "📊 *[포트폴리오 & 매크로 종합 리포트]*",
         f"⏰ 기준시각: {now_str} KST",
         f"💵 적용 환율: $1 = {usd_krw_rate:,.1f}원 {rate_change_str}",
-        f"💰 *총 평가금액: {total_eval_krw:,.0f}원* (평가손익: *{profit_sign}{total_profit_krw:,.0f}원* / *{total_profit_pct:+.2f}%*)",
+        f"💰 *총 평가금액(정규): {total_eval_krw:,.0f}원* (평가손익: *{profit_sign}{total_profit_krw:,.0f}원* / *{total_profit_pct:+.2f}%*)",
+        f"🌙 *애프터 반영 총액: {total_after_eval_krw:,.0f}원* (정규대비 *{total_after_diff_pct:+.2f}%* | 손익: *{after_profit_sign}{total_after_profit_krw:,.0f}원* / *{total_after_profit_pct:+.2f}%*)",
         "----------------------------------------"
     ]
 
@@ -314,34 +398,58 @@ def main():
         if cat not in category_summary:
             category_summary[cat] = {
                 "eval_krw": 0,
+                "after_eval_krw": 0,
                 "buy_eval_usd": 0,
                 "profit_usd": 0,
                 "profit_krw": 0,
+                "after_profit_usd": 0,
+                "after_profit_krw": 0,
                 "target_weight": 0.0,
                 "symbols": []
             }
         category_summary[cat]["eval_krw"] += item["eval_krw"]
+        category_summary[cat]["after_eval_krw"] += item["after_eval_krw"]
         category_summary[cat]["buy_eval_usd"] += item["buy_eval_usd"]
         category_summary[cat]["profit_usd"] += item["profit_usd"]
         category_summary[cat]["profit_krw"] += item["profit_krw"]
+        category_summary[cat]["after_profit_usd"] += item["after_profit_usd"]
+        category_summary[cat]["after_profit_krw"] += item["after_profit_krw"]
         category_summary[cat]["target_weight"] += item["target_weight"]
         category_summary[cat]["symbols"].append(item["symbol"])
 
     for cat_name, cat_data in category_summary.items():
         cat_weight = (cat_data["eval_krw"] / total_eval_krw) * 100
+        cat_after_weight = (cat_data["after_eval_krw"] / total_after_eval_krw) * 100 if total_after_eval_krw > 0 else cat_weight
         cat_target = cat_data["target_weight"]
         cat_diff = cat_weight - cat_target
+        cat_after_diff = cat_after_weight - cat_target
+
         cat_profit_pct = (cat_data["profit_usd"] / cat_data["buy_eval_usd"] * 100) if cat_data["buy_eval_usd"] > 0 else 0.0
+        cat_after_profit_pct = (cat_data["after_profit_usd"] / cat_data["buy_eval_usd"] * 100) if cat_data["buy_eval_usd"] > 0 else 0.0
+        cat_after_change_krw = cat_data["after_eval_krw"] - cat_data["eval_krw"]
+        cat_after_change_pct = (cat_after_change_krw / cat_data["eval_krw"] * 100) if cat_data["eval_krw"] > 0 else 0.0
+
         cat_data["profit_pct"] = cat_profit_pct
+        cat_data["after_profit_pct"] = cat_after_profit_pct
+        cat_data["after_change_krw"] = cat_after_change_krw
+        cat_data["after_change_pct"] = cat_after_change_pct
+        cat_data["current_weight"] = cat_weight
+        cat_data["after_weight"] = cat_after_weight
+        cat_data["after_weight_diff"] = cat_after_diff
         
         cat_status = "🟢 정상"
         if abs(cat_diff) >= threshold:
             cat_status = f"⚠️ 초과 (+{cat_diff:.1f}%)" if cat_diff > 0 else f"⚠️ 미달 ({cat_diff:.1f}%)"
+
+        cat_after_status = "🟢 정상"
+        if abs(cat_after_diff) >= threshold:
+            cat_after_status = f"⚠️ 초과 (+{cat_after_diff:.1f}%)" if cat_after_diff > 0 else f"⚠️ 미달 ({cat_after_diff:.1f}%)"
             
         sym_list = ", ".join(cat_data["symbols"])
         lines.append(
             f"• *{cat_name}* ({sym_list})\n"
-            f"  • 평가금액: {cat_data['eval_krw']:,.0f}원 (수익률: {cat_profit_pct:+.1f}%) | 비중: *{cat_weight:.1f}%* (목표 {cat_target:.1f}%) [{cat_status}]"
+            f"  • 정규장: {cat_data['eval_krw']:,.0f}원 (수익률: {cat_profit_pct:+.1f}%) | 비중: *{cat_weight:.1f}%* (목표 {cat_target:.1f}%) [{cat_status}]\n"
+            f"  • 🌙 애프터: {cat_data['after_eval_krw']:,.0f}원 (정규대비 {cat_after_change_pct:+.2f}% / 수익률: {cat_after_profit_pct:+.1f}%) | 애프터 비중: *{cat_after_weight:.1f}%* [{cat_after_status}]"
         )
 
     lines.append("----------------------------------------")
@@ -356,8 +464,13 @@ def main():
     for item in item_results:
         current_weight = (item["eval_krw"] / total_eval_krw) * 100
         weight_diff = current_weight - item["target_weight"]
+        after_weight = (item["after_eval_krw"] / total_after_eval_krw) * 100 if total_after_eval_krw > 0 else current_weight
+        after_weight_diff = after_weight - item["target_weight"]
+
         item["current_weight"] = current_weight
         item["weight_diff"] = weight_diff
+        item["after_weight"] = after_weight
+        item["after_weight_diff"] = after_weight_diff
 
         if item["symbol"] == "SGOV":
             sgov_item = item
@@ -379,17 +492,30 @@ def main():
         else:
             change_str = "➖ 0.00%"
 
+        after_pct = item["after_change_pct"]
+        after_usd = item["after_change_usd"]
+        if after_pct > 0:
+            after_str = f"🌙 애프터: ${item['after_price_usd']:,.2f} (🔺 +{after_pct:.2f}% / +${after_usd:.2f})"
+        elif after_pct < 0:
+            after_str = f"🌙 애프터: ${item['after_price_usd']:,.2f} (🔹 {after_pct:.2f}% / -${abs(after_usd):.2f})"
+        else:
+            after_str = f"🌙 애프터: ${item['after_price_usd']:,.2f} (➖ 0.00%)"
+
         if item["market"] == "US":
             price_disp = f"${item['price_usd']:,.2f}"
-            profit_disp = f"총수익: {item['profit_pct']:+.2f}% (${item['profit_usd']:+,.2f})"
+            profit_disp = f"총수익: {item['profit_pct']:+.2f}% (${item['profit_usd']:+,.2f}) [🌙 애프터: {item['after_profit_pct']:+.2f}%]"
+            header_after = f" | {after_str}"
         else:
             price_disp = f"{item['price_krw']:,.0f}원"
             profit_disp = f"총수익: {item['profit_pct']:+.2f}% ({item['profit_krw']:+,.0f}원)"
+            header_after = ""
 
         lines.append(
-            f"{status_icon} *{item['name']}* ({item['symbol']})\n"
-            f"  • 현재가: {price_disp} | 전일대비: {change_str}\n"
-            f"  • {profit_disp} | 평가금액: {item['eval_krw']:,.0f}원 | 비중: *{current_weight:.1f}%*\n"
+            f"{status_icon} *{item['name']}* ({item['symbol']}){header_after}\n"
+            f"  • 현재가(정규): {price_disp} | 전일대비: {change_str}\n"
+            f"  • {profit_disp}\n"
+            f"  • 평가금액: {item['eval_krw']:,.0f}원 (🌙 애프터: {item['after_eval_krw']:,.0f}원)\n"
+            f"  • 비중: *{current_weight:.1f}%* | 🌙 애프터 비중: *{after_weight:.1f}%* (목표 {item['target_weight']:.1f}%)\n"
         )
 
     lines.append("----------------------------------------")
@@ -459,7 +585,10 @@ def main():
 
     # JSON 데이터 내보내기 (대시보드 즉시 로딩용)
     export_portfolio_json(
-        usd_krw_rate, tnx, vix, dxy, total_eval_krw, total_buy_krw, total_profit_krw, total_profit_pct, item_results, category_summary
+        usd_krw_rate, tnx, vix, dxy,
+        total_eval_krw, total_buy_krw, total_profit_krw, total_profit_pct,
+        total_after_eval_krw, total_after_profit_krw, total_after_profit_pct,
+        item_results, category_summary
     )
 
     # 텔레그램 텍스트 전송
