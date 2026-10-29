@@ -344,41 +344,46 @@ def main():
     macro_news = get_google_news("Federal Reserve interest rate inflation market", max_count=2)
     portfolio_news = get_google_news("NVIDIA OR Alphabet OR AMD OR Microsoft stock market", max_count=2)
 
-    # 1. 헤더 및 종합 자산 정보
+    # 1. 헤더 및 종합 자산 정보 (모바일 한 줄 폭에 맞춰 깔끔하게 정렬)
     rate_change_str = f"({rate_detail['change_pct']:+.2f}%)" if rate_detail['change_pct'] != 0 else ""
     profit_sign = "+" if total_profit_krw >= 0 else ""
     after_profit_sign = "+" if total_after_profit_krw >= 0 else ""
+    divider = "━━━━━━━━━━━━━━━━━━"
     lines = [
-        "📊 *[포트폴리오 & 매크로 종합 리포트]*",
-        f"⏰ 기준시각: {now_str} KST",
-        f"💵 적용 환율: $1 = {usd_krw_rate:,.1f}원 {rate_change_str}",
-        f"💰 *총 평가금액(정규): {total_eval_krw:,.0f}원* (평가손익: *{profit_sign}{total_profit_krw:,.0f}원* / *{total_profit_pct:+.2f}%*)",
-        f"🌙 *애프터 반영 총액: {total_after_eval_krw:,.0f}원* (정규대비 *{total_after_diff_pct:+.2f}%* | 손익: *{after_profit_sign}{total_after_profit_krw:,.0f}원* / *{total_after_profit_pct:+.2f}%*)",
-        "----------------------------------------"
+        "📊 *[포트폴리오 & 매크로 리포트]*",
+        f"⏰ {now_str} KST",
+        f"💵 환율: 1$ = {usd_krw_rate:,.1f}원 {rate_change_str}",
+        "",
+        "💰 *[총 자산 요약]*",
+        f"☀️ *정규 총액: {total_eval_krw:,.0f}원*",
+        f"  └ 손익: *{profit_sign}{total_profit_krw:,.0f}원 ({total_profit_pct:+.2f}%)*",
+        f"🌙 *애프터 총액: {total_after_eval_krw:,.0f}원* ({total_after_diff_pct:+.2f}%)",
+        f"  └ 손익: *{after_profit_sign}{total_after_profit_krw:,.0f}원 ({total_after_profit_pct:+.2f}%)*",
+        divider
     ]
 
     # 2. 매크로 동향
-    lines.append("🌐 *[매크로 핵심 지표 & 변동]*")
+    lines.append("🌐 *[매크로 핵심 지표]*")
     if tnx:
         tnx_sign = "+" if tnx['change'] >= 0 else ""
-        lines.append(f"• 🇺🇸 미국 10년물 금리: *{tnx['price']:.2f}%* ({tnx_sign}{tnx['change']:.2f}%p / {tnx['change_pct']:+.2f}%)")
+        lines.append(f"• 🇺🇸 미 10년물: *{tnx['price']:.2f}%* ({tnx_sign}{tnx['change']:.2f}%p)")
     if vix:
         vix_status = "안정" if vix['price'] < 20 else ("경계" if vix['price'] < 25 else ("경고" if vix['price'] < 30 else "🚨 공포"))
-        lines.append(f"• ⚡ VIX 공포지수: *{vix['price']:.2f}* ({vix['change_pct']:+.2f}%) [{vix_status}]")
+        lines.append(f"• ⚡ VIX 지수: *{vix['price']:.2f}* ({vix['change_pct']:+.2f}%) [{vix_status}]")
     if dxy:
-        lines.append(f"• 💵 달러 인덱스 (DXY): *{dxy['price']:.2f}* ({dxy['change_pct']:+.2f}%)")
+        lines.append(f"• 💵 달러(DXY): *{dxy['price']:.2f}* ({dxy['change_pct']:+.2f}%)")
 
     if vix and vix['price'] >= 25:
-        lines.append("💡 *매크로 진단*: VIX 공포지수 급등 중! 주가 과매도 구간 진입 가능성이 높으므로 현금 실탄 집행 준비.")
+        lines.append("💡 *진단*: VIX 급등! 과매도 진입 가능성 높음 (실탄 준비)")
     elif tnx and tnx['price'] >= 4.5:
-        lines.append("💡 *매크로 진단*: 10년물 금리 4.5% 이상 유지 중. 기술주 멀티플 압박에 유의하며 분할 접근 권장.")
+        lines.append("💡 *진단*: 10년물 4.5% 상회 중. 기술주 분할 접근 권장")
     else:
-        lines.append("💡 *매크로 진단*: 변동성 및 금리가 안정적 흐름을 유지하고 있습니다.")
+        lines.append("💡 *진단*: 변동성 및 금리가 안정적 흐름 유지 중")
 
-    lines.append("----------------------------------------")
+    lines.append(divider)
 
     # 3. 실시간 주요 뉴스 (한국어 번역)
-    lines.append("📰 *[실시간 주요 뉴스 (한국어 번역)]*")
+    lines.append("📰 *[실시간 주요 뉴스]*")
     if macro_news:
         lines.append("*[매크로/금리]*")
         for news in macro_news:
@@ -388,10 +393,10 @@ def main():
         for news in portfolio_news:
             lines.append(f"• {news}")
     
-    lines.append("----------------------------------------")
+    lines.append(divider)
 
     # 4. 카테고리별 자산군 비중 요약
-    lines.append("📂 *[자산 카테고리별 비중 요약]*")
+    lines.append("📂 *[카테고리별 비중 & 수익]*")
     category_summary = {}
     for item in item_results:
         cat = item["category"]
@@ -437,25 +442,23 @@ def main():
         cat_data["after_weight"] = cat_after_weight
         cat_data["after_weight_diff"] = cat_after_diff
         
-        cat_status = "🟢 정상"
+        cat_status = "🟢정상"
         if abs(cat_diff) >= threshold:
-            cat_status = f"⚠️ 초과 (+{cat_diff:.1f}%)" if cat_diff > 0 else f"⚠️ 미달 ({cat_diff:.1f}%)"
-
-        cat_after_status = "🟢 정상"
-        if abs(cat_after_diff) >= threshold:
-            cat_after_status = f"⚠️ 초과 (+{cat_after_diff:.1f}%)" if cat_after_diff > 0 else f"⚠️ 미달 ({cat_after_diff:.1f}%)"
+            cat_status = f"⚠️초과({cat_diff:+.1f}%)" if cat_diff > 0 else f"⚠️미달({cat_diff:.1f}%)"
             
         sym_list = ", ".join(cat_data["symbols"])
         lines.append(
-            f"• *{cat_name}* ({sym_list})\n"
-            f"  • 정규장: {cat_data['eval_krw']:,.0f}원 (수익률: {cat_profit_pct:+.1f}%) | 비중: *{cat_weight:.1f}%* (목표 {cat_target:.1f}%) [{cat_status}]\n"
-            f"  • 🌙 애프터: {cat_data['after_eval_krw']:,.0f}원 (정규대비 {cat_after_change_pct:+.2f}% / 수익률: {cat_after_profit_pct:+.1f}%) | 애프터 비중: *{cat_after_weight:.1f}%* [{cat_after_status}]"
+            f"\n*{cat_name}* [{cat_status}]\n"
+            f"  └ 종목: {sym_list}\n"
+            f"  • ☀️정규: {cat_data['eval_krw']:,.0f}원 (*{cat_profit_pct:+.1f}%*)\n"
+            f"  • 🌙애프터: {cat_data['after_eval_krw']:,.0f}원 (*{cat_after_profit_pct:+.1f}%* | {cat_after_change_pct:+.2f}%)\n"
+            f"  • 📊비중: 정규 *{cat_weight:.1f}%* ➡️ 🌙 *{cat_after_weight:.1f}%* (목표 {cat_target:.1f}%)"
         )
 
-    lines.append("----------------------------------------")
+    lines.append(divider)
 
     # 5. 개별 종목 전일 대비 등락 & 비중 현황
-    lines.append("📈 *[개별 종목 전일대비 등락 & 비중]*")
+    lines.append("📈 *[개별 종목 시세 & 비중]*")
     rebalance_needed = False
     over_weighted = []
     under_weighted = []
@@ -486,42 +489,43 @@ def main():
 
         change_pct = item["change_pct"]
         if change_pct > 0:
-            change_str = f"🔺 +{change_pct:.2f}% (+${item['change_usd']:.2f})"
+            change_str = f"🔺+{change_pct:.2f}% (+${item['change_usd']:.2f})"
         elif change_pct < 0:
-            change_str = f"🔹 {change_pct:.2f}% (-${abs(item['change_usd']):.2f})"
+            change_str = f"🔹{change_pct:.2f}% (-${abs(item['change_usd']):.2f})"
         else:
-            change_str = "➖ 0.00%"
+            change_str = "➖0.00%"
 
         after_pct = item["after_change_pct"]
         after_usd = item["after_change_usd"]
         if after_pct > 0:
-            after_str = f"🌙 애프터: ${item['after_price_usd']:,.2f} (🔺 +{after_pct:.2f}% / +${after_usd:.2f})"
+            after_change_str = f"🔺+{after_pct:.2f}% (+${after_usd:.2f})"
         elif after_pct < 0:
-            after_str = f"🌙 애프터: ${item['after_price_usd']:,.2f} (🔹 {after_pct:.2f}% / -${abs(after_usd):.2f})"
+            after_change_str = f"🔹{after_pct:.2f}% (-${abs(after_usd):.2f})"
         else:
-            after_str = f"🌙 애프터: ${item['after_price_usd']:,.2f} (➖ 0.00%)"
+            after_change_str = "➖0.00%"
 
         if item["market"] == "US":
-            price_disp = f"${item['price_usd']:,.2f}"
-            profit_disp = f"총수익: {item['profit_pct']:+.2f}% (${item['profit_usd']:+,.2f}) [🌙 애프터: {item['after_profit_pct']:+.2f}%]"
-            header_after = f" | {after_str}"
+            lines.append(
+                f"\n{status_icon} *{item['name']} ({item['symbol']})*\n"
+                f"  • ☀️정규가: *${item['price_usd']:,.2f}* ({change_str})\n"
+                f"  • 🌙애프터: *${item['after_price_usd']:,.2f}* ({after_change_str})\n"
+                f"  • 💰평가액: {item['eval_krw']:,.0f}원 (🌙 {item['after_eval_krw']:,.0f}원)\n"
+                f"  • 🏆수익률: *{item['profit_pct']:+.2f}%* (${item['profit_usd']:+,.0f}) ➡️ 🌙 *{item['after_profit_pct']:+.2f}%*\n"
+                f"  • 📊비중: 정규 *{current_weight:.1f}%* ➡️ 🌙 *{after_weight:.1f}%* (목표 {item['target_weight']:.1f}%)"
+            )
         else:
-            price_disp = f"{item['price_krw']:,.0f}원"
-            profit_disp = f"총수익: {item['profit_pct']:+.2f}% ({item['profit_krw']:+,.0f}원)"
-            header_after = ""
+            lines.append(
+                f"\n{status_icon} *{item['name']} ({item['symbol']})*\n"
+                f"  • ☀️현재가: *{item['price_krw']:,.0f}원* ({change_str})\n"
+                f"  • 💰평가액: {item['eval_krw']:,.0f}원\n"
+                f"  • 🏆수익률: *{item['profit_pct']:+.2f}%* ({item['profit_krw']:+,.0f}원)\n"
+                f"  • 📊비중: *{current_weight:.1f}%* (목표 {item['target_weight']:.1f}%)"
+            )
 
-        lines.append(
-            f"{status_icon} *{item['name']}* ({item['symbol']}){header_after}\n"
-            f"  • 현재가(정규): {price_disp} | 전일대비: {change_str}\n"
-            f"  • {profit_disp}\n"
-            f"  • 평가금액: {item['eval_krw']:,.0f}원 (🌙 애프터: {item['after_eval_krw']:,.0f}원)\n"
-            f"  • 비중: *{current_weight:.1f}%* | 🌙 애프터 비중: *{after_weight:.1f}%* (목표 {item['target_weight']:.1f}%)\n"
-        )
-
-    lines.append("----------------------------------------")
+    lines.append(divider)
 
     # 6. 현금 실탄 (SGOV) 사용 시점 진단
-    lines.append("💳 *[현금 실탄(SGOV) 집행 타이밍 진단]*")
+    lines.append("💳 *[현금 실탄(SGOV) 타이밍 진단]*")
     
     vix_val = vix['price'] if vix else 15.0
     cash_signal = "HOLD"
@@ -529,52 +533,52 @@ def main():
 
     if vix_val >= 30:
         cash_signal = "STRONG_BUY"
-        cash_reason.append("🚨 **VIX 30 이상 (패닉 장세)**: 시장 극심한 공포 구간! SGOV의 20~30%를 매도하여 주도주(NVDA/GOOGL/AMD) 저가 매수 고려.")
+        cash_reason.append("🚨 *VIX 30 이상 (패닉 장세)*: SGOV 20~30% 매도 후 주도주 저가 매수 고려")
     elif vix_val >= 25:
         cash_signal = "BUY"
-        cash_reason.append("⚠️ **VIX 25 이상 (투매 발생)**: 조정을 받는 기술주의 분할 매수를 위해 SGOV 현금 실탄 일부 사용 진입 구간.")
+        cash_reason.append("⚠️ *VIX 25 이상 (투매 발생)*: 조정 기술주 분할 매수를 위해 SGOV 일부 집행")
 
     if sgov_item and sgov_item["weight_diff"] >= threshold:
         cash_signal = "BUY"
-        cash_reason.append(f"📊 **SGOV 비중 초과 (+{sgov_item['weight_diff']:.1f}%)**: 주가 하락으로 현금 비중이 커졌습니다. 하락 종목 저가 매수 고려.")
+        cash_reason.append(f"📊 *SGOV 비중 초과 (+{sgov_item['weight_diff']:.1f}%)*: 하락 종목 저가 매수 고려")
     elif sgov_item and sgov_item["weight_diff"] <= -threshold:
-        cash_reason.append(f"📊 **SGOV 비중 부족 ({sgov_item['weight_diff']:.1f}%)**: 현금 자산이 줄었으므로 상승 종목 털어 SGOV 충전 필요.")
+        cash_reason.append(f"📊 *SGOV 비중 부족 ({sgov_item['weight_diff']:.1f}%)*: 상승 종목 일부 익절 후 SGOV 충전")
 
     if cash_signal == "STRONG_BUY":
-        lines.append("🔥 **[강력 매수 시그널] 현금 실탄 집행 권장!**")
+        lines.append("🔥 *[강력 매수 시그널] 실탄 집행 권장!*")
         for r in cash_reason:
             lines.append(f"• {r}")
     elif cash_signal == "BUY":
-        lines.append("🛒 **[분할 매수 시그널] 현금 실탄 일부 사용 고려**")
+        lines.append("🛒 *[분할 매수 시그널] 실탄 일부 사용 고려*")
         for r in cash_reason:
             lines.append(f"• {r}")
     else:
-        lines.append("🛡️ **[실탄 대기] SGOV 이자 수취 중 (HOLD)**")
-        lines.append("현재 시장이 안정적이며 SGOV 비중이 정상이므로 현금 실탄을 온전히 보존하며 연 5%대 이자를 챙기세요.")
+        lines.append("🛡️ *[실탄 대기] SGOV 이자 수취 중 (HOLD)*")
+        lines.append("• 시장 및 현금 비중 안정적 (연 5%대 이자 수취)")
 
-    lines.append("----------------------------------------")
+    lines.append(divider)
 
     # 7. 종합 대응 가이드
-    lines.append("🎯 *[고금리·고변동성 장세 종합 대응 가이드]*")
+    lines.append("🎯 *[종합 대응 가이드]*")
     if rebalance_needed:
         over_names = ", ".join([name for name, _ in over_weighted]) if over_weighted else "없음"
         under_names = ", ".join([name for name, _ in under_weighted]) if under_weighted else "없음"
         lines.append(
             f"🔔 *비중 이탈 발생! (기준 {threshold}% 이상)*\n"
-            f"• **비중 초과 종목**: {over_names}\n"
-            f"• **비중 미달 종목**: {under_names}\n"
-            f"👉 **액션 플랜**: 비중 초과 종목 일부 매도 ➡️ 미달 종목/방어자산 분할 매수로 리밸런싱을 검토하세요."
+            f"• *비중 초과*: {over_names}\n"
+            f"• *비중 미달*: {under_names}\n"
+            f"👉 초과 종목 일부 매도 ➡️ 미달 종목 분할 매수 검토"
         )
     else:
         lines.append(
-            "✅ **포트폴리오 안정 유지 중**\n"
-            "현재 기술주, 배당주, 방어자산의 비중이 목표 범위 내에서 균형을 이루고 있습니다.\n"
-            "👉 **액션 플랜**: 별도의 매매 없이 현재 비중 포지션을 그대로 유지(Hold)하세요."
+            "✅ *포트폴리오 균형 유지 중*\n"
+            "• 전 자산군 목표 비중 범위 내 정상 유지 중\n"
+            "👉 별도 매매 없이 현재 포지션 유지 (Hold)"
         )
 
-    lines.append("----------------------------------------")
+    lines.append(divider)
     lines.append("📱 *[실시간 대시보드 웹페이지]*")
-    lines.append("👉 [핸드폰으로 실시간 도넛 차트 & 대시보드 보기](https://hoohoon.github.io/my-stock-portfolio/)")
+    lines.append("👉 [대시보드 열기 (차트 & 상세 표)](https://hoohoon.github.io/my-stock-portfolio/)")
 
     msg_text = "\n".join(lines)
     

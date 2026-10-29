@@ -64,43 +64,63 @@
             </div>
         </header>
 
-        <!-- Top Indicator Cards (5 Grid) -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
+        <!-- Top Indicator Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
             <!-- Total Value -->
-            <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
-                <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">총 평가금액 (정규 / 애프터)</div>
-                <div id="total-eval-krw" class="text-base sm:text-lg md:text-xl font-bold text-sky-400 truncate">38,919,403원</div>
-                <div id="total-eval-usd" class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">약 $29,190.72</div>
-                <div id="total-after-eval" class="text-[11px] sm:text-xs text-indigo-300 font-medium mt-1 pt-1 border-t border-slate-800/80 truncate">🌙 애프터: 38,223,190원 (-1.79%)</div>
+            <div class="bg-cardbg p-3.5 sm:p-4 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between col-span-2 sm:col-span-1 lg:col-span-1">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider">총 평가금액</span>
+                    <span id="total-eval-usd" class="text-[11px] font-mono text-slate-400">약 $29,190.72</span>
+                </div>
+                <div class="space-y-1.5 mt-1">
+                    <div class="flex items-baseline justify-between bg-slate-900/60 px-2.5 py-1.5 rounded-lg border border-slate-800/80">
+                        <span class="text-[11px] text-slate-400 font-medium">☀️ 정규</span>
+                        <span id="total-eval-krw" class="text-sm sm:text-base font-mono font-bold text-sky-400">39,009,894원</span>
+                    </div>
+                    <div class="flex items-baseline justify-between bg-indigo-950/30 px-2.5 py-1.5 rounded-lg border border-indigo-500/20">
+                        <span class="text-[11px] text-indigo-300 font-medium">🌙 애프터</span>
+                        <span id="total-after-eval" class="text-xs sm:text-sm font-mono font-semibold text-indigo-200">38,140,611원 (-2.23%)</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Total Profit & Loss -->
-            <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-emerald-500/30 shadow-lg flex flex-col justify-between bg-emerald-500/5">
-                <div class="text-[11px] sm:text-xs font-semibold text-emerald-400 uppercase tracking-wider mb-1 whitespace-nowrap">총 평가손익 & 수익률</div>
-                <div id="total-profit-krw" class="text-base sm:text-lg md:text-xl font-bold text-emerald-400 truncate">+3,098,963원</div>
-                <div id="total-profit-pct" class="text-[11px] sm:text-xs text-emerald-300 font-semibold mt-0.5 truncate">총 수익률 +8.65%</div>
-                <div id="total-after-profit" class="text-[11px] sm:text-xs text-indigo-300 font-medium mt-1 pt-1 border-t border-emerald-500/20 truncate">🌙 애프터: +2,402,750원 (+6.71%)</div>
+            <div class="bg-cardbg p-3.5 sm:p-4 rounded-2xl border border-emerald-500/30 shadow-lg flex flex-col justify-between bg-emerald-500/5 col-span-2 sm:col-span-1 lg:col-span-1">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[11px] sm:text-xs font-semibold text-emerald-400 uppercase tracking-wider">총 평가손익 & 수익률</span>
+                    <span id="total-profit-pct" class="text-[11px] font-mono text-emerald-300 font-bold">정규 +8.65%</span>
+                </div>
+                <div class="space-y-1.5 mt-1">
+                    <div class="flex items-baseline justify-between bg-slate-900/60 px-2.5 py-1.5 rounded-lg border border-emerald-500/20">
+                        <span class="text-[11px] text-slate-400 font-medium">☀️ 정규</span>
+                        <span id="total-profit-krw" class="text-sm sm:text-base font-mono font-bold text-emerald-400">+3,106,168원 (+8.65%)</span>
+                    </div>
+                    <div class="flex items-baseline justify-between bg-indigo-950/30 px-2.5 py-1.5 rounded-lg border border-indigo-500/20">
+                        <span class="text-[11px] text-indigo-300 font-medium">🌙 애프터</span>
+                        <span id="total-after-profit" class="text-xs sm:text-sm font-mono font-semibold text-indigo-200">+2,236,885원 (+6.23%)</span>
+                    </div>
+                </div>
             </div>
 
             <!-- Exchange Rate -->
-            <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-cardbg p-3.5 sm:p-4 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
                 <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">USD/KRW 환율</div>
-                <div id="rate-krw" class="text-base sm:text-lg md:text-xl font-bold text-slate-200 truncate">1,340.2원</div>
-                <div id="rate-change" class="text-[11px] sm:text-xs text-rose-400 mt-0.5 truncate">전일대비 +0.06%</div>
+                <div id="rate-krw" class="text-base sm:text-lg md:text-xl font-mono font-bold text-slate-200">1,336.4원</div>
+                <div id="rate-change" class="text-[11px] sm:text-xs text-slate-400 mt-0.5">실시간 기준 환율</div>
             </div>
 
             <!-- 10Y Treasury Rate -->
-            <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
+            <div class="bg-cardbg p-3.5 sm:p-4 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between">
                 <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">미 10년물 국채금리</div>
-                <div id="tnx-rate" class="text-base sm:text-lg md:text-xl font-bold text-amber-400 truncate">5.28%</div>
-                <div id="tnx-status" class="text-[11px] sm:text-xs text-slate-400 mt-0.5 truncate">전일대비 +0.01%p</div>
+                <div id="tnx-rate" class="text-base sm:text-lg md:text-xl font-mono font-bold text-amber-400">5.04%</div>
+                <div id="tnx-status" class="text-[11px] sm:text-xs text-slate-400 mt-0.5">전일대비 +0.05%p</div>
             </div>
 
             <!-- VIX Index -->
-            <div class="bg-cardbg p-3.5 sm:p-5 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between col-span-2 sm:col-span-1">
+            <div class="bg-cardbg p-3.5 sm:p-4 rounded-2xl border border-slate-800 shadow-lg flex flex-col justify-between col-span-2 lg:col-span-1">
                 <div class="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1 whitespace-nowrap">VIX 공포지수</div>
-                <div id="vix-index" class="text-base sm:text-lg md:text-xl font-bold text-emerald-400 truncate">15.61</div>
-                <div id="vix-status" class="text-[11px] sm:text-xs text-emerald-400 mt-0.5 truncate">안정 (20 미만)</div>
+                <div id="vix-index" class="text-base sm:text-lg md:text-xl font-mono font-bold text-emerald-400">16.91</div>
+                <div id="vix-status" class="text-[11px] sm:text-xs text-emerald-400 mt-0.5">안정 (20 미만)</div>
             </div>
         </div>
 
@@ -917,23 +937,23 @@
             document.getElementById('total-eval-usd').innerText = `약 $${(data.total_eval_krw / usdKrw).toLocaleString('en-US', {maximumFractionDigits: 2})}`;
             const afterEvalEl = document.getElementById('total-after-eval');
             if (afterEvalEl) {
-                afterEvalEl.innerText = `🌙 애프터: ${Math.round(totalAfterEvalKrw).toLocaleString('ko-KR')}원 (${totalAfterDiffSign}${totalAfterDiffPct.toFixed(2)}%)`;
+                afterEvalEl.innerText = `${Math.round(totalAfterEvalKrw).toLocaleString('ko-KR')}원 (${totalAfterDiffSign}${totalAfterDiffPct.toFixed(2)}%)`;
             }
 
             if (data.total_profit_krw !== undefined) {
                 const profitSign = data.total_profit_krw >= 0 ? '+' : '';
                 const profitColorClass = data.total_profit_krw >= 0 ? 'text-emerald-400' : 'text-rose-400';
-                document.getElementById('total-profit-krw').innerText = `${profitSign}${Math.round(data.total_profit_krw).toLocaleString('ko-KR')}원`;
-                document.getElementById('total-profit-krw').className = `text-base sm:text-lg md:text-xl font-bold truncate ${profitColorClass}`;
-                document.getElementById('total-profit-pct').innerText = `총 수익률 ${profitSign}${data.total_profit_pct.toFixed(2)}%`;
-                document.getElementById('total-profit-pct').className = `text-[11px] sm:text-xs font-semibold mt-0.5 truncate ${profitColorClass}`;
+                document.getElementById('total-profit-krw').innerText = `${profitSign}${Math.round(data.total_profit_krw).toLocaleString('ko-KR')}원 (${profitSign}${data.total_profit_pct.toFixed(2)}%)`;
+                document.getElementById('total-profit-krw').className = `text-sm sm:text-base font-mono font-bold ${profitColorClass}`;
+                document.getElementById('total-profit-pct').innerText = `정규 ${profitSign}${data.total_profit_pct.toFixed(2)}%`;
+                document.getElementById('total-profit-pct').className = `text-[11px] font-mono font-bold ${profitColorClass}`;
 
                 const totalAfterProfitKrw = data.total_after_profit_krw !== undefined ? data.total_after_profit_krw : data.total_profit_krw;
                 const totalAfterProfitPct = data.total_after_profit_pct !== undefined ? data.total_after_profit_pct : data.total_profit_pct;
                 const afterProfitSign = totalAfterProfitKrw >= 0 ? '+' : '';
                 const afterProfitEl = document.getElementById('total-after-profit');
                 if (afterProfitEl) {
-                    afterProfitEl.innerText = `🌙 애프터: ${afterProfitSign}${Math.round(totalAfterProfitKrw).toLocaleString('ko-KR')}원 (${afterProfitSign}${totalAfterProfitPct.toFixed(2)}%)`;
+                    afterProfitEl.innerText = `${afterProfitSign}${Math.round(totalAfterProfitKrw).toLocaleString('ko-KR')}원 (${afterProfitSign}${totalAfterProfitPct.toFixed(2)}%)`;
                 }
             }
 
@@ -953,7 +973,7 @@
                 else if (vixVal >= 25) { vixStatusText = "⚠️ 경고 (투매 기회)"; vixColorClass = "text-amber-400 font-bold"; }
                 else if (vixVal >= 20) { vixStatusText = "경계 (변동성 확대)"; vixColorClass = "text-yellow-400"; }
                 document.getElementById('vix-status').innerText = vixStatusText;
-                document.getElementById('vix-status').className = `text-[11px] sm:text-xs mt-0.5 ${vixColorClass} truncate`;
+                document.getElementById('vix-status').className = `text-[11px] sm:text-xs mt-0.5 ${vixColorClass}`;
             }
 
             renderActionBanner(data, data.items);
@@ -1116,6 +1136,7 @@
                 const afterProfitKrw = data.after_profit_krw !== undefined ? data.after_profit_krw : profitKrw;
                 const afterProfitPct = data.after_profit_pct !== undefined ? data.after_profit_pct : profitPct;
                 const afterProfitSign = afterProfitKrw >= 0 ? '+' : '';
+                const afterProfitColor = afterProfitKrw >= 0 ? 'text-emerald-300' : 'text-rose-300';
 
                 const statusBadge = Math.abs(diff) >= 5.0 
                     ? `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">⚠️ 이탈 (${diff > 0 ? '+' : ''}${diff.toFixed(1)}%)</span>`
@@ -1125,49 +1146,65 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-800/60 hover:bg-slate-800/40 transition";
                 tr.innerHTML = `
-                    <td class="py-3 px-4 font-semibold text-slate-200 whitespace-nowrap">${catName}</td>
-                    <td class="py-3 px-4 text-xs text-slate-400">${data.symbols.join(', ')}</td>
-                    <td class="py-3 px-4 font-mono whitespace-nowrap">
-                        <div>${Math.round(data.eval_krw).toLocaleString('ko-KR')}원</div>
-                        <div class="text-[11px] text-indigo-300 mt-0.5">🌙 애프터: ${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원 (${afterChangeSign}${afterChangePct.toFixed(2)}%)</div>
+                    <td class="py-3.5 px-4 font-semibold text-slate-200 whitespace-nowrap">${catName}</td>
+                    <td class="py-3.5 px-4 text-xs text-slate-400">${data.symbols.join(', ')}</td>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
+                        <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <span>${Math.round(data.eval_krw).toLocaleString('ko-KR')}원</span></div>
+                        <div class="flex items-center gap-1.5 text-xs text-indigo-200"><span class="text-[10px] bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded">🌙애프터</span> <span>${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원 (${afterChangeSign}${afterChangePct.toFixed(2)}%)</span></div>
                     </td>
-                    <td class="py-3 px-4 font-mono ${profitColor} whitespace-nowrap">
-                        <div>${profitSign}${Math.round(profitKrw).toLocaleString('ko-KR')}원</div>
-                        <div class="text-[11px] text-indigo-300 mt-0.5">🌙 ${afterProfitSign}${Math.round(afterProfitKrw).toLocaleString('ko-KR')}원</div>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
+                        <div class="${profitColor}">${profitSign}${Math.round(profitKrw).toLocaleString('ko-KR')}원</div>
+                        <div class="text-xs ${afterProfitColor}">🌙 ${afterProfitSign}${Math.round(afterProfitKrw).toLocaleString('ko-KR')}원</div>
                     </td>
-                    <td class="py-3 px-4 font-mono font-bold ${profitColor} whitespace-nowrap">
-                        <div>${profitSign}${profitPct.toFixed(1)}%</div>
-                        <div class="text-[11px] font-normal text-indigo-300 mt-0.5">🌙 ${afterProfitSign}${afterProfitPct.toFixed(1)}%</div>
+                    <td class="py-3.5 px-4 font-mono font-bold whitespace-nowrap space-y-1">
+                        <div class="${profitColor}">${profitSign}${profitPct.toFixed(1)}%</div>
+                        <div class="text-xs font-semibold ${afterProfitColor}">🌙 ${afterProfitSign}${afterProfitPct.toFixed(1)}%</div>
                     </td>
-                    <td class="py-3 px-4 font-mono whitespace-nowrap">
-                        <div>정규 <strong class="text-sky-400">${curWeight.toFixed(1)}%</strong> <span class="text-slate-500">(${data.target_weight.toFixed(1)}%)</span></div>
-                        <div class="text-[11px] text-indigo-300 mt-0.5">🌙 애프터 비중: <strong class="text-indigo-200">${afterWeight.toFixed(1)}%</strong></div>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
+                        <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <strong class="text-sky-400">${curWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(목표 ${data.target_weight.toFixed(1)}%)</span></div>
+                        <div class="flex items-center gap-1.5 text-xs"><span class="text-[10px] bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded">🌙애프터</span> <strong class="text-indigo-200">${afterWeight.toFixed(1)}%</strong></div>
                     </td>
-                    <td class="py-3 px-4 whitespace-nowrap">${statusBadge}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">${statusBadge}</td>
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile Card
+                // Mobile Card (2-Column Side-by-Side Comparison Grid)
                 if (mobileContainer) {
                     const card = document.createElement('div');
-                    card.className = "bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 space-y-2";
+                    card.className = "bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2.5";
                     card.innerHTML = `
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-slate-100 text-sm">${catName}</span>
+                        <div class="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
+                            <div>
+                                <div class="font-bold text-slate-100 text-sm">${catName}</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">종목: ${data.symbols.join(', ')} · 목표 비중 ${data.target_weight.toFixed(1)}%</div>
+                            </div>
                             ${statusBadge}
                         </div>
-                        <div class="text-xs text-slate-400">구성 종목: ${data.symbols.join(', ')}</div>
-                        <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-800/60">
-                            <span class="text-slate-400">정규 평가 (수익률)</span>
-                            <span class="font-mono text-slate-100 font-semibold">${Math.round(data.eval_krw).toLocaleString('ko-KR')}원 <span class="${profitColor}">(${profitSign}${profitPct.toFixed(1)}%)</span></span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-indigo-300">🌙 애프터 평가 (등락)</span>
-                            <span class="font-mono text-indigo-200 font-semibold">${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원 <span>(${afterChangeSign}${afterChangePct.toFixed(2)}% / 수익 ${afterProfitSign}${afterProfitPct.toFixed(1)}%)</span></span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800/40">
-                            <span class="text-slate-400">비중 (정규 / 🌙애프터 / 목표)</span>
-                            <span class="font-mono"><strong class="text-sky-400 text-sm">${curWeight.toFixed(1)}%</strong> · <strong class="text-indigo-300 text-sm">🌙${afterWeight.toFixed(1)}%</strong> <span class="text-slate-500">(${data.target_weight.toFixed(1)}%)</span></span>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <!-- 정규장 박스 -->
+                            <div class="bg-slate-800/50 p-2.5 rounded-lg border border-slate-700/50 space-y-1">
+                                <div class="text-[11px] font-semibold text-slate-300 flex items-center justify-between">
+                                    <span>☀️ 정규장</span>
+                                    <span class="font-mono font-bold ${profitColor}">${profitSign}${profitPct.toFixed(1)}%</span>
+                                </div>
+                                <div class="font-mono text-slate-100 font-bold text-xs sm:text-sm">${Math.round(data.eval_krw).toLocaleString('ko-KR')}원</div>
+                                <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-700/50">
+                                    <span class="text-slate-400">정규 비중</span>
+                                    <strong class="font-mono text-sky-400 text-xs">${curWeight.toFixed(1)}%</strong>
+                                </div>
+                            </div>
+                            <!-- 애프터마켓 박스 -->
+                            <div class="bg-indigo-950/25 p-2.5 rounded-lg border border-indigo-500/25 space-y-1">
+                                <div class="text-[11px] font-semibold text-indigo-300 flex items-center justify-between">
+                                    <span>🌙 애프터</span>
+                                    <span class="font-mono font-bold ${afterProfitColor}">${afterProfitSign}${afterProfitPct.toFixed(1)}%</span>
+                                </div>
+                                <div class="font-mono text-indigo-100 font-bold text-xs sm:text-sm">${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원 <span class="text-[10px] font-normal text-indigo-300">(${afterChangeSign}${afterChangePct.toFixed(2)}%)</span></div>
+                                <div class="flex items-center justify-between text-[11px] pt-1 border-t border-indigo-500/20">
+                                    <span class="text-indigo-300">애프터 비중</span>
+                                    <strong class="font-mono text-indigo-200 text-xs">${afterWeight.toFixed(1)}%</strong>
+                                </div>
+                            </div>
                         </div>
                     `;
                     mobileContainer.appendChild(card);
@@ -1197,18 +1234,19 @@
                 const afterChangePct = item.after_change_pct !== undefined ? item.after_change_pct : 0;
                 const afterChangeUsd = item.after_change_usd !== undefined ? item.after_change_usd : 0;
                 const afterEvalKrw = item.after_eval_krw !== undefined ? item.after_eval_krw : evalKrw;
+                const afterProfitUsd = item.after_profit_usd !== undefined ? item.after_profit_usd : profitUsd;
+                const afterProfitKrw = item.after_profit_krw !== undefined ? item.after_profit_krw : profitKrw;
                 const afterProfitPct = item.after_profit_pct !== undefined ? item.after_profit_pct : profitPct;
                 const afterWeight = item.after_weight !== undefined ? item.after_weight : currentWeight;
 
-                const changeColor = changePct > 0 ? 'text-rose-400' : (changePct < 0 ? 'text-emerald-400' : 'text-slate-400');
+                const changeColor = changePct > 0 ? 'text-rose-400' : (changePct < 0 ? 'text-sky-400' : 'text-slate-400');
                 const changeIcon = changePct > 0 ? '▲' : (changePct < 0 ? '▼' : '─');
+                const afterChangeIcon = afterChangePct > 0 ? '▲' : (afterChangePct < 0 ? '▼' : '─');
+                const afterChangeColor = afterChangePct > 0 ? 'text-rose-300' : (afterChangePct < 0 ? 'text-sky-300' : 'text-indigo-200');
                 
                 const afterChangeSign = afterChangePct > 0 ? '+' : '';
-                const afterBadgeColor = afterChangePct > 0 ? 'bg-rose-500/15 text-rose-300 border-rose-500/30' : (afterChangePct < 0 ? 'bg-sky-500/15 text-sky-300 border-sky-500/30' : 'bg-slate-800 text-slate-400 border-slate-700');
-                const afterBadgeHtml = item.market === 'KRX' ? '' : `<span class="inline-flex items-center gap-1 text-[11px] font-mono px-1.5 py-0.5 rounded border ${afterBadgeColor}">🌙 애프터 $${afterPriceUsd.toFixed(2)} (${afterChangeSign}${afterChangePct.toFixed(2)}%)</span>`;
-
                 const profitColor = profitPct >= 0 ? 'text-emerald-400' : 'text-rose-400';
-                const profitBg = profitPct >= 0 ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-rose-500/10 border-rose-500/30';
+                const afterProfitColor = afterProfitPct >= 0 ? 'text-emerald-300' : 'text-rose-300';
                 const profitSign = profitPct >= 0 ? '+' : '';
                 const afterProfitSign = afterProfitPct >= 0 ? '+' : '';
 
@@ -1222,68 +1260,92 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-slate-800/60 hover:bg-slate-800/40 transition";
                 tr.innerHTML = `
-                    <td class="py-3 px-4 font-semibold text-slate-200 whitespace-nowrap">
-                        <div class="flex items-center gap-1.5">${item.name} <span class="text-xs text-slate-400 font-normal">(${item.symbol})</span></div>
-                        <div class="mt-1">${afterBadgeHtml}</div>
+                    <td class="py-3.5 px-4 font-semibold text-slate-200 whitespace-nowrap">
+                        <div class="flex items-center gap-1.5">${item.name} <span class="text-xs font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">${item.symbol}</span></div>
                     </td>
-                    <td class="py-3 px-4 font-mono whitespace-nowrap">${item.quantity}주</td>
-                    <td class="py-3 px-4 font-mono whitespace-nowrap text-slate-400">$${buyPrice.toFixed(2)}</td>
-                    <td class="py-3 px-4 font-mono whitespace-nowrap">
-                        <div>${priceDisplay}</div>
-                        <div class="text-[11px] text-indigo-300 mt-0.5">🌙 $${afterPriceUsd.toFixed(2)}</div>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap">${item.quantity}주</td>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap text-slate-400">$${buyPrice.toFixed(2)}</td>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
+                        <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <span class="font-bold text-slate-100">${priceDisplay}</span></div>
+                        <div class="flex items-center gap-1.5 text-xs"><span class="text-[10px] bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded">🌙애프터</span> <span class="font-semibold text-indigo-200">$${afterPriceUsd.toFixed(2)}</span></div>
                     </td>
-                    <td class="py-3 px-4 font-mono ${changeColor} whitespace-nowrap">
-                        <div>${changeIcon} ${Math.abs(changePct).toFixed(2)}%</div>
-                        <div class="text-[11px] text-indigo-300 mt-0.5">🌙 ${afterChangeSign}${afterChangePct.toFixed(2)}% (${afterChangeUsd >= 0 ? '+' : '-'}$${Math.abs(afterChangeUsd).toFixed(2)})</div>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
+                        <div class="${changeColor}">${changeIcon} ${Math.abs(changePct).toFixed(2)}% (${changeUsd >= 0 ? '+' : '-'}$${Math.abs(changeUsd).toFixed(2)})</div>
+                        <div class="text-xs ${afterChangeColor}">🌙 ${afterChangeIcon} ${Math.abs(afterChangePct).toFixed(2)}% (${afterChangeUsd >= 0 ? '+' : '-'}$${Math.abs(afterChangeUsd).toFixed(2)})</div>
                     </td>
-                    <td class="py-3 px-4 font-mono ${profitColor} whitespace-nowrap">${profitSign}$${Math.abs(profitUsd).toFixed(2)} <span class="text-xs text-slate-400">(${profitSign}${Math.round(Math.abs(profitKrw)).toLocaleString()}원)</span></td>
-                    <td class="py-3 px-4 font-mono font-bold ${profitColor} whitespace-nowrap">
-                        <div>${profitSign}${profitPct.toFixed(2)}%</div>
-                        <div class="text-[11px] font-normal text-indigo-300 mt-0.5">🌙 ${afterProfitSign}${afterProfitPct.toFixed(2)}%</div>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
+                        <div class="${profitColor}">${profitSign}$${Math.abs(profitUsd).toFixed(2)} <span class="text-xs text-slate-400">(${profitSign}${Math.round(Math.abs(profitKrw)).toLocaleString()}원)</span></div>
+                        <div class="text-xs ${afterProfitColor}">🌙 ${afterProfitSign}$${Math.abs(afterProfitUsd).toFixed(2)} <span class="text-[11px] text-slate-400">(${afterProfitSign}${Math.round(Math.abs(afterProfitKrw)).toLocaleString()}원)</span></div>
                     </td>
-                    <td class="py-3 px-4 font-mono whitespace-nowrap">
+                    <td class="py-3.5 px-4 font-mono font-bold whitespace-nowrap space-y-1">
+                        <div class="${profitColor}">${profitSign}${profitPct.toFixed(2)}%</div>
+                        <div class="text-xs font-semibold ${afterProfitColor}">🌙 ${afterProfitSign}${afterProfitPct.toFixed(2)}%</div>
+                    </td>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
                         <div>${Math.round(evalKrw).toLocaleString('ko-KR')}원</div>
-                        <div class="text-[11px] text-indigo-300 mt-0.5">🌙 ${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원</div>
+                        <div class="text-xs text-indigo-200">🌙 ${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원</div>
                     </td>
-                    <td class="py-3 px-4 font-mono whitespace-nowrap">
-                        <div>정규 <strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(${item.target_weight}%)</span></div>
-                        <div class="text-[11px] text-indigo-300 mt-0.5">🌙 애프터 비중: <strong class="text-indigo-200">${afterWeight.toFixed(1)}%</strong></div>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
+                        <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(목표 ${item.target_weight}%)</span></div>
+                        <div class="flex items-center gap-1.5 text-xs"><span class="text-[10px] bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded">🌙애프터</span> <strong class="text-indigo-200">${afterWeight.toFixed(1)}%</strong></div>
                     </td>
-                    <td class="py-3 px-4 whitespace-nowrap">${statusBadge}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">${statusBadge}</td>
                 `;
                 tbody.appendChild(tr);
 
-                // Mobile Card
+                // Mobile Card (2-Column Side-by-Side Comparison Grid)
                 if (mobileContainer) {
                     const card = document.createElement('div');
-                    card.className = "bg-slate-900/80 p-3.5 rounded-xl border border-slate-800/80 space-y-2.5";
+                    card.className = "bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 space-y-2.5";
                     card.innerHTML = `
-                        <div class="flex items-start justify-between gap-2">
+                        <!-- 상단 종목 헤더 -->
+                        <div class="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
                             <div>
-                                <div class="font-bold text-slate-100 text-sm flex items-center gap-1.5 flex-wrap">
+                                <div class="font-bold text-slate-100 text-sm flex items-center gap-1.5">
                                     <span>${item.name}</span>
                                     <span class="text-[11px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">${item.symbol}</span>
-                                    ${afterBadgeHtml}
                                 </div>
-                                <div class="text-xs text-slate-400 mt-1">${item.quantity}주 · 정규 종가 ${priceDisplay} <span class="text-[11px] text-slate-500">(평단 $${buyPrice.toFixed(2)})</span></div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">${item.quantity}주 보유 · 평단 $${buyPrice.toFixed(2)} · 목표 비중 ${item.target_weight}%</div>
                             </div>
-                            <div class="flex flex-col items-end gap-1 whitespace-nowrap">
-                                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded border ${profitBg} ${profitColor}">
-                                    ${profitSign}${profitPct.toFixed(2)}% (🌙${afterProfitSign}${afterProfitPct.toFixed(1)}%)
-                                </span>
-                                ${statusBadge}
-                            </div>
+                            ${statusBadge}
                         </div>
-                        <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/60 text-xs">
-                            <div>
-                                <span class="text-slate-400 block text-[11px]">총 평가손익 (정규 / 🌙애프터)</span>
-                                <span class="font-mono font-semibold ${profitColor}">${profitSign}$${Math.abs(profitUsd).toFixed(2)} (${profitSign}${Math.round(Math.abs(profitKrw)).toLocaleString()}원)</span>
-                                <span class="font-mono block text-[11px] text-indigo-300 mt-0.5">🌙 애프터 평가: ${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원</span>
+
+                        <!-- 중단 2열 비교 박스 (정규장 vs 애프터마켓) -->
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <!-- 좌측: 정규장 -->
+                            <div class="bg-slate-800/50 p-2.5 rounded-lg border border-slate-700/50 space-y-1.5">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="text-slate-300 font-semibold">☀️ 정규장</span>
+                                    <span class="font-mono ${changeColor}">${changeIcon} ${Math.abs(changePct).toFixed(2)}%</span>
+                                </div>
+                                <div class="font-mono font-bold text-slate-100 text-sm">${priceDisplay}</div>
+                                <div class="text-[11px] font-mono text-slate-300">${Math.round(evalKrw).toLocaleString('ko-KR')}원</div>
+                                <div class="flex items-center justify-between text-[11px] pt-1 border-t border-slate-700/50">
+                                    <span class="text-slate-400">수익률</span>
+                                    <span class="font-mono font-bold ${profitColor}">${profitSign}${profitPct.toFixed(2)}%</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="text-slate-400">정규 비중</span>
+                                    <strong class="font-mono text-sky-400">${currentWeight.toFixed(1)}%</strong>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <span class="text-slate-400 block text-[11px]">비중 (정규 / 🌙애프터 / 목표)</span>
-                                <span class="font-mono text-slate-200">정규 <strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong> (${Math.round(evalKrw).toLocaleString('ko-KR')}원)</span>
-                                <span class="font-mono block text-[11px] text-indigo-300 mt-0.5">🌙 애프터 비중: <strong class="text-indigo-200">${afterWeight.toFixed(1)}%</strong> (목표 ${item.target_weight}%)</span>
+
+                            <!-- 우측: 애프터마켓 -->
+                            <div class="bg-indigo-950/25 p-2.5 rounded-lg border border-indigo-500/25 space-y-1.5">
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="text-indigo-300 font-semibold">🌙 애프터</span>
+                                    <span class="font-mono ${afterChangeColor}">${afterChangeIcon} ${Math.abs(afterChangePct).toFixed(2)}%</span>
+                                </div>
+                                <div class="font-mono font-bold text-indigo-100 text-sm">$${afterPriceUsd.toFixed(2)}</div>
+                                <div class="text-[11px] font-mono text-indigo-200">${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원</div>
+                                <div class="flex items-center justify-between text-[11px] pt-1 border-t border-indigo-500/20">
+                                    <span class="text-indigo-300">수익률</span>
+                                    <span class="font-mono font-bold ${afterProfitColor}">${afterProfitSign}${afterProfitPct.toFixed(2)}%</span>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px]">
+                                    <span class="text-indigo-300">애프터 비중</span>
+                                    <strong class="font-mono text-indigo-200">${afterWeight.toFixed(1)}%</strong>
+                                </div>
                             </div>
                         </div>
                     `;
