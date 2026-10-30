@@ -170,27 +170,97 @@
             </div>
         </div>
 
-        <!-- Asset Allocation Doughnut Charts Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            <!-- Category Doughnut Chart -->
-            <div class="bg-cardbg p-4 sm:p-6 rounded-2xl border border-slate-800 shadow-lg flex flex-col items-center">
-                <h3 class="font-bold text-slate-200 mb-3 text-sm sm:text-base w-full flex items-center justify-between">
-                    <span><i class="fa-solid fa-layer-group text-sky-400 mr-2"></i>자산 카테고리별 비중 (%)</span>
-                    <span class="text-xs font-normal text-slate-400">목표 자산배분</span>
-                </h3>
-                <div class="w-full max-w-[320px] sm:max-w-[340px] aspect-square relative">
-                    <canvas id="categoryChart"></canvas>
+        <!-- Asset Allocation & Weight Deviation Analysis Section (3 Tabs, Category & Stock Separate) -->
+        <div class="bg-cardbg rounded-2xl border border-slate-800 shadow-lg p-4 sm:p-6 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+                <div>
+                    <h3 class="font-bold text-sm sm:text-base text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced text-sky-400"></i> 비중 이탈 & 자산배분 진단 (카테고리별 · 종목별)
+                    </h3>
+                    <p id="alloc-tab-desc" class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
+                        0%p 기준선을 중심으로 목표 비중 대비 초과(+) 및 미달(-) 폭을 ☀️정규장과 🌙애프터마켓 동시에 진단합니다. (리밸런싱 기준: ±5.0%p)
+                    </p>
+                </div>
+                <!-- Allocation Tab Buttons -->
+                <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs overflow-x-auto">
+                    <button id="alloc-btn-diff" onclick="switchAllocTab('diff')" class="px-3 py-1.5 rounded-lg font-semibold transition bg-sky-500 text-white whitespace-nowrap shadow">
+                        ⚖️ 목표 대비 이탈도
+                    </button>
+                    <button id="alloc-btn-compare" onclick="switchAllocTab('compare')" class="px-3 py-1.5 rounded-lg font-semibold transition text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                        📊 목표 vs 현재 비교
+                    </button>
+                    <button id="alloc-btn-doughnut" onclick="switchAllocTab('doughnut')" class="px-3 py-1.5 rounded-lg font-semibold transition text-slate-400 hover:text-slate-200 whitespace-nowrap">
+                        🍩 보유 비중 도넛
+                    </button>
                 </div>
             </div>
 
-            <!-- Stock Doughnut Chart -->
-            <div class="bg-cardbg p-4 sm:p-6 rounded-2xl border border-slate-800 shadow-lg flex flex-col items-center">
-                <h3 class="font-bold text-slate-200 mb-3 text-sm sm:text-base w-full flex items-center justify-between">
-                    <span><i class="fa-solid fa-chart-pie text-emerald-400 mr-2"></i>개별 종목 보유 비중 (%)</span>
-                    <span class="text-xs font-normal text-slate-400">실시간 비중</span>
-                </h3>
-                <div class="w-full max-w-[320px] sm:max-w-[340px] aspect-square relative">
-                    <canvas id="stockChart"></canvas>
+            <!-- Tab 1 (Default): 목표 대비 이탈도 (Diverging Bar: Category & Stock) -->
+            <div id="alloc-tab-diff" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <div class="bg-slate-900/60 p-3.5 sm:p-5 rounded-xl border border-slate-800/90 flex flex-col">
+                    <h4 class="font-bold text-slate-200 mb-2 text-xs sm:text-sm w-full flex items-center justify-between">
+                        <span><i class="fa-solid fa-layer-group text-sky-400 mr-1.5"></i>카테고리별 목표 대비 이탈폭 (%p)</span>
+                        <span class="text-[11px] font-normal text-slate-400">◀ 미달(-) | 초과(+) ▶</span>
+                    </h4>
+                    <div class="w-full h-[250px] sm:h-[290px] relative">
+                        <canvas id="categoryDiffChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-slate-900/60 p-3.5 sm:p-5 rounded-xl border border-slate-800/90 flex flex-col">
+                    <h4 class="font-bold text-slate-200 mb-2 text-xs sm:text-sm w-full flex items-center justify-between">
+                        <span><i class="fa-solid fa-bars-progress text-emerald-400 mr-1.5"></i>개별 종목 목표 대비 이탈폭 (%p)</span>
+                        <span class="text-[11px] font-normal text-slate-400">◀ 미달(-) | 초과(+) ▶</span>
+                    </h4>
+                    <div class="w-full h-[270px] sm:h-[290px] relative">
+                        <canvas id="stockDiffChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: 목표 vs 현재(☀️정규 · 🌙애프터) 비교 (Grouped Bar: Category & Stock) -->
+            <div id="alloc-tab-compare" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 hidden">
+                <div class="bg-slate-900/60 p-3.5 sm:p-5 rounded-xl border border-slate-800/90 flex flex-col">
+                    <h4 class="font-bold text-slate-200 mb-2 text-xs sm:text-sm w-full flex items-center justify-between">
+                        <span><i class="fa-solid fa-layer-group text-sky-400 mr-1.5"></i>카테고리별 [🎯목표 · ☀️정규 · 🌙애프터] 비중</span>
+                        <span class="text-[11px] font-normal text-slate-400">단위: %</span>
+                    </h4>
+                    <div class="w-full h-[260px] sm:h-[300px] relative">
+                        <canvas id="categoryCompareChart"></canvas>
+                    </div>
+                </div>
+                <div class="bg-slate-900/60 p-3.5 sm:p-5 rounded-xl border border-slate-800/90 flex flex-col">
+                    <h4 class="font-bold text-slate-200 mb-2 text-xs sm:text-sm w-full flex items-center justify-between">
+                        <span><i class="fa-solid fa-chart-simple text-emerald-400 mr-1.5"></i>종목별 [🎯목표 · ☀️정규 · 🌙애프터] 비중</span>
+                        <span class="text-[11px] font-normal text-slate-400">단위: %</span>
+                    </h4>
+                    <div class="w-full h-[260px] sm:h-[300px] relative">
+                        <canvas id="stockCompareChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: 보유 비중 도넛 차트 (Doughnut: Category & Stock) -->
+            <div id="alloc-tab-doughnut" class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 hidden">
+                <!-- Category Doughnut Chart -->
+                <div class="bg-slate-900/60 p-4 sm:p-5 rounded-xl border border-slate-800/90 flex flex-col items-center">
+                    <h4 class="font-bold text-slate-200 mb-3 text-xs sm:text-sm w-full flex items-center justify-between">
+                        <span><i class="fa-solid fa-layer-group text-sky-400 mr-1.5"></i>자산 카테고리별 비중 (%)</span>
+                        <span class="text-[11px] font-normal text-slate-400">현재 정규장 기준</span>
+                    </h4>
+                    <div class="w-full max-w-[300px] sm:max-w-[320px] aspect-square relative">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Stock Doughnut Chart -->
+                <div class="bg-slate-900/60 p-4 sm:p-5 rounded-xl border border-slate-800/90 flex flex-col items-center">
+                    <h4 class="font-bold text-slate-200 mb-3 text-xs sm:text-sm w-full flex items-center justify-between">
+                        <span><i class="fa-solid fa-chart-pie text-emerald-400 mr-1.5"></i>개별 종목 보유 비중 (%)</span>
+                        <span class="text-[11px] font-normal text-slate-400">현재 정규장 기준</span>
+                    </h4>
+                    <div class="w-full max-w-[300px] sm:max-w-[320px] aspect-square relative">
+                        <canvas id="stockChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -800,6 +870,10 @@
 
         let categoryChartInst = null;
         let stockChartInst = null;
+        let categoryDiffChartInst = null;
+        let stockDiffChartInst = null;
+        let categoryCompareChartInst = null;
+        let stockCompareChartInst = null;
         let historyChartInst = null;
         let catProfitChartInst = null;
         let stockProfitChartInst = null;
@@ -823,6 +897,46 @@
                     container.classList.add('hidden');
                 }
             });
+            setTimeout(() => {
+                if (tabName === 'history' && historyChartInst) historyChartInst.resize();
+                if (tabName === 'cat' && catProfitChartInst) catProfitChartInst.resize();
+                if (tabName === 'stock' && stockProfitChartInst) stockProfitChartInst.resize();
+            }, 10);
+        }
+
+        function switchAllocTab(tabName) {
+            const tabs = ['diff', 'compare', 'doughnut'];
+            const descMap = {
+                diff: '0%p 기준선을 중심으로 목표 비중 대비 초과(+) 및 미달(-) 폭을 ☀️정규장과 🌙애프터마켓 동시에 진단합니다. (리밸런싱 기준: ±5.0%p)',
+                compare: '카테고리별·종목별 [🎯목표 비중 - ☀️정규장 비중 - 🌙애프터 비중] 3개 막대를 나란히 비교하여 체급과 장후 비중 흐름을 한눈에 파악합니다.',
+                doughnut: '현재 포트폴리오에서 각 자산 카테고리와 개별 종목이 차지하는 전체 비중(%) 구성을 도넛 차트로 보여줍니다.'
+            };
+            const descEl = document.getElementById('alloc-tab-desc');
+            if (descEl && descMap[tabName]) descEl.innerText = descMap[tabName];
+
+            tabs.forEach(t => {
+                const btn = document.getElementById(`alloc-btn-${t}`);
+                const container = document.getElementById(`alloc-tab-${t}`);
+                if (t === tabName) {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold transition bg-sky-500 text-white whitespace-nowrap shadow";
+                    container.classList.remove('hidden');
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold transition text-slate-400 hover:text-slate-200 whitespace-nowrap";
+                    container.classList.add('hidden');
+                }
+            });
+            setTimeout(() => {
+                if (tabName === 'diff') {
+                    if (categoryDiffChartInst) categoryDiffChartInst.resize();
+                    if (stockDiffChartInst) stockDiffChartInst.resize();
+                } else if (tabName === 'compare') {
+                    if (categoryCompareChartInst) categoryCompareChartInst.resize();
+                    if (stockCompareChartInst) stockCompareChartInst.resize();
+                } else if (tabName === 'doughnut') {
+                    if (categoryChartInst) categoryChartInst.resize();
+                    if (stockChartInst) stockChartInst.resize();
+                }
+            }, 10);
         }
 
         function showToast(message) {
@@ -1358,10 +1472,319 @@
             const palette = ['#38bdf8', '#4ade80', '#facc15', '#f87171', '#c084fc', '#fb923c', '#e879f9'];
 
             const catLabels = Object.keys(categoryMap);
-            const totalKrw = items.reduce((a,b)=>a+(b.evalKrw !== undefined ? b.evalKrw : b.eval_krw),0);
-            const catWeights = Object.values(categoryMap).map(d => ((d.eval_krw || d.evalKrw) / totalKrw)*100);
+            const totalKrw = items.reduce((a, b) => a + (b.evalKrw !== undefined ? b.evalKrw : b.eval_krw), 0);
+            const totalAfterKrw = items.reduce((a, b) => a + (b.after_eval_krw !== undefined ? b.after_eval_krw : (b.evalKrw !== undefined ? b.evalKrw : b.eval_krw)), 0);
 
-            // 1. 카테고리 도넛 차트
+            const catTargets = Object.values(categoryMap).map(d => d.target_weight || 0);
+            const catWeights = Object.values(categoryMap).map(d => d.current_weight !== undefined ? d.current_weight : (((d.eval_krw || d.evalKrw) / totalKrw) * 100));
+            const catAfterWeights = Object.values(categoryMap).map((d, idx) => {
+                if (d.after_weight !== undefined) return d.after_weight;
+                const afterEval = d.after_eval_krw !== undefined ? d.after_eval_krw : (d.eval_krw || d.evalKrw);
+                return totalAfterKrw > 0 ? (afterEval / totalAfterKrw) * 100 : catWeights[idx];
+            });
+            const catDiffs = catWeights.map((w, idx) => Number((w - catTargets[idx]).toFixed(2)));
+            const catAfterDiffs = catAfterWeights.map((w, idx) => Number((w - catTargets[idx]).toFixed(2)));
+
+            const stockLabels = items.map(i => i.symbol);
+            const stockTargets = items.map(i => i.target_weight || 0);
+            const stockWeights = items.map(i => i.currentWeight !== undefined ? i.currentWeight : i.current_weight);
+            const stockAfterWeights = items.map((i, idx) => i.after_weight !== undefined ? i.after_weight : stockWeights[idx]);
+            const stockDiffs = stockWeights.map((w, idx) => Number((w - stockTargets[idx]).toFixed(2)));
+            const stockAfterDiffs = stockAfterWeights.map((w, idx) => Number((w - stockTargets[idx]).toFixed(2)));
+
+            // =========================================================================
+            // [탭 1] 목표 대비 이탈도 차트 (Diverging Horizontal Bar: Category & Stock)
+            // =========================================================================
+            const maxCatDiffAbs = Math.max(3.5, ...catDiffs.map(Math.abs), ...catAfterDiffs.map(Math.abs));
+            const catAxisLimit = Math.ceil((maxCatDiffAbs + 1.2) * 2) / 2;
+
+            if (categoryDiffChartInst) categoryDiffChartInst.destroy();
+            categoryDiffChartInst = new Chart(document.getElementById('categoryDiffChart'), {
+                type: 'bar',
+                data: {
+                    labels: catLabels,
+                    datasets: [
+                        {
+                            label: '☀️ 정규 이탈 (%p)',
+                            data: catDiffs,
+                            backgroundColor: catDiffs.map(v => Math.abs(v) >= 5.0 ? '#f43f5e' : (v >= 0 ? '#f59e0b' : '#38bdf8')),
+                            borderRadius: 5,
+                            barPercentage: 0.75,
+                            categoryPercentage: 0.72
+                        },
+                        {
+                            label: '🌙 애프터 이탈 (%p)',
+                            data: catAfterDiffs,
+                            backgroundColor: catAfterDiffs.map(v => Math.abs(v) >= 5.0 ? '#e879f9' : '#818cf8'),
+                            borderRadius: 5,
+                            barPercentage: 0.75,
+                            categoryPercentage: 0.72
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' }, boxWidth: 12 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const idx = ctx.dataIndex;
+                                    const val = ctx.raw;
+                                    const sign = val >= 0 ? '+' : '';
+                                    const cur = ctx.datasetIndex === 0 ? catWeights[idx] : catAfterWeights[idx];
+                                    return `${ctx.dataset.label}: ${sign}${val.toFixed(2)}%p (현재 ${cur.toFixed(1)}% / 목표 ${catTargets[idx].toFixed(1)}%)`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: (ctx) => ctx.datasetIndex === 0 ? '#f8fafc' : '#c7d2fe',
+                            font: { weight: 'bold', size: 10 },
+                            anchor: (ctx) => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start',
+                            align: (ctx) => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'right' : 'left',
+                            formatter: (val) => `${val >= 0 ? '+' : ''}${val.toFixed(1)}%p`
+                        }
+                    },
+                    scales: {
+                        x: {
+                            min: -catAxisLimit,
+                            max: catAxisLimit,
+                            grid: {
+                                color: (ctx) => (ctx.tick && ctx.tick.value === 0) ? '#94a3b8' : '#1e293b',
+                                lineWidth: (ctx) => (ctx.tick && ctx.tick.value === 0) ? 2 : 1
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10 },
+                                callback: (v) => `${v > 0 ? '+' : ''}${v}%p`
+                            }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+
+            const maxStockDiffAbs = Math.max(3.5, ...stockDiffs.map(Math.abs), ...stockAfterDiffs.map(Math.abs));
+            const stockAxisLimit = Math.ceil((maxStockDiffAbs + 1.2) * 2) / 2;
+
+            if (stockDiffChartInst) stockDiffChartInst.destroy();
+            stockDiffChartInst = new Chart(document.getElementById('stockDiffChart'), {
+                type: 'bar',
+                data: {
+                    labels: stockLabels,
+                    datasets: [
+                        {
+                            label: '☀️ 정규 이탈 (%p)',
+                            data: stockDiffs,
+                            backgroundColor: stockDiffs.map(v => Math.abs(v) >= 5.0 ? '#f43f5e' : (v >= 0 ? '#f59e0b' : '#38bdf8')),
+                            borderRadius: 4,
+                            barPercentage: 0.8,
+                            categoryPercentage: 0.76
+                        },
+                        {
+                            label: '🌙 애프터 이탈 (%p)',
+                            data: stockAfterDiffs,
+                            backgroundColor: stockAfterDiffs.map(v => Math.abs(v) >= 5.0 ? '#e879f9' : '#818cf8'),
+                            borderRadius: 4,
+                            barPercentage: 0.8,
+                            categoryPercentage: 0.76
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' }, boxWidth: 12 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const idx = ctx.dataIndex;
+                                    const val = ctx.raw;
+                                    const sign = val >= 0 ? '+' : '';
+                                    const cur = ctx.datasetIndex === 0 ? stockWeights[idx] : stockAfterWeights[idx];
+                                    return `${ctx.dataset.label}: ${sign}${val.toFixed(2)}%p (현재 ${cur.toFixed(1)}% / 목표 ${stockTargets[idx].toFixed(1)}%)`;
+                                }
+                            }
+                        },
+                        datalabels: {
+                            color: (ctx) => ctx.datasetIndex === 0 ? '#f8fafc' : '#c7d2fe',
+                            font: { weight: 'bold', size: 10 },
+                            anchor: (ctx) => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'end' : 'start',
+                            align: (ctx) => ctx.dataset.data[ctx.dataIndex] >= 0 ? 'right' : 'left',
+                            formatter: (val) => `${val >= 0 ? '+' : ''}${val.toFixed(1)}%p`
+                        }
+                    },
+                    scales: {
+                        x: {
+                            min: -stockAxisLimit,
+                            max: stockAxisLimit,
+                            grid: {
+                                color: (ctx) => (ctx.tick && ctx.tick.value === 0) ? '#94a3b8' : '#1e293b',
+                                lineWidth: (ctx) => (ctx.tick && ctx.tick.value === 0) ? 2 : 1
+                            },
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 10 },
+                                callback: (v) => `${v > 0 ? '+' : ''}${v}%p`
+                            }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }
+                        }
+                    }
+                }
+            });
+
+            // =========================================================================
+            // [탭 2] 목표 vs 현재(☀️정규 · 🌙애프터) 3막대 나란히 비교 차트
+            // =========================================================================
+            const maxCatWeight = Math.max(...catTargets, ...catWeights, ...catAfterWeights, 30);
+            if (categoryCompareChartInst) categoryCompareChartInst.destroy();
+            categoryCompareChartInst = new Chart(document.getElementById('categoryCompareChart'), {
+                type: 'bar',
+                data: {
+                    labels: catLabels,
+                    datasets: [
+                        {
+                            label: '🎯 목표 비중',
+                            data: catTargets.map(v => Number(v.toFixed(1))),
+                            backgroundColor: '#475569',
+                            borderColor: '#94a3b8',
+                            borderWidth: 1,
+                            borderRadius: 5
+                        },
+                        {
+                            label: '☀️ 정규 비중',
+                            data: catWeights.map(v => Number(v.toFixed(1))),
+                            backgroundColor: '#38bdf8',
+                            borderRadius: 5
+                        },
+                        {
+                            label: '🌙 애프터 비중',
+                            data: catAfterWeights.map(v => Number(v.toFixed(1))),
+                            backgroundColor: '#818cf8',
+                            borderRadius: 5
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' }, boxWidth: 12 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(1)}%`
+                            }
+                        },
+                        datalabels: {
+                            color: (ctx) => ctx.datasetIndex === 0 ? '#cbd5e1' : (ctx.datasetIndex === 1 ? '#38bdf8' : '#c7d2fe'),
+                            font: { weight: 'bold', size: 10 },
+                            anchor: 'end',
+                            align: 'top',
+                            offset: 0,
+                            formatter: (val) => `${val.toFixed(1)}%`
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#e2e8f0', font: { size: 10, weight: 'bold' } }
+                        },
+                        y: {
+                            max: Math.ceil(maxCatWeight * 1.18),
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#94a3b8', font: { size: 10 }, callback: (v) => `${v}%` }
+                        }
+                    }
+                }
+            });
+
+            const maxStockWeight = Math.max(...stockTargets, ...stockWeights, ...stockAfterWeights, 25);
+            if (stockCompareChartInst) stockCompareChartInst.destroy();
+            stockCompareChartInst = new Chart(document.getElementById('stockCompareChart'), {
+                type: 'bar',
+                data: {
+                    labels: stockLabels,
+                    datasets: [
+                        {
+                            label: '🎯 목표 비중',
+                            data: stockTargets.map(v => Number(v.toFixed(1))),
+                            backgroundColor: '#475569',
+                            borderColor: '#94a3b8',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: '☀️ 정규 비중',
+                            data: stockWeights.map(v => Number(v.toFixed(1))),
+                            backgroundColor: '#38bdf8',
+                            borderRadius: 4
+                        },
+                        {
+                            label: '🌙 애프터 비중',
+                            data: stockAfterWeights.map(v => Number(v.toFixed(1))),
+                            backgroundColor: '#818cf8',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: '#cbd5e1', font: { size: 11, weight: 'bold' }, boxWidth: 12 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toFixed(1)}%`
+                            }
+                        },
+                        datalabels: {
+                            color: (ctx) => ctx.datasetIndex === 0 ? '#cbd5e1' : (ctx.datasetIndex === 1 ? '#38bdf8' : '#c7d2fe'),
+                            font: { weight: 'bold', size: 9 },
+                            anchor: 'end',
+                            align: 'top',
+                            offset: -1,
+                            formatter: (val) => `${val.toFixed(1)}`
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#e2e8f0', font: { size: 11, weight: 'bold' } }
+                        },
+                        y: {
+                            max: Math.ceil(maxStockWeight * 1.18),
+                            grid: { color: '#1e293b' },
+                            ticks: { color: '#94a3b8', font: { size: 10 }, callback: (v) => `${v}%` }
+                        }
+                    }
+                }
+            });
+
+            // =========================================================================
+            // [탭 3] 기존 보유 비중 도넛 차트 (Category & Stock)
+            // =========================================================================
             if (categoryChartInst) categoryChartInst.destroy();
             categoryChartInst = new Chart(document.getElementById('categoryChart'), {
                 type: 'doughnut',
@@ -1387,10 +1810,6 @@
                     }
                 }
             });
-
-            // 2. 개별 종목 도넛 차트
-            const stockLabels = items.map(i => i.symbol);
-            const stockWeights = items.map(i => i.currentWeight !== undefined ? i.currentWeight : i.current_weight);
 
             if (stockChartInst) stockChartInst.destroy();
             stockChartInst = new Chart(document.getElementById('stockChart'), {
