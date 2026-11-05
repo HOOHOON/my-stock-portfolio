@@ -4,6 +4,8 @@ on:
   schedule:
     # 매일 대한민국 기준 오전 06:57 (UTC 전날 21:57) - 혼잡 분 회피를 위한 57분 설정
     - cron: '57 21 * * *'
+    # 매일 대한민국 기준 오전 10:13 (UTC 01:13) - 미국 애프터마켓 최종 마감 후 알림
+    - cron: '13 1 * * *'
   workflow_dispatch: # 깃허브 웹사이트에서 버튼 눌러 수동 실행 가능
 
 permissions:
@@ -40,4 +42,3 @@ jobs:
           git config --local user.name "GitHub Action Bot"
           git add portfolio_data.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto update portfolio_data.json [skip ci]" && git push)
-
