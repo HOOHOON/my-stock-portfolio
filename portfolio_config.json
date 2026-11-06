@@ -5,7 +5,8 @@
       "name": "SGOV (초단기채)",
       "symbol": "SGOV",
       "market": "US",
-      "quantity": 75,
+      "quantity": 57,
+      "cash_usd": 53.55,
       "target_weight": 24.9,
       "category": "💵 초단기채/현금",
       "buy_price": 100.5996
@@ -14,10 +15,10 @@
       "name": "엔비디아",
       "symbol": "NVDA",
       "market": "US",
-      "quantity": 27,
+      "quantity": 30,
       "target_weight": 21.0,
       "category": "💻 빅테크/AI 성장주",
-      "buy_price": 212.8844
+      "buy_price": 210.1310
     },
     {
       "name": "알파벳 A",
@@ -32,10 +33,10 @@
       "name": "AMD",
       "symbol": "AMD",
       "market": "US",
-      "quantity": 8,
+      "quantity": 11,
       "target_weight": 16.8,
       "category": "💻 빅테크/AI 성장주",
-      "buy_price": 444.9800
+      "buy_price": 437.4309
     },
     {
       "name": "마이크로소프트",

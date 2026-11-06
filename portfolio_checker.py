@@ -244,6 +244,7 @@ def main():
         symbol = item["symbol"]
         market = item.get("market", "KRX").upper()
         quantity = item["quantity"]
+        cash_usd = float(item.get("cash_usd", 0.0))
         target_weight = item["target_weight"]
         category = item.get("category", "기타")
         buy_price = item.get("buy_price", 0.0)
@@ -276,18 +277,21 @@ def main():
                 has_after = False
                 after_price_krw = price_krw
 
-            eval_krw = price_krw * quantity
-            eval_usd = price_usd * quantity
-            buy_eval_usd = buy_price * quantity if buy_price > 0 else eval_usd
-            profit_usd = eval_usd - buy_eval_usd
+            stock_eval_usd = price_usd * quantity
+            stock_buy_usd = buy_price * quantity if buy_price > 0 else stock_eval_usd
+            eval_usd = stock_eval_usd + cash_usd
+            eval_krw = eval_usd * usd_krw_rate
+            buy_eval_usd = stock_buy_usd + cash_usd
+            profit_usd = stock_eval_usd - stock_buy_usd
             profit_krw = profit_usd * usd_krw_rate
-            profit_pct = (profit_usd / buy_eval_usd * 100) if buy_eval_usd > 0 else 0.0
+            profit_pct = (profit_usd / stock_buy_usd * 100) if stock_buy_usd > 0 else 0.0
 
-            after_eval_krw = after_price_krw * quantity
-            after_eval_usd = after_price_usd * quantity
-            after_profit_usd = after_eval_usd - buy_eval_usd
+            stock_after_eval_usd = after_price_usd * quantity
+            after_eval_usd = stock_after_eval_usd + cash_usd
+            after_eval_krw = after_eval_usd * usd_krw_rate
+            after_profit_usd = stock_after_eval_usd - stock_buy_usd
             after_profit_krw = after_profit_usd * usd_krw_rate
-            after_profit_pct = (after_profit_usd / buy_eval_usd * 100) if buy_eval_usd > 0 else 0.0
+            after_profit_pct = (after_profit_usd / stock_buy_usd * 100) if stock_buy_usd > 0 else 0.0
 
             total_eval_krw += eval_krw
             total_after_eval_krw += after_eval_krw
@@ -298,6 +302,7 @@ def main():
                 "symbol": symbol,
                 "market": market,
                 "quantity": quantity,
+                "cash_usd": cash_usd,
                 "target_weight": target_weight,
                 "category": category,
                 "buy_price": buy_price,
@@ -504,9 +509,11 @@ def main():
         else:
             after_change_str = "➖0.00%"
 
+        cash_note = f" (+예수금 ${item['cash_usd']:,.2f} 포함)" if item.get("cash_usd", 0) > 0 else ""
+
         if item["market"] == "US":
             lines.append(
-                f"\n{status_icon} *{item['name']} ({item['symbol']})*\n"
+                f"\n{status_icon} *{item['name']} ({item['symbol']})*{cash_note}\n"
                 f"  • ☀️정규가: *${item['price_usd']:,.2f}* ({change_str})\n"
                 f"  • 🌙애프터: *${item['after_price_usd']:,.2f}* ({after_change_str})\n"
                 f"  • 💰평가액: {item['eval_krw']:,.0f}원 (🌙 {item['after_eval_krw']:,.0f}원)\n"
