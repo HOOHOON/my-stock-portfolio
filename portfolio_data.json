@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-21 17:16",
+  "updated_at": "2026-11-22 10:55",
   "usd_krw_rate": 1346.13,
   "tnx": {
     "price": 4.912,
@@ -787,6 +787,17 @@
     },
     {
       "date": "2026-11-21",
+      "total_eval_krw": 32237162,
+      "total_after_eval_krw": 32805629,
+      "total_buy_krw": 36233934,
+      "total_profit_krw": -3996772,
+      "total_profit_pct": -11.03,
+      "total_after_profit_krw": -3428305,
+      "total_after_profit_pct": -9.46,
+      "usd_krw_rate": 1346.13
+    },
+    {
+      "date": "2026-11-22",
       "total_eval_krw": 32237162,
       "total_after_eval_krw": 32805629,
       "total_buy_krw": 36233934,
