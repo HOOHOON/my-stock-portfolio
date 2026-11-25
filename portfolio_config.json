@@ -1,13 +1,28 @@
 {
+  "rebalance_rules": {
+    "category_abs_band_percent": 5.0,
+    "category_rel_band_ratio": 0.25,
+    "stock_abs_band_percent": 3.0,
+    "stock_rel_band_ratio": 0.20,
+    "min_band_percent": 1.0,
+    "watch_ratio": 0.8,
+    "cash_floor_percent": 15.0,
+    "min_trade_usd": 150.0,
+    "drawdown_lookback_range": "3mo",
+    "drawdown_warn_percent": -15.0,
+    "drawdown_strong_percent": -25.0,
+    "daily_drop_warn_percent": -5.0
+  },
   "rebalance_threshold_percent": 5.0,
+  "cash_usd": 53.55,
+  "cash_category": "💵 초단기채/현금",
   "portfolio": [
     {
       "name": "SGOV (초단기채)",
       "symbol": "SGOV",
       "market": "US",
       "quantity": 57,
-      "cash_usd": 53.55,
-      "target_weight": 24.9,
+      "target_weight": 25,
       "category": "💵 초단기채/현금",
       "buy_price": 100.5996
     },
@@ -16,7 +31,7 @@
       "symbol": "NVDA",
       "market": "US",
       "quantity": 30,
-      "target_weight": 21.0,
+      "target_weight": 20,
       "category": "💻 빅테크/AI 성장주",
       "buy_price": 210.1310
     },
@@ -25,7 +40,7 @@
       "symbol": "GOOGL",
       "market": "US",
       "quantity": 18,
-      "target_weight": 20.3,
+      "target_weight": 20,
       "category": "💻 빅테크/AI 성장주",
       "buy_price": 270.8759
     },
@@ -34,7 +49,7 @@
       "symbol": "AMD",
       "market": "US",
       "quantity": 11,
-      "target_weight": 16.8,
+      "target_weight": 16,
       "category": "💻 빅테크/AI 성장주",
       "buy_price": 437.4309
     },
@@ -43,7 +58,7 @@
       "symbol": "MSFT",
       "market": "US",
       "quantity": 4,
-      "target_weight": 6.8,
+      "target_weight": 8,
       "category": "💻 빅테크/AI 성장주",
       "buy_price": 512.9600
     },
@@ -52,7 +67,7 @@
       "symbol": "SCHD",
       "market": "US",
       "quantity": 62,
-      "target_weight": 6.7,
+      "target_weight": 7,
       "category": "📈 배당 성장주",
       "buy_price": 32.5950
     },
@@ -61,7 +76,7 @@
       "symbol": "GLDM",
       "market": "US",
       "quantity": 13,
-      "target_weight": 3.5,
+      "target_weight": 4,
       "category": "🥇 실물 금/원자재",
       "buy_price": 81.9400
     }

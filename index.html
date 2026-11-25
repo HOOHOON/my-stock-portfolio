@@ -54,10 +54,13 @@
                     <span id="sync-time-sub" class="text-xs bg-sky-500/10 text-sky-400 border border-sky-500/30 px-2.5 py-0.5 rounded-full font-medium whitespace-nowrap">기준 시각: 2026-10-08 17:32 KST</span>
                 </p>
             </div>
-            <div class="flex items-center gap-2.5 self-start sm:self-auto pt-1 sm:pt-0">
+            <div class="flex flex-wrap items-center gap-2 sm:gap-2.5 self-start sm:self-auto pt-1 sm:pt-0">
                 <span id="last-update" class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1.5 rounded-full border border-slate-700 whitespace-nowrap">
                     <i class="fa-solid fa-check text-emerald-400 mr-1"></i> 동기화 완료
                 </span>
+                <button onclick="openPlaybookModal()" class="bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 font-semibold text-xs sm:text-sm px-3 py-1.5 rounded-lg shadow-md transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-book-open"></i> 매매 계획표
+                </button>
                 <button id="refresh-btn" onclick="manualRefresh()" class="bg-sky-500 hover:bg-sky-600 text-white font-medium text-xs sm:text-sm px-3 py-1.5 rounded-lg shadow-md transition flex items-center gap-1.5 whitespace-nowrap">
                     <i id="refresh-icon" class="fa-solid fa-rotate"></i> 새로고침
                 </button>
@@ -87,7 +90,7 @@
             <!-- Total Profit & Loss -->
             <div class="bg-cardbg p-3.5 sm:p-4 rounded-2xl border border-emerald-500/30 shadow-lg flex flex-col justify-between bg-emerald-500/5 col-span-2 sm:col-span-1 lg:col-span-1">
                 <div class="flex items-center justify-between mb-1">
-                    <span class="text-[11px] sm:text-xs font-semibold text-emerald-400 uppercase tracking-wider">총 평가손익 & 수익률</span>
+                    <span class="text-[11px] sm:text-xs font-semibold text-emerald-400 uppercase tracking-wider">총 평가손익 (USD기준)</span>
                     <span id="total-profit-pct" class="text-[11px] font-mono text-emerald-300 font-bold">정규 +8.65%</span>
                 </div>
                 <div class="space-y-1.5 mt-1">
@@ -126,11 +129,16 @@
 
         <!-- Cash Reserve & Action Plan Alert -->
         <div id="action-banner" class="bg-cardbg border-l-4 border-emerald-400 p-4 sm:p-5 rounded-2xl shadow-lg border border-slate-800 space-y-1.5">
-            <h3 class="font-bold text-sm sm:text-base flex items-center gap-2 text-sky-400">
-                <i class="fa-solid fa-shield-halved"></i> 현금 실탄(SGOV) & 매크로 대응 가이드
-            </h3>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <h3 class="font-bold text-sm sm:text-base flex items-center gap-2 text-sky-400">
+                    <i class="fa-solid fa-shield-halved"></i> 현금 실탄(SGOV) & 매크로 대응 가이드
+                </h3>
+                <button onclick="openPlaybookModal()" class="text-[11px] sm:text-xs bg-slate-800/90 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-lg font-medium transition flex items-center gap-1.5 whitespace-nowrap">
+                    <i class="fa-solid fa-table-list"></i> 매수·매도 계획표 보기
+                </button>
+            </div>
             <p id="action-text" class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                <span class="text-emerald-400 font-bold">🛡️ [실탄 대기 (HOLD)]</span> 현재 시장 변동성 및 비중이 안정적입니다. SGOV 현금 실탄을 온전히 보존하며 연 5%대 이자 수익을 수취하세요.
+                <span class="text-emerald-400 font-bold">🛡️ [실탄 대기 (HOLD)]</span> 현재 시장 변동성 및 비중이 안정적입니다. SGOV 보유로 단기 국채 이자를 수취하며 기회를 대기하세요.
             </p>
         </div>
 
@@ -178,7 +186,7 @@
                         <i class="fa-solid fa-scale-balanced text-sky-400"></i> 비중 이탈 & 자산배분 진단 (카테고리별 · 종목별)
                     </h3>
                     <p id="alloc-tab-desc" class="text-[11px] sm:text-xs text-slate-400 mt-0.5">
-                        0%p 기준선을 중심으로 목표 비중 대비 초과(+) 및 미달(-) 폭을 ☀️정규장과 🌙애프터마켓 동시에 진단합니다. (리밸런싱 기준: ±5.0%p)
+                        0%p 기준선을 중심으로 목표 비중 대비 초과(+) 및 미달(-) 폭을 ☀️정규장과 🌙애프터마켓 동시에 진단합니다. (카테고리 5/25 · 개별종목 3/20 · 현금 방어선 15%)
                     </p>
                 </div>
                 <!-- Allocation Tab Buttons -->
@@ -281,7 +289,8 @@
                             <th class="py-3 px-4">평가금액 (원)</th>
                             <th class="py-3 px-4">평가손익 (원)</th>
                             <th class="py-3 px-4">수익률</th>
-                            <th class="py-3 px-4">현재 비중 (목표)</th>
+                            <th class="py-3 px-4">현재 비중 (목표 · 밴드)</th>
+                            <th class="py-3 px-4">목표 복귀 제안</th>
                             <th class="py-3 px-4">상태</th>
                         </tr>
                     </thead>
@@ -316,8 +325,9 @@
                             <th class="py-3 px-4">평가손익 ($ / 원)</th>
                             <th class="py-3 px-4">수익률 (%)</th>
                             <th class="py-3 px-4">평가금액 (원)</th>
-                            <th class="py-3 px-4">비중 (목표)</th>
-                            <th class="py-3 px-4">상태</th>
+                            <th class="py-3 px-4">비중 (목표 · 밴드)</th>
+                            <th class="py-3 px-4">리밸런싱 제안</th>
+                            <th class="py-3 px-4">상태 / 낙폭</th>
                         </tr>
                     </thead>
                     <tbody id="stock-table-body">
@@ -334,375 +344,856 @@
 
     </div>
 
+    <!-- Buy/Sell Playbook Modal -->
+    <div id="playbook-modal" onclick="if (event.target === this) closePlaybookModal()" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-5">
+        <div class="bg-cardbg border border-slate-700/80 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-slate-800 bg-slate-900/70">
+                <div>
+                    <h2 class="text-base sm:text-lg font-extrabold text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-emerald-400"></i>
+                        <span>매수 · 매도 리밸런싱 계획표</span>
+                    </h2>
+                    <p class="text-[11px] sm:text-xs text-slate-400 mt-0.5">카테고리 5/25 · 개별종목 3/20 · 가격 급락 감지 · 현금 최소 방어선 15%</p>
+                </div>
+                <button onclick="closePlaybookModal()" aria-label="닫기" class="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 w-8 h-8 rounded-lg flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="flex items-center gap-1.5 px-4 sm:px-6 py-2.5 bg-slate-900/40 border-b border-slate-800 overflow-x-auto text-xs">
+                <button id="pb-tab-all" onclick="switchPlaybookSection('all')" class="px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white whitespace-nowrap transition">📋 한눈에 보기</button>
+                <button id="pb-tab-buy" onclick="switchPlaybookSection('buy')" class="px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-slate-200 whitespace-nowrap transition">🟢 매수 기준</button>
+                <button id="pb-tab-sell" onclick="switchPlaybookSection('sell')" class="px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-slate-200 whitespace-nowrap transition">🔴 매도 기준</button>
+                <button id="pb-tab-bands" onclick="switchPlaybookSection('bands')" class="px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-slate-200 whitespace-nowrap transition">⚖️ 목표·밴드표</button>
+                <button id="pb-tab-matrix" onclick="switchPlaybookSection('matrix')" class="px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-slate-200 whitespace-nowrap transition">💳 현금×VIX 매트릭스</button>
+            </div>
+
+            <!-- Scrollable Modal Body -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-5 text-xs sm:text-sm">
+                <!-- Live Account Snapshot Banner -->
+                <div id="playbook-live-status" class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3.5 space-y-1.5">
+                    <!-- JS Insert -->
+                </div>
+
+                <!-- Section 1: BUY Plan -->
+                <div id="pb-sec-buy" class="space-y-2.5">
+                    <h3 class="font-bold text-emerald-400 text-sm sm:text-base flex items-center gap-2">
+                        <span>🟢 언제 매수(BUY)하는가?</span>
+                        <span class="text-[11px] font-normal text-slate-400">평소 85~90%는 HOLD, 아래 3가지 조건에만 매수</span>
+                    </h3>
+                    <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-900/80 text-slate-400 text-[11px] uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="py-2.5 px-3 whitespace-nowrap">상황</th>
+                                    <th class="py-2.5 px-3">발동 조건</th>
+                                    <th class="py-2.5 px-3">실행 방법</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/70 text-slate-200">
+                                <tr class="bg-slate-900/30">
+                                    <td class="py-2.5 px-3 font-bold text-sky-300 whitespace-nowrap">① 카테고리 폭락<div class="text-[10px] font-normal text-slate-400">정석 1단계</div></td>
+                                    <td class="py-2.5 px-3"><strong>빅테크 ≤ 59%</strong> (-5%p)<br><span class="text-slate-400">또는 SCHD ≤ 5.2% / GLDM ≤ 3.0%</span></td>
+                                    <td class="py-2.5 px-3"><strong>SGOV(현금)</strong>에서 빼서 목표 비중까지 매수<br><span class="text-slate-400">(카테고리 내 미달폭이 가장 큰 종목 우선)</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-sky-300 whitespace-nowrap">② 개별종목 급락<div class="text-[10px] font-normal text-slate-400">2단계 3/20</div></td>
+                                    <td class="py-2.5 px-3"><strong>NVDA ≤ 17% · GOOGL ≤ 17%</strong><br><strong>AMD ≤ 13% · MSFT ≤ 6.4%</strong></td>
+                                    <td class="py-2.5 px-3 space-y-1">
+                                        <div>• <strong>빅테크 ≤ 64% & 현금 &gt; 15%</strong>: ✅ 현금으로 목표까지 분할 매수 <span class="text-slate-400">(펀더멘털 확인 필수)</span></div>
+                                        <div>• <strong>빅테크 &gt; 64%</strong>: ❌ 현금 아끼고 <strong>내부 초과 종목 교체</strong> 또는 <strong>신규 적립금</strong> 배분</div>
+                                    </td>
+                                </tr>
+                                <tr class="bg-slate-900/30">
+                                    <td class="py-2.5 px-3 font-bold text-rose-300 whitespace-nowrap">③ 패닉 투매<div class="text-[10px] font-normal text-slate-400">엔진2 · VIX</div></td>
+                                    <td class="py-2.5 px-3"><strong>VIX ≥ 25~30</strong> 또는 <strong>고점 -15% / -25%</strong><br><span class="text-slate-400">AND 현금 &gt; 15% AND 해당 종목 ≤ 목표</span></td>
+                                    <td class="py-2.5 px-3">(현재 현금 - 방어선 15%) <strong>가용 실탄의 20~50%만 분할 집행</strong><br><span class="text-slate-400">(한 번에 올인 금지, 기업 실적 훼손 여부 먼저 점검)</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-rose-950/30 border border-rose-500/30 rounded-xl p-3 text-xs text-rose-200">
+                        <strong>⛔ 매수 금지 브레이크:</strong> 현금 비중이 <strong>15% 이하(최소 방어선)</strong>이거나, 이미 선제 매수해서 <strong>빅테크가 목표(64%) 이상</strong>이면 VIX가 높아도 추가 추격 매수를 중단합니다.
+                    </div>
+                </div>
+
+                <!-- Section 2: SELL Plan -->
+                <div id="pb-sec-sell" class="space-y-2.5">
+                    <h3 class="font-bold text-rose-400 text-sm sm:text-base flex items-center gap-2">
+                        <span>🔴 언제 매도(SELL)하는가?</span>
+                        <span class="text-[11px] font-normal text-slate-400">상승장 익절을 해야 다음 폭락장 실탄이 채워짐</span>
+                    </h3>
+                    <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-900/80 text-slate-400 text-[11px] uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="py-2.5 px-3 whitespace-nowrap">상황</th>
+                                    <th class="py-2.5 px-3">발동 조건</th>
+                                    <th class="py-2.5 px-3">실행 방법</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/70 text-slate-200">
+                                <tr class="bg-slate-900/30">
+                                    <td class="py-2.5 px-3 font-bold text-amber-300 whitespace-nowrap">① 카테고리 과열<div class="text-[10px] font-normal text-slate-400">실탄 재충전</div></td>
+                                    <td class="py-2.5 px-3"><strong>빅테크 ≥ 69%</strong> (+5%p)<br><span class="text-slate-400">또는 SCHD ≥ 8.8% / GLDM ≥ 5.0%</span></td>
+                                    <td class="py-2.5 px-3">초과폭이 큰 종목부터 <strong>초과분만 일부 익절</strong> → <strong>SGOV(현금) 25% 재충전</strong></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2.5 px-3 font-bold text-amber-300 whitespace-nowrap">② 개별종목 급등<div class="text-[10px] font-normal text-slate-400">쏠림 제어</div></td>
+                                    <td class="py-2.5 px-3"><strong>NVDA ≥ 23% · GOOGL ≥ 23%</strong><br><strong>AMD ≥ 19% · MSFT ≥ 9.6%</strong></td>
+                                    <td class="py-2.5 px-3">초과분 일부 익절 → ① 현금 25% 미만이면 <strong>SGOV 보충</strong>, ② 현금 충분하면 <strong>미달 자산 이동</strong></td>
+                                </tr>
+                                <tr class="bg-slate-900/30">
+                                    <td class="py-2.5 px-3 font-bold text-amber-300 whitespace-nowrap">③ 현금 방어 복구<div class="text-[10px] font-normal text-slate-400">유동성 회복</div></td>
+                                    <td class="py-2.5 px-3">폭락장 매수 후 <strong>현금 ≤ 15~20%</strong> 상태에서 반등 시</td>
+                                    <td class="py-2.5 px-3">수익 난 초과 자산 일부 익절 또는 신규 입금으로 <strong>현금 20~25% 회복</strong></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-amber-950/25 border border-amber-500/30 rounded-xl p-3 text-xs text-amber-200">
+                        <strong>💡 세금 절약 팁 (해외주식 양도세 연 250만 원 공제):</strong> 조정액이 <strong>$150(약 20만 원) 미만</strong>이거나 소폭 초과일 때는 굳이 매도하지 말고, <strong>신규 적립금·배당금을 미달 자산(SGOV 등)에 투입해 자연 희석(무과세 리밸런싱)</strong>하는 것이 1순위입니다.
+                    </div>
+                </div>
+
+                <!-- Section 3: Dynamic Target & Band Table -->
+                <div id="pb-sec-bands" class="space-y-2.5">
+                    <h3 class="font-bold text-sky-400 text-sm sm:text-base flex items-center gap-2">
+                        <span>⚖️ 자산별 목표 비중 · 허용 밴드 · 실시간 위치</span>
+                        <span class="text-[11px] font-normal text-slate-400">설정 변경 시 자동 반영</span>
+                    </h3>
+                    <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-900/80 text-slate-400 text-[11px] uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="py-2.5 px-3">구분 / 자산</th>
+                                    <th class="py-2.5 px-3 text-right">목표</th>
+                                    <th class="py-2.5 px-3 text-right">현재</th>
+                                    <th class="py-2.5 px-3 text-right">허용 밴드</th>
+                                    <th class="py-2.5 px-3 text-center">매수 하한 ~ 매도 상한</th>
+                                    <th class="py-2.5 px-3 text-center">현재 상태</th>
+                                </tr>
+                            </thead>
+                            <tbody id="playbook-band-tbody" class="divide-y divide-slate-800/70 font-mono">
+                                <!-- JS Insert -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Section 4: Cash x VIX Matrix -->
+                <div id="pb-sec-matrix" class="space-y-2.5">
+                    <h3 class="font-bold text-purple-300 text-sm sm:text-base flex items-center gap-2">
+                        <span>💳 현금 실탄 × VIX 6단계 의사결정 매트릭스</span>
+                        <span class="text-[11px] font-normal text-slate-400">현재 해당 구간 강조 표시</span>
+                    </h3>
+                    <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-900/80 text-slate-400 text-[11px] uppercase border-b border-slate-800">
+                                <tr>
+                                    <th class="py-2.5 px-3 whitespace-nowrap">단계</th>
+                                    <th class="py-2.5 px-3">조건</th>
+                                    <th class="py-2.5 px-3">시그널 & 대응</th>
+                                </tr>
+                            </thead>
+                            <tbody id="playbook-matrix-tbody" class="divide-y divide-slate-800/70 text-slate-200">
+                                <!-- JS Insert -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3 text-xs text-slate-300 leading-relaxed">
+                        <strong class="text-sky-400">🔁 한 줄 운용 사이클:</strong>
+                        <span class="text-emerald-300 font-semibold">하락장</span>(빅테크 59%↓ · 종목 -3%p↓ · VIX 30↑) → 현금으로 분할 매수 *(방어선 15% 사수)*
+                        <span class="text-slate-500 mx-1">▶</span>
+                        <span class="text-slate-200 font-semibold">평상시</span>(밴드 내부) → 매매 없이 SGOV 이자·배당 수취(HOLD)
+                        <span class="text-slate-500 mx-1">▶</span>
+                        <span class="text-amber-300 font-semibold">상승장</span>(빅테크 69%↑ · 종목 +3%p↑) → 초과분 일부 익절로 SGOV 25% 재충전
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Embedded Data Logic -->
     <script>
         // Datalabels 플러그인 등록
         Chart.register(ChartDataLabels);
 
         const INITIAL_DATA = {
-            "updated_at": "2026-11-06 09:35",
-            "usd_krw_rate": 1344.6,
+            "updated_at": "2026-11-25 03:44",
+            "usd_krw_rate": 1342.8,
             "tnx": {
-                        "price": 4.894,
-                        "prev_close": 4.952,
-                        "change": -0.05799999999999983,
-                        "change_pct": -1.1712439418416767,
-                        "after_price": 4.894,
+                        "price": 4.906,
+                        "prev_close": 4.918,
+                        "change": -0.012000000000000455,
+                        "change_pct": -0.2440016266775204,
+                        "after_price": 4.906,
                         "after_change": 0.0,
                         "after_change_pct": 0.0,
                         "has_after": false
             },
             "vix": {
-                        "price": 16.61,
-                        "prev_close": 20.83,
-                        "change": -4.219999999999999,
-                        "change_pct": -20.25924147863658,
-                        "after_price": 16.610000610351562,
-                        "after_change": 6.103515630684342e-07,
-                        "after_change_pct": 3.674603028708213e-06,
-                        "has_after": true
-            },
-            "dxy": {
-                        "price": 101.327,
-                        "prev_close": 101.566,
-                        "change": -0.23900000000000432,
-                        "change_pct": -0.23531496760727438,
-                        "after_price": 101.327,
+                        "price": 26.44,
+                        "prev_close": 26.62,
+                        "change": -0.17999999999999972,
+                        "change_pct": -0.676183320811419,
+                        "after_price": 26.44,
                         "after_change": 0.0,
                         "after_change_pct": 0.0,
                         "has_after": false
             },
-            "total_eval_krw": 35601113.3661,
-            "total_buy_krw": 36192750.54318,
-            "total_profit_krw": -591637.1770800003,
-            "total_profit_pct": -1.6346842066455924,
-            "total_after_eval_krw": 35601113.3661,
-            "total_after_profit_krw": -591637.1770800003,
-            "total_after_profit_pct": -1.6346842066455924,
+            "dxy": {
+                        "price": 103.784,
+                        "prev_close": 104.318,
+                        "change": -0.5339999999999918,
+                        "change_pct": -0.5118963170306101,
+                        "after_price": 103.784,
+                        "after_change": 0.0,
+                        "after_change_pct": 0.0,
+                        "has_after": false
+            },
+            "rebalance_rules": {
+                        "category_abs_band_percent": 5.0,
+                        "category_rel_band_ratio": 0.25,
+                        "stock_abs_band_percent": 3.0,
+                        "stock_rel_band_ratio": 0.2,
+                        "min_band_percent": 1.0,
+                        "watch_ratio": 0.8,
+                        "cash_floor_percent": 15.0,
+                        "min_trade_usd": 150.0,
+                        "drawdown_lookback_range": "3mo",
+                        "drawdown_warn_percent": -15.0,
+                        "drawdown_strong_percent": -25.0,
+                        "daily_drop_warn_percent": -5.0
+            },
+            "cash_usd": 53.55,
+            "target_weight_sum": 100.0,
+            "target_weight_valid": true,
+            "total_eval_usd": 25041.734999999997,
+            "total_eval_krw": 33626041.757999994,
+            "total_buy_usd": 26917.1133,
+            "total_buy_krw": 36144299.73924,
+            "total_invested_buy_usd": 26863.5633,
+            "total_invested_buy_krw": 36072392.79924,
+            "total_profit_usd": -1875.3783000000014,
+            "total_profit_krw": -2518257.981240002,
+            "total_profit_pct": -6.967234112730808,
+            "total_after_eval_usd": 25041.734999999997,
+            "total_after_eval_krw": 33626041.757999994,
+            "total_after_profit_usd": -1875.3783000000014,
+            "total_after_profit_krw": -2518257.981240002,
+            "total_after_profit_pct": -6.967234112730808,
             "items": [
                         {
                                     "name": "SGOV (초단기채)",
                                     "symbol": "SGOV",
                                     "market": "US",
+                                    "is_cash": false,
                                     "quantity": 57,
-                                    "cash_usd": 53.55,
-                                    "target_weight": 24.9,
+                                    "cash_usd": 0.0,
+                                    "target_weight": 25,
                                     "category": "💵 초단기채/현금",
                                     "buy_price": 100.5996,
-                                    "price_krw": 135077.44032,
-                                    "price_usd": 100.4592,
-                                    "change_usd": 0.00919999999999277,
-                                    "change_pct": 0.009158785465398476,
-                                    "eval_krw": 7771417.428239999,
-                                    "eval_usd": 5779.7244,
-                                    "buy_eval_usd": 5787.7272,
-                                    "profit_usd": -8.002800000000207,
-                                    "profit_krw": -10760.564880000276,
-                                    "profit_pct": -0.1395631791776544,
-                                    "after_price_usd": 100.4592,
-                                    "after_price_krw": 135077.44032,
+                                    "price_krw": 135159.53399999999,
+                                    "price_usd": 100.655,
+                                    "change_usd": 0.015000000000000568,
+                                    "change_pct": 0.014904610492846353,
+                                    "eval_krw": 7704093.438,
+                                    "eval_usd": 5737.335,
+                                    "buy_eval_usd": 5734.1772,
+                                    "profit_usd": 3.157799999999952,
+                                    "profit_krw": 4240.293839999936,
+                                    "profit_pct": 0.05506980147038274,
+                                    "after_price_usd": 100.655,
+                                    "after_price_krw": 135159.53399999999,
                                     "after_change_usd": 0.0,
                                     "after_change_pct": 0.0,
-                                    "has_after": true,
-                                    "after_eval_krw": 7771417.428239999,
-                                    "after_eval_usd": 5779.7244,
-                                    "after_profit_usd": -8.002800000000207,
-                                    "after_profit_krw": -10760.564880000276,
-                                    "after_profit_pct": -0.1395631791776544,
-                                    "current_weight": 21.829141544882354,
-                                    "weight_diff": -3.0708584551176443,
-                                    "after_weight": 21.829141544882354,
-                                    "after_weight_diff": -3.0708584551176443
+                                    "has_after": false,
+                                    "after_eval_krw": 7704093.438,
+                                    "after_eval_usd": 5737.335,
+                                    "after_profit_usd": 3.157799999999952,
+                                    "after_profit_krw": 4240.293839999936,
+                                    "after_profit_pct": 0.05506980147038274,
+                                    "recent_high_usd": null,
+                                    "drawdown_pct": 0.0,
+                                    "current_weight": 22.91109222264352,
+                                    "weight_diff": -1.8750647668781717,
+                                    "after_weight": 22.91109222264352,
+                                    "after_weight_diff": -1.8750647668781717,
+                                    "band": 5.0,
+                                    "watch_band": 4.0,
+                                    "lower_bound": 20.0,
+                                    "upper_bound": 30.0,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": 469.55,
+                                    "rebalance_krw": 630512,
+                                    "rebalance_shares": 5,
+                                    "is_small_trade": false,
+                                    "drawdown_signal": "NONE",
+                                    "drawdown_reason": "",
+                                    "action_code": "HOLD",
+                                    "action_guide": "현금 비중 정상 (단기 국채 이자 수취)",
+                                    "is_cash_category_member": true
+                        },
+                        {
+                                    "name": "달러 예수금 (USD)",
+                                    "symbol": "USD",
+                                    "market": "CASH",
+                                    "is_cash": true,
+                                    "quantity": 53.55,
+                                    "cash_usd": 53.55,
+                                    "target_weight": 0,
+                                    "category": "💵 초단기채/현금",
+                                    "buy_price": 1.0,
+                                    "price_krw": 1342.8,
+                                    "price_usd": 1.0,
+                                    "change_usd": 0.0,
+                                    "change_pct": 0.0,
+                                    "eval_krw": 71906.93999999999,
+                                    "eval_usd": 53.55,
+                                    "buy_eval_usd": 53.55,
+                                    "profit_usd": 0.0,
+                                    "profit_krw": 0.0,
+                                    "profit_pct": 0.0,
+                                    "after_price_usd": 1.0,
+                                    "after_price_krw": 1342.8,
+                                    "after_change_usd": 0.0,
+                                    "after_change_pct": 0.0,
+                                    "has_after": false,
+                                    "after_eval_krw": 71906.93999999999,
+                                    "after_eval_usd": 53.55,
+                                    "after_profit_usd": 0.0,
+                                    "after_profit_krw": 0.0,
+                                    "after_profit_pct": 0.0,
+                                    "recent_high_usd": 1.0,
+                                    "drawdown_pct": 0.0,
+                                    "current_weight": 0.21384301047830753,
+                                    "weight_diff": 0.0,
+                                    "after_weight": 0.21384301047830753,
+                                    "after_weight_diff": 0.0,
+                                    "band": 0.0,
+                                    "watch_band": 0.0,
+                                    "lower_bound": 0.0,
+                                    "upper_bound": 0.0,
+                                    "status": "CASH",
+                                    "after_breach": false,
+                                    "rebalance_usd": 0.0,
+                                    "rebalance_krw": 0,
+                                    "rebalance_shares": 0,
+                                    "is_small_trade": true,
+                                    "drawdown_signal": "NONE",
+                                    "action_code": "CASH_POOL",
+                                    "action_guide": "초단기채/현금 카테고리 합산 관리 (23.1% / 목표 25%)"
                         },
                         {
                                     "name": "엔비디아",
                                     "symbol": "NVDA",
                                     "market": "US",
+                                    "is_cash": false,
                                     "quantity": 30,
                                     "cash_usd": 0.0,
-                                    "target_weight": 21.0,
+                                    "target_weight": 20,
                                     "category": "💻 빅테크/AI 성장주",
                                     "buy_price": 210.131,
-                                    "price_krw": 248213.69783999998,
-                                    "price_usd": 184.6004,
-                                    "change_usd": -15.529599999999988,
-                                    "change_pct": -7.7597561584969705,
-                                    "eval_krw": 7446410.9352,
-                                    "eval_usd": 5538.012000000001,
+                                    "price_krw": 206851.626,
+                                    "price_usd": 154.045,
+                                    "change_usd": -11.005000000000024,
+                                    "change_pct": -6.667676461678293,
+                                    "eval_krw": 6205548.779999999,
+                                    "eval_usd": 4621.349999999999,
                                     "buy_eval_usd": 6303.93,
-                                    "profit_usd": -765.9179999999997,
-                                    "profit_krw": -1029853.3427999995,
-                                    "profit_pct": -12.149849379672673,
-                                    "after_price_usd": 184.6004,
-                                    "after_price_krw": 248213.69783999998,
+                                    "profit_usd": -1682.5800000000008,
+                                    "profit_krw": -2259368.424000001,
+                                    "profit_pct": -26.690968966977756,
+                                    "after_price_usd": 154.045,
+                                    "after_price_krw": 206851.626,
                                     "after_change_usd": 0.0,
                                     "after_change_pct": 0.0,
-                                    "has_after": true,
-                                    "after_eval_krw": 7446410.9352,
-                                    "after_eval_usd": 5538.012000000001,
-                                    "after_profit_usd": -765.9179999999997,
-                                    "after_profit_krw": -1029853.3427999995,
-                                    "after_profit_pct": -12.149849379672673,
-                                    "current_weight": 20.916230508371132,
-                                    "weight_diff": -0.0837694916288676,
-                                    "after_weight": 20.916230508371132,
-                                    "after_weight_diff": -0.0837694916288676
+                                    "has_after": false,
+                                    "after_eval_krw": 6205548.779999999,
+                                    "after_eval_usd": 4621.349999999999,
+                                    "after_profit_usd": -1682.5800000000008,
+                                    "after_profit_krw": -2259368.424000001,
+                                    "after_profit_pct": -26.690968966977756,
+                                    "recent_high_usd": null,
+                                    "drawdown_pct": 0.0,
+                                    "current_weight": 18.454591904275002,
+                                    "weight_diff": -1.5454080957249978,
+                                    "after_weight": 18.454591904275002,
+                                    "after_weight_diff": -1.5454080957249978,
+                                    "band": 3.0,
+                                    "watch_band": 2.4,
+                                    "lower_bound": 17.0,
+                                    "upper_bound": 23.0,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": 387.0,
+                                    "rebalance_krw": 519660,
+                                    "rebalance_shares": 3,
+                                    "is_small_trade": false,
+                                    "drawdown_signal": "STRONG_DIP",
+                                    "drawdown_reason": "당일 -6.7% · 평단 -26.7%·VIX 26",
+                                    "action_code": "DIP_WAIT",
+                                    "action_guide": "급락 감지 (종목 미달이나 카테고리 목표 초과 — 현금 추격 주의, 교체/추가 급락 대기)",
+                                    "is_cash_category_member": false
                         },
                         {
                                     "name": "알파벳 A",
                                     "symbol": "GOOGL",
                                     "market": "US",
+                                    "is_cash": false,
                                     "quantity": 18,
                                     "cash_usd": 0.0,
-                                    "target_weight": 20.3,
+                                    "target_weight": 20,
                                     "category": "💻 빅테크/AI 성장주",
                                     "buy_price": 270.8759,
-                                    "price_krw": 384138.774,
-                                    "price_usd": 285.69,
-                                    "change_usd": -3.240000000000009,
-                                    "change_pct": -1.1213788806977498,
-                                    "eval_krw": 6914497.932,
-                                    "eval_usd": 5142.42,
+                                    "price_krw": 374318.92799999996,
+                                    "price_usd": 278.76,
+                                    "change_usd": -3.340000000000032,
+                                    "change_pct": -1.1839773130095823,
+                                    "eval_krw": 6737740.704,
+                                    "eval_usd": 5017.68,
                                     "buy_eval_usd": 4875.7662,
-                                    "profit_usd": 266.65380000000005,
-                                    "profit_krw": 358542.69948,
-                                    "profit_pct": 5.468961985913108,
-                                    "after_price_usd": 285.69,
-                                    "after_price_krw": 384138.774,
+                                    "profit_usd": 141.91380000000026,
+                                    "profit_krw": 190561.85064000034,
+                                    "profit_pct": 2.9105948517383844,
+                                    "after_price_usd": 278.76,
+                                    "after_price_krw": 374318.92799999996,
                                     "after_change_usd": 0.0,
                                     "after_change_pct": 0.0,
-                                    "has_after": true,
-                                    "after_eval_krw": 6914497.932,
-                                    "after_eval_usd": 5142.42,
-                                    "after_profit_usd": 266.65380000000005,
-                                    "after_profit_krw": 358542.69948,
-                                    "after_profit_pct": 5.468961985913108,
-                                    "current_weight": 19.422139585623484,
-                                    "weight_diff": -0.8778604143765172,
-                                    "after_weight": 19.422139585623484,
-                                    "after_weight_diff": -0.8778604143765172
+                                    "has_after": false,
+                                    "after_eval_krw": 6737740.704,
+                                    "after_eval_usd": 5017.68,
+                                    "after_profit_usd": 141.91380000000026,
+                                    "after_profit_krw": 190561.85064000034,
+                                    "after_profit_pct": 2.9105948517383844,
+                                    "recent_high_usd": null,
+                                    "drawdown_pct": 0.0,
+                                    "current_weight": 20.03726978182622,
+                                    "weight_diff": 0.03726978182622176,
+                                    "after_weight": 20.03726978182622,
+                                    "after_weight_diff": 0.03726978182622176,
+                                    "band": 3.0,
+                                    "watch_band": 2.4,
+                                    "lower_bound": 17.0,
+                                    "upper_bound": 23.0,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": -9.33,
+                                    "rebalance_krw": -12532,
+                                    "rebalance_shares": 0,
+                                    "is_small_trade": true,
+                                    "drawdown_signal": "NONE",
+                                    "drawdown_reason": "",
+                                    "action_code": "HOLD",
+                                    "action_guide": "목표 범위 내 정상 유지 (HOLD)",
+                                    "is_cash_category_member": false
                         },
                         {
                                     "name": "AMD",
                                     "symbol": "AMD",
                                     "market": "US",
+                                    "is_cash": false,
                                     "quantity": 11,
                                     "cash_usd": 0.0,
-                                    "target_weight": 16.8,
+                                    "target_weight": 16,
                                     "category": "💻 빅테크/AI 성장주",
                                     "buy_price": 437.4309,
-                                    "price_krw": 560462.8949999999,
-                                    "price_usd": 416.825,
-                                    "change_usd": -71.95499999999998,
-                                    "change_pct": -14.721347027292438,
-                                    "eval_krw": 6165091.845,
-                                    "eval_usd": 4585.075,
+                                    "price_krw": 555247.7999999999,
+                                    "price_usd": 413.5,
+                                    "change_usd": -39.95999999999998,
+                                    "change_pct": -8.812243637807079,
+                                    "eval_krw": 6107725.8,
+                                    "eval_usd": 4548.5,
                                     "buy_eval_usd": 4811.7399000000005,
-                                    "profit_usd": -226.66490000000067,
-                                    "profit_krw": -304773.62454000086,
-                                    "profit_pct": -4.710664015733698,
-                                    "after_price_usd": 416.825,
-                                    "after_price_krw": 560462.8949999999,
+                                    "profit_usd": -263.2399000000005,
+                                    "profit_krw": -353478.53772000066,
+                                    "profit_pct": -5.470784071267038,
+                                    "after_price_usd": 413.5,
+                                    "after_price_krw": 555247.7999999999,
                                     "after_change_usd": 0.0,
                                     "after_change_pct": 0.0,
-                                    "has_after": true,
-                                    "after_eval_krw": 6165091.845,
-                                    "after_eval_usd": 4585.075,
-                                    "after_profit_usd": -226.66490000000067,
-                                    "after_profit_krw": -304773.62454000086,
-                                    "after_profit_pct": -4.710664015733698,
-                                    "current_weight": 17.317132140228253,
-                                    "weight_diff": 0.5171321402282523,
-                                    "after_weight": 17.317132140228253,
-                                    "after_weight_diff": 0.5171321402282523
+                                    "has_after": false,
+                                    "after_eval_krw": 6107725.8,
+                                    "after_eval_usd": 4548.5,
+                                    "after_profit_usd": -263.2399000000005,
+                                    "after_profit_krw": -353478.53772000066,
+                                    "after_profit_pct": -5.470784071267038,
+                                    "recent_high_usd": null,
+                                    "drawdown_pct": 0.0,
+                                    "current_weight": 18.16367755668687,
+                                    "weight_diff": 2.1636775566868707,
+                                    "after_weight": 18.16367755668687,
+                                    "after_weight_diff": 2.1636775566868707,
+                                    "band": 3.0,
+                                    "watch_band": 2.4,
+                                    "lower_bound": 13.0,
+                                    "upper_bound": 19.0,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": -541.82,
+                                    "rebalance_krw": -727559,
+                                    "rebalance_shares": -1,
+                                    "is_small_trade": false,
+                                    "drawdown_signal": "DIP",
+                                    "drawdown_reason": "당일 -8.8%",
+                                    "action_code": "DIP_WAIT",
+                                    "action_guide": "급락 감지 (이미 종목 목표 비중 초과 — 추격 매수 주의, 추가 급락 대기)",
+                                    "is_cash_category_member": false
                         },
                         {
                                     "name": "마이크로소프트",
                                     "symbol": "MSFT",
                                     "market": "US",
+                                    "is_cash": false,
                                     "quantity": 4,
                                     "cash_usd": 0.0,
-                                    "target_weight": 6.8,
+                                    "target_weight": 8,
                                     "category": "💻 빅테크/AI 성장주",
                                     "buy_price": 512.96,
-                                    "price_krw": 727657.31646,
-                                    "price_usd": 541.1701,
-                                    "change_usd": -14.629899999999907,
-                                    "change_pct": -2.632223821518515,
-                                    "eval_krw": 2910629.26584,
-                                    "eval_usd": 2164.6804,
+                                    "price_krw": 666189.936,
+                                    "price_usd": 496.12,
+                                    "change_usd": 3.6200000000000045,
+                                    "change_pct": 0.7350253807106608,
+                                    "eval_krw": 2664759.744,
+                                    "eval_usd": 1984.48,
                                     "buy_eval_usd": 2051.84,
-                                    "profit_usd": 112.84040000000005,
-                                    "profit_krw": 151725.20184000005,
-                                    "profit_pct": 5.499473643169059,
-                                    "after_price_usd": 541.1701,
-                                    "after_price_krw": 727657.31646,
+                                    "profit_usd": -67.36000000000013,
+                                    "profit_krw": -90451.00800000016,
+                                    "profit_pct": -3.282907049282601,
+                                    "after_price_usd": 496.12,
+                                    "after_price_krw": 666189.936,
                                     "after_change_usd": 0.0,
                                     "after_change_pct": 0.0,
-                                    "has_after": true,
-                                    "after_eval_krw": 2910629.26584,
-                                    "after_eval_usd": 2164.6804,
-                                    "after_profit_usd": 112.84040000000005,
-                                    "after_profit_krw": 151725.20184000005,
-                                    "after_profit_pct": 5.499473643169059,
-                                    "current_weight": 8.175669215478951,
-                                    "weight_diff": 1.3756692154789514,
-                                    "after_weight": 8.175669215478951,
-                                    "after_weight_diff": 1.3756692154789514
+                                    "has_after": false,
+                                    "after_eval_krw": 2664759.744,
+                                    "after_eval_usd": 1984.48,
+                                    "after_profit_usd": -67.36000000000013,
+                                    "after_profit_krw": -90451.00800000016,
+                                    "after_profit_pct": -3.282907049282601,
+                                    "recent_high_usd": null,
+                                    "drawdown_pct": 0.0,
+                                    "current_weight": 7.92469052164317,
+                                    "weight_diff": -0.07530947835683044,
+                                    "after_weight": 7.92469052164317,
+                                    "after_weight_diff": -0.07530947835683044,
+                                    "band": 1.6,
+                                    "watch_band": 1.28,
+                                    "lower_bound": 6.4,
+                                    "upper_bound": 9.6,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": 18.86,
+                                    "rebalance_krw": 25324,
+                                    "rebalance_shares": 0,
+                                    "is_small_trade": true,
+                                    "drawdown_signal": "NONE",
+                                    "drawdown_reason": "",
+                                    "action_code": "HOLD",
+                                    "action_guide": "목표 범위 내 정상 유지 (HOLD)",
+                                    "is_cash_category_member": false
                         },
                         {
                                     "name": "SCHD (배당성장)",
                                     "symbol": "SCHD",
                                     "market": "US",
+                                    "is_cash": false,
                                     "quantity": 62,
                                     "cash_usd": 0.0,
-                                    "target_weight": 6.7,
+                                    "target_weight": 7,
                                     "category": "📈 배당 성장주",
                                     "buy_price": 32.595,
-                                    "price_krw": 47923.5609,
-                                    "price_usd": 35.6415,
-                                    "change_usd": -0.5685000000000002,
-                                    "change_pct": -1.570008285004143,
-                                    "eval_krw": 2971260.7758,
-                                    "eval_usd": 2209.773,
+                                    "price_krw": 46877.147999999994,
+                                    "price_usd": 34.91,
+                                    "change_usd": 0.519999999999996,
+                                    "change_pct": 1.5120674614713463,
+                                    "eval_krw": 2906383.1759999995,
+                                    "eval_usd": 2164.4199999999996,
                                     "buy_eval_usd": 2020.8899999999999,
-                                    "profit_usd": 188.88300000000027,
-                                    "profit_krw": 253972.08180000033,
-                                    "profit_pct": 9.346525540727118,
-                                    "after_price_usd": 35.6415,
-                                    "after_price_krw": 47923.5609,
+                                    "profit_usd": 143.52999999999975,
+                                    "profit_krw": 192732.08399999965,
+                                    "profit_pct": 7.102316306181917,
+                                    "after_price_usd": 34.91,
+                                    "after_price_krw": 46877.147999999994,
                                     "after_change_usd": 0.0,
                                     "after_change_pct": 0.0,
-                                    "has_after": true,
-                                    "after_eval_krw": 2971260.7758,
-                                    "after_eval_usd": 2209.773,
-                                    "after_profit_usd": 188.88300000000027,
-                                    "after_profit_krw": 253972.08180000033,
-                                    "after_profit_pct": 9.346525540727118,
-                                    "current_weight": 8.345977119438311,
-                                    "weight_diff": 1.645977119438311,
-                                    "after_weight": 8.345977119438311,
-                                    "after_weight_diff": 1.645977119438311
+                                    "has_after": false,
+                                    "after_eval_krw": 2906383.1759999995,
+                                    "after_eval_usd": 2164.4199999999996,
+                                    "after_profit_usd": 143.52999999999975,
+                                    "after_profit_krw": 192732.08399999965,
+                                    "after_profit_pct": 7.102316306181917,
+                                    "recent_high_usd": null,
+                                    "drawdown_pct": 0.0,
+                                    "current_weight": 8.64325095685263,
+                                    "weight_diff": 1.6432509568526292,
+                                    "after_weight": 8.64325095685263,
+                                    "after_weight_diff": 1.6432509568526292,
+                                    "band": 1.8,
+                                    "watch_band": 1.44,
+                                    "lower_bound": 5.2,
+                                    "upper_bound": 8.8,
+                                    "status": "WATCH_OVER",
+                                    "after_breach": false,
+                                    "rebalance_usd": -411.5,
+                                    "rebalance_krw": -552560,
+                                    "rebalance_shares": -12,
+                                    "is_small_trade": false,
+                                    "drawdown_signal": "NONE",
+                                    "drawdown_reason": "",
+                                    "action_code": "WATCH",
+                                    "action_guide": "허용 밴드 경계(80%) 근접 — 추이 관찰",
+                                    "is_cash_category_member": false
                         },
                         {
                                     "name": "GLDM (실물 금)",
                                     "symbol": "GLDM",
                                     "market": "US",
+                                    "is_cash": false,
                                     "quantity": 13,
                                     "cash_usd": 0.0,
-                                    "target_weight": 3.5,
+                                    "target_weight": 4,
                                     "category": "🥇 실물 금/원자재",
                                     "buy_price": 81.94,
-                                    "price_krw": 109369.62954,
-                                    "price_usd": 81.3399,
-                                    "change_usd": 0.9599000000000046,
-                                    "change_pct": 1.1942025379447683,
-                                    "eval_krw": 1421805.1840199998,
-                                    "eval_usd": 1057.4187,
+                                    "price_krw": 94452.552,
+                                    "price_usd": 70.34,
+                                    "change_usd": -1.5300000000000011,
+                                    "change_pct": -2.128843745651873,
+                                    "eval_krw": 1227883.176,
+                                    "eval_usd": 914.4200000000001,
                                     "buy_eval_usd": 1065.22,
-                                    "profit_usd": -7.801300000000083,
-                                    "profit_krw": -10489.62798000011,
-                                    "profit_pct": -0.7323651452282236,
-                                    "after_price_usd": 81.3399,
-                                    "after_price_krw": 109369.62954,
+                                    "profit_usd": -150.79999999999995,
+                                    "profit_krw": -202494.23999999993,
+                                    "profit_pct": -14.156700024408098,
+                                    "after_price_usd": 70.34,
+                                    "after_price_krw": 94452.552,
                                     "after_change_usd": 0.0,
                                     "after_change_pct": 0.0,
-                                    "has_after": true,
-                                    "after_eval_krw": 1421805.1840199998,
-                                    "after_eval_usd": 1057.4187,
-                                    "after_profit_usd": -7.801300000000083,
-                                    "after_profit_krw": -10489.62798000011,
-                                    "after_profit_pct": -0.7323651452282236,
-                                    "current_weight": 3.9937098859775197,
-                                    "weight_diff": 0.49370988597751975,
-                                    "after_weight": 3.9937098859775197,
-                                    "after_weight_diff": 0.49370988597751975
+                                    "has_after": false,
+                                    "after_eval_krw": 1227883.176,
+                                    "after_eval_usd": 914.4200000000001,
+                                    "after_profit_usd": -150.79999999999995,
+                                    "after_profit_krw": -202494.23999999993,
+                                    "after_profit_pct": -14.156700024408098,
+                                    "recent_high_usd": null,
+                                    "drawdown_pct": 0.0,
+                                    "current_weight": 3.6515840455942854,
+                                    "weight_diff": -0.3484159544057146,
+                                    "after_weight": 3.6515840455942854,
+                                    "after_weight_diff": -0.3484159544057146,
+                                    "band": 1.0,
+                                    "watch_band": 0.8,
+                                    "lower_bound": 3.0,
+                                    "upper_bound": 5.0,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": 87.25,
+                                    "rebalance_krw": 117158,
+                                    "rebalance_shares": 1,
+                                    "is_small_trade": true,
+                                    "drawdown_signal": "NONE",
+                                    "drawdown_reason": "",
+                                    "action_code": "HOLD",
+                                    "action_guide": "목표 범위 내 정상 유지 (HOLD)",
+                                    "is_cash_category_member": false
                         }
             ],
             "categories": {
                         "💵 초단기채/현금": {
-                                    "eval_krw": 7771417.428239999,
-                                    "after_eval_krw": 7771417.428239999,
+                                    "eval_usd": 5790.885,
+                                    "eval_krw": 7776000.3780000005,
+                                    "after_eval_usd": 5790.885,
+                                    "after_eval_krw": 7776000.3780000005,
                                     "buy_eval_usd": 5787.7272,
-                                    "profit_usd": -8.002800000000207,
-                                    "profit_krw": -10760.564880000276,
-                                    "after_profit_usd": -8.002800000000207,
-                                    "after_profit_krw": -10760.564880000276,
-                                    "target_weight": 24.9,
+                                    "invested_buy_usd": 5734.1772,
+                                    "profit_usd": 3.157799999999952,
+                                    "profit_krw": 4240.293839999936,
+                                    "after_profit_usd": 3.157799999999952,
+                                    "after_profit_krw": 4240.293839999936,
+                                    "target_weight": 25,
                                     "symbols": [
-                                                "SGOV"
+                                                "SGOV",
+                                                "USD"
                                     ],
-                                    "profit_pct": -0.13827189367184076,
-                                    "after_profit_pct": -0.13827189367184076,
+                                    "profit_pct": 0.05506980147038274,
+                                    "after_profit_pct": 0.05506980147038274,
                                     "after_change_krw": 0.0,
                                     "after_change_pct": 0.0,
-                                    "current_weight": 21.829141544882354,
-                                    "after_weight": 21.829141544882354,
-                                    "after_weight_diff": -3.0708584551176443
+                                    "current_weight": 23.12493523312183,
+                                    "weight_diff": -1.8750647668781717,
+                                    "after_weight": 23.12493523312183,
+                                    "after_weight_diff": -1.8750647668781717,
+                                    "band": 5.0,
+                                    "watch_band": 4.0,
+                                    "lower_bound": 20.0,
+                                    "upper_bound": 30.0,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": 469.55,
+                                    "rebalance_krw": 630510,
+                                    "is_small_trade": false,
+                                    "non_cash_count": 1
                         },
                         "💻 빅테크/AI 성장주": {
-                                    "eval_krw": 23436629.978040002,
-                                    "after_eval_krw": 23436629.978040002,
+                                    "eval_usd": 16172.009999999998,
+                                    "eval_krw": 21715775.027999997,
+                                    "after_eval_usd": 16172.009999999998,
+                                    "after_eval_krw": 21715775.027999997,
                                     "buy_eval_usd": 18043.276100000003,
-                                    "profit_usd": -613.0887000000002,
-                                    "profit_krw": -824359.0660200005,
-                                    "after_profit_usd": -613.0887000000002,
-                                    "after_profit_krw": -824359.0660200005,
-                                    "target_weight": 64.89999999999999,
+                                    "invested_buy_usd": 18043.276100000003,
+                                    "profit_usd": -1871.2661000000012,
+                                    "profit_krw": -2512736.119080002,
+                                    "after_profit_usd": -1871.2661000000012,
+                                    "after_profit_krw": -2512736.119080002,
+                                    "target_weight": 64,
                                     "symbols": [
                                                 "NVDA",
                                                 "GOOGL",
                                                 "AMD",
                                                 "MSFT"
                                     ],
-                                    "profit_pct": -3.397879058116281,
-                                    "after_profit_pct": -3.397879058116281,
+                                    "profit_pct": -10.370988559001217,
+                                    "after_profit_pct": -10.370988559001217,
                                     "after_change_krw": 0.0,
                                     "after_change_pct": 0.0,
-                                    "current_weight": 65.83117144970181,
-                                    "after_weight": 65.83117144970181,
-                                    "after_weight_diff": 0.9311714497018215
+                                    "current_weight": 64.58022976443127,
+                                    "weight_diff": 0.580229764431266,
+                                    "after_weight": 64.58022976443127,
+                                    "after_weight_diff": 0.580229764431266,
+                                    "band": 5.0,
+                                    "watch_band": 4.0,
+                                    "lower_bound": 59.0,
+                                    "upper_bound": 69.0,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": -145.3,
+                                    "rebalance_krw": -195108,
+                                    "is_small_trade": true,
+                                    "non_cash_count": 4
                         },
                         "📈 배당 성장주": {
-                                    "eval_krw": 2971260.7758,
-                                    "after_eval_krw": 2971260.7758,
+                                    "eval_usd": 2164.4199999999996,
+                                    "eval_krw": 2906383.1759999995,
+                                    "after_eval_usd": 2164.4199999999996,
+                                    "after_eval_krw": 2906383.1759999995,
                                     "buy_eval_usd": 2020.8899999999999,
-                                    "profit_usd": 188.88300000000027,
-                                    "profit_krw": 253972.08180000033,
-                                    "after_profit_usd": 188.88300000000027,
-                                    "after_profit_krw": 253972.08180000033,
-                                    "target_weight": 6.7,
+                                    "invested_buy_usd": 2020.8899999999999,
+                                    "profit_usd": 143.52999999999975,
+                                    "profit_krw": 192732.08399999965,
+                                    "after_profit_usd": 143.52999999999975,
+                                    "after_profit_krw": 192732.08399999965,
+                                    "target_weight": 7,
                                     "symbols": [
                                                 "SCHD"
                                     ],
-                                    "profit_pct": 9.346525540727118,
-                                    "after_profit_pct": 9.346525540727118,
+                                    "profit_pct": 7.102316306181917,
+                                    "after_profit_pct": 7.102316306181917,
                                     "after_change_krw": 0.0,
                                     "after_change_pct": 0.0,
-                                    "current_weight": 8.345977119438311,
-                                    "after_weight": 8.345977119438311,
-                                    "after_weight_diff": 1.645977119438311
+                                    "current_weight": 8.64325095685263,
+                                    "weight_diff": 1.6432509568526292,
+                                    "after_weight": 8.64325095685263,
+                                    "after_weight_diff": 1.6432509568526292,
+                                    "band": 1.8,
+                                    "watch_band": 1.44,
+                                    "lower_bound": 5.2,
+                                    "upper_bound": 8.8,
+                                    "status": "WATCH_OVER",
+                                    "after_breach": false,
+                                    "rebalance_usd": -411.5,
+                                    "rebalance_krw": -552560,
+                                    "is_small_trade": false,
+                                    "non_cash_count": 1
                         },
                         "🥇 실물 금/원자재": {
-                                    "eval_krw": 1421805.1840199998,
-                                    "after_eval_krw": 1421805.1840199998,
+                                    "eval_usd": 914.4200000000001,
+                                    "eval_krw": 1227883.176,
+                                    "after_eval_usd": 914.4200000000001,
+                                    "after_eval_krw": 1227883.176,
                                     "buy_eval_usd": 1065.22,
-                                    "profit_usd": -7.801300000000083,
-                                    "profit_krw": -10489.62798000011,
-                                    "after_profit_usd": -7.801300000000083,
-                                    "after_profit_krw": -10489.62798000011,
-                                    "target_weight": 3.5,
+                                    "invested_buy_usd": 1065.22,
+                                    "profit_usd": -150.79999999999995,
+                                    "profit_krw": -202494.23999999993,
+                                    "after_profit_usd": -150.79999999999995,
+                                    "after_profit_krw": -202494.23999999993,
+                                    "target_weight": 4,
                                     "symbols": [
                                                 "GLDM"
                                     ],
-                                    "profit_pct": -0.7323651452282236,
-                                    "after_profit_pct": -0.7323651452282236,
+                                    "profit_pct": -14.156700024408098,
+                                    "after_profit_pct": -14.156700024408098,
                                     "after_change_krw": 0.0,
                                     "after_change_pct": 0.0,
-                                    "current_weight": 3.9937098859775197,
-                                    "after_weight": 3.9937098859775197,
-                                    "after_weight_diff": 0.49370988597751975
+                                    "current_weight": 3.6515840455942854,
+                                    "weight_diff": -0.3484159544057146,
+                                    "after_weight": 3.6515840455942854,
+                                    "after_weight_diff": -0.3484159544057146,
+                                    "band": 1.0,
+                                    "watch_band": 0.8,
+                                    "lower_bound": 3.0,
+                                    "upper_bound": 5.0,
+                                    "status": "NORMAL",
+                                    "after_breach": false,
+                                    "rebalance_usd": 87.25,
+                                    "rebalance_krw": 117158,
+                                    "is_small_trade": true,
+                                    "non_cash_count": 1
                         }
+            },
+            "cash_guidance": {
+                        "signal": "DEPLOYED_WAIT",
+                        "title": "🟡 [선제 집행 중 — 신중 관망]",
+                        "reasons": [
+                                    "VIX 26.44이나 현금이 이미 목표(25%) 대비 -1.9%p 선제 투입된 상태입니다 (현재 23.1%, 방어선 15%까지 잔여 여력 8.1%p / 약 $2,035).",
+                                    "추격 매수는 자제하고, VIX 30+ 패닉 또는 카테고리 하한 이탈(-5%p) 도달 시 2차 집행을 권장합니다."
+                        ],
+                        "cash_category": "💵 초단기채/현금",
+                        "cash_weight": 23.12,
+                        "cash_target": 25,
+                        "cash_diff": -1.88,
+                        "cash_band": 5.0,
+                        "cash_floor": 15.0,
+                        "deployable_cash_pct": 8.12,
+                        "deployable_cash_usd": 2034.62,
+                        "deployable_cash_krw": 2732094,
+                        "vix_val": 26.44
+            },
+            "rebalance_summary": {
+                        "rebalance_needed": false,
+                        "tier1_category_breaches": [],
+                        "tier2_stock_breaches": [],
+                        "drawdown_alerts": [
+                                    {
+                                                "symbol": "NVDA",
+                                                "name": "엔비디아",
+                                                "signal": "STRONG_DIP",
+                                                "reason": "당일 -6.7% · 평단 -26.7%·VIX 26",
+                                                "drawdown_pct": 0.0,
+                                                "change_pct": -6.67,
+                                                "profit_pct": -26.69,
+                                                "weight_diff": -1.55,
+                                                "action_code": "DIP_WAIT",
+                                                "action_guide": "급락 감지 (종목 미달이나 카테고리 목표 초과 — 현금 추격 주의, 교체/추가 급락 대기)"
+                                    },
+                                    {
+                                                "symbol": "AMD",
+                                                "name": "AMD",
+                                                "signal": "DIP",
+                                                "reason": "당일 -8.8%",
+                                                "drawdown_pct": 0.0,
+                                                "change_pct": -8.81,
+                                                "profit_pct": -5.47,
+                                                "weight_diff": 2.16,
+                                                "action_code": "DIP_WAIT",
+                                                "action_guide": "급락 감지 (이미 종목 목표 비중 초과 — 추격 매수 주의, 추가 급락 대기)"
+                                    }
+                        ],
+                        "after_breach_alerts": [],
+                        "target_weight_sum": 100.0,
+                        "target_weight_valid": true
             },
             "history": [
                         {
@@ -963,14 +1454,223 @@
                         },
                         {
                                     "date": "2026-11-06",
-                                    "total_eval_krw": 35601113,
-                                    "total_after_eval_krw": 35601113,
-                                    "total_buy_krw": 36192751,
-                                    "total_profit_krw": -591637,
-                                    "total_profit_pct": -1.63,
-                                    "total_after_profit_krw": -591637,
-                                    "total_after_profit_pct": -1.63,
-                                    "usd_krw_rate": 1344.6
+                                    "total_eval_krw": 35411273,
+                                    "total_after_eval_krw": 35683367,
+                                    "total_buy_krw": 36442541,
+                                    "total_profit_krw": -1031268,
+                                    "total_profit_pct": -2.83,
+                                    "total_after_profit_krw": -759174,
+                                    "total_after_profit_pct": -2.08,
+                                    "usd_krw_rate": 1353.88
+                        },
+                        {
+                                    "date": "2026-11-07",
+                                    "total_eval_krw": 36538279,
+                                    "total_after_eval_krw": 36636509,
+                                    "total_buy_krw": 36705522,
+                                    "total_profit_krw": -167243,
+                                    "total_profit_pct": -0.46,
+                                    "total_after_profit_krw": -69012,
+                                    "total_after_profit_pct": -0.19,
+                                    "usd_krw_rate": 1363.65
+                        },
+                        {
+                                    "date": "2026-11-08",
+                                    "total_eval_krw": 36538279,
+                                    "total_after_eval_krw": 36636509,
+                                    "total_buy_krw": 36705522,
+                                    "total_profit_krw": -167243,
+                                    "total_profit_pct": -0.46,
+                                    "total_after_profit_krw": -69012,
+                                    "total_after_profit_pct": -0.19,
+                                    "usd_krw_rate": 1363.65
+                        },
+                        {
+                                    "date": "2026-11-09",
+                                    "total_eval_krw": 36139845,
+                                    "total_after_eval_krw": 36237004,
+                                    "total_buy_krw": 36305264,
+                                    "total_profit_krw": -165419,
+                                    "total_profit_pct": -0.46,
+                                    "total_after_profit_krw": -68260,
+                                    "total_after_profit_pct": -0.19,
+                                    "usd_krw_rate": 1348.78
+                        },
+                        {
+                                    "date": "2026-11-10",
+                                    "total_eval_krw": 36595426,
+                                    "total_after_eval_krw": 36730406,
+                                    "total_buy_krw": 35977952,
+                                    "total_profit_krw": 617474,
+                                    "total_profit_pct": 1.72,
+                                    "total_after_profit_krw": 752454,
+                                    "total_after_profit_pct": 2.09,
+                                    "usd_krw_rate": 1336.62
+                        },
+                        {
+                                    "date": "2026-11-11",
+                                    "total_eval_krw": 36176227,
+                                    "total_after_eval_krw": 36430558,
+                                    "total_buy_krw": 35956687,
+                                    "total_profit_krw": 219539,
+                                    "total_profit_pct": 0.61,
+                                    "total_after_profit_krw": 473871,
+                                    "total_after_profit_pct": 1.32,
+                                    "usd_krw_rate": 1335.83
+                        },
+                        {
+                                    "date": "2026-11-12",
+                                    "total_eval_krw": 36966911,
+                                    "total_after_eval_krw": 36744719,
+                                    "total_buy_krw": 35920349,
+                                    "total_profit_krw": 1046562,
+                                    "total_profit_pct": 2.91,
+                                    "total_after_profit_krw": 824370,
+                                    "total_after_profit_pct": 2.29,
+                                    "usd_krw_rate": 1334.48
+                        },
+                        {
+                                    "date": "2026-11-13",
+                                    "total_eval_krw": 37321031,
+                                    "total_after_eval_krw": 37399146,
+                                    "total_buy_krw": 36006484,
+                                    "total_profit_krw": 1314547,
+                                    "total_profit_pct": 3.65,
+                                    "total_after_profit_krw": 1392662,
+                                    "total_after_profit_pct": 3.87,
+                                    "usd_krw_rate": 1337.68
+                        },
+                        {
+                                    "date": "2026-11-14",
+                                    "total_eval_krw": 36346711,
+                                    "total_after_eval_krw": 36034081,
+                                    "total_buy_krw": 35966647,
+                                    "total_profit_krw": 380064,
+                                    "total_profit_pct": 1.06,
+                                    "total_after_profit_krw": 67434,
+                                    "total_after_profit_pct": 0.19,
+                                    "usd_krw_rate": 1336.2
+                        },
+                        {
+                                    "date": "2026-11-15",
+                                    "total_eval_krw": 36346711,
+                                    "total_after_eval_krw": 36034081,
+                                    "total_buy_krw": 35966647,
+                                    "total_profit_krw": 380064,
+                                    "total_profit_pct": 1.06,
+                                    "total_after_profit_krw": 67434,
+                                    "total_after_profit_pct": 0.19,
+                                    "usd_krw_rate": 1336.2
+                        },
+                        {
+                                    "date": "2026-11-16",
+                                    "total_eval_krw": 36297204,
+                                    "total_after_eval_krw": 35985000,
+                                    "total_buy_krw": 35917658,
+                                    "total_profit_krw": 379547,
+                                    "total_profit_pct": 1.06,
+                                    "total_after_profit_krw": 67342,
+                                    "total_after_profit_pct": 0.19,
+                                    "usd_krw_rate": 1334.38
+                        },
+                        {
+                                    "date": "2026-11-17",
+                                    "total_eval_krw": 35278230,
+                                    "total_after_eval_krw": 35162596,
+                                    "total_buy_krw": 35955342,
+                                    "total_profit_krw": -677111,
+                                    "total_profit_pct": -1.88,
+                                    "total_after_profit_krw": -792745,
+                                    "total_after_profit_pct": -2.2,
+                                    "usd_krw_rate": 1335.78
+                        },
+                        {
+                                    "date": "2026-11-18",
+                                    "total_eval_krw": 34889635,
+                                    "total_after_eval_krw": 35570513,
+                                    "total_buy_krw": 35795992,
+                                    "total_profit_krw": -906357,
+                                    "total_profit_pct": -2.53,
+                                    "total_after_profit_krw": -225480,
+                                    "total_after_profit_pct": -0.63,
+                                    "usd_krw_rate": 1329.86
+                        },
+                        {
+                                    "date": "2026-11-19",
+                                    "total_eval_krw": 35085268,
+                                    "total_after_eval_krw": 35366837,
+                                    "total_buy_krw": 35807567,
+                                    "total_profit_krw": -722299,
+                                    "total_profit_pct": -2.02,
+                                    "total_after_profit_krw": -440730,
+                                    "total_after_profit_pct": -1.23,
+                                    "usd_krw_rate": 1330.29
+                        },
+                        {
+                                    "date": "2026-11-20",
+                                    "total_eval_krw": 34046083,
+                                    "total_after_eval_krw": 33721937,
+                                    "total_buy_krw": 35923041,
+                                    "total_profit_krw": -1876958,
+                                    "total_profit_pct": -5.22,
+                                    "total_after_profit_krw": -2201105,
+                                    "total_after_profit_pct": -6.13,
+                                    "usd_krw_rate": 1334.58
+                        },
+                        {
+                                    "date": "2026-11-21",
+                                    "total_eval_krw": 32237162,
+                                    "total_after_eval_krw": 32805629,
+                                    "total_buy_krw": 36233934,
+                                    "total_profit_krw": -3996772,
+                                    "total_profit_pct": -11.03,
+                                    "total_after_profit_krw": -3428305,
+                                    "total_after_profit_pct": -9.46,
+                                    "usd_krw_rate": 1346.13
+                        },
+                        {
+                                    "date": "2026-11-22",
+                                    "total_eval_krw": 32037675,
+                                    "total_after_eval_krw": 32602624,
+                                    "total_buy_krw": 36009714,
+                                    "total_profit_krw": -3972040,
+                                    "total_profit_pct": -11.03,
+                                    "total_after_profit_krw": -3407090,
+                                    "total_after_profit_pct": -9.46,
+                                    "usd_krw_rate": 1337.8
+                        },
+                        {
+                                    "date": "2026-11-23",
+                                    "total_eval_krw": 32186631,
+                                    "total_after_eval_krw": 33461926,
+                                    "total_buy_krw": 36177139,
+                                    "total_profit_krw": -3990507,
+                                    "total_profit_pct": -11.03,
+                                    "total_after_profit_krw": -2715213,
+                                    "total_after_profit_pct": -7.51,
+                                    "usd_krw_rate": 1344.02
+                        },
+                        {
+                                    "date": "2026-11-24",
+                                    "total_eval_krw": 34723579,
+                                    "total_after_eval_krw": 33942185,
+                                    "total_buy_krw": 36165564,
+                                    "total_profit_krw": -1441986,
+                                    "total_profit_pct": -3.99,
+                                    "total_after_profit_krw": -2223379,
+                                    "total_after_profit_pct": -6.15,
+                                    "usd_krw_rate": 1343.59
+                        },
+                        {
+                                    "date": "2026-11-25",
+                                    "total_eval_krw": 33626042,
+                                    "total_after_eval_krw": 33626042,
+                                    "total_buy_krw": 36144300,
+                                    "total_profit_krw": -2518258,
+                                    "total_profit_pct": -6.97,
+                                    "total_after_profit_krw": -2518258,
+                                    "total_after_profit_pct": -6.97,
+                                    "usd_krw_rate": 1342.8
                         }
             ]
 };
@@ -1014,7 +1714,7 @@
         function switchAllocTab(tabName) {
             const tabs = ['diff', 'compare', 'doughnut'];
             const descMap = {
-                diff: '0%p 기준선을 중심으로 목표 비중 대비 초과(+) 및 미달(-) 폭을 ☀️정규장과 🌙애프터마켓 동시에 진단합니다. (리밸런싱 기준: ±5.0%p)',
+                diff: '0%p 기준선을 중심으로 목표 비중 대비 초과(+) 및 미달(-) 폭을 ☀️정규장과 🌙애프터마켓 동시에 진단합니다. (카테고리 5/25 · 개별종목 3/20 · 현금 방어선 15%)',
                 compare: '카테고리별·종목별 [🎯목표 비중 - ☀️정규장 비중 - 🌙애프터 비중] 3개 막대를 나란히 비교하여 체급과 장후 비중 흐름을 한눈에 파악합니다.',
                 doughnut: '현재 포트폴리오에서 각 자산 카테고리와 개별 종목이 차지하는 전체 비중(%) 구성을 도넛 차트로 보여줍니다.'
             };
@@ -1103,44 +1803,55 @@
         }
 
         function renderActionBanner(data, items) {
-            const vixVal = data.vix ? data.vix.price : 15.0;
-            const sgov = items.find(i => i.symbol === 'SGOV');
-            const sgovDiff = sgov ? (sgov.weight_diff !== undefined ? sgov.weight_diff : (sgov.weightDiff !== undefined ? sgov.weightDiff : 0)) : 0;
-            const threshold = 5.0;
-
-            let cashSignal = "HOLD";
-            let cashReason = [];
-
-            if (vixVal >= 30) {
-                cashSignal = "STRONG_BUY";
-                cashReason.push("🚨 <strong>VIX 30 이상 (패닉 장세)</strong>: 시장 극심한 공포 구간! SGOV의 20~30%를 매도하여 주도주(NVDA/GOOGL/AMD) 저가 매수 고려.");
-            } else if (vixVal >= 25) {
-                cashSignal = "BUY";
-                cashReason.push("⚠️ <strong>VIX 25 이상 (투매 발생)</strong>: 조정을 받는 기술주의 분할 매수를 위해 SGOV 현금 실탄 일부 사용 진입 구간.");
-            }
-
-            if (sgovDiff >= threshold) {
-                if (cashSignal === "HOLD") cashSignal = "BUY";
-                cashReason.push(`📊 <strong>SGOV 비중 초과 (+${sgovDiff.toFixed(1)}%)</strong>: 주가 하락으로 현금 비중이 커졌습니다. 하락 종목 저가 매수 고려.`);
-            } else if (sgovDiff <= -threshold) {
-                cashReason.push(`📊 <strong>SGOV 비중 부족 (${sgovDiff.toFixed(1)}%)</strong>: 현금 자산이 줄었으므로 상승 종목 털어 SGOV 충전 필요.`);
-            }
-
             const bannerEl = document.getElementById('action-banner');
             const textEl = document.getElementById('action-text');
-
             if (!bannerEl || !textEl) return;
 
-            if (cashSignal === "STRONG_BUY") {
-                bannerEl.className = "bg-cardbg border-l-4 border-rose-500 p-4 sm:p-5 rounded-2xl shadow-lg border border-slate-800 space-y-1.5";
-                textEl.innerHTML = `<span class="text-rose-400 font-bold">🔥 [강력 매수 시그널] 현금 실탄 집행 권장!</span><br>${cashReason.join('<br>')}`;
-            } else if (cashSignal === "BUY") {
-                bannerEl.className = "bg-cardbg border-l-4 border-amber-400 p-4 sm:p-5 rounded-2xl shadow-lg border border-slate-800 space-y-1.5";
-                textEl.innerHTML = `<span class="text-amber-400 font-bold">🛒 [분할 매수 시그널] 현금 실탄 일부 사용 고려</span><br>${cashReason.join('<br>')}`;
-            } else {
-                bannerEl.className = "bg-cardbg border-l-4 border-emerald-400 p-4 sm:p-5 rounded-2xl shadow-lg border border-slate-800 space-y-1.5";
-                textEl.innerHTML = `<span class="text-emerald-400 font-bold">🛡️ [실탄 대기 (HOLD)]</span> 현재 시장 변동성 및 비중이 안정적입니다. SGOV 현금 실탄을 온전히 보존하며 연 5%대 이자 수익을 수취하세요.`;
+            const cg = data.cash_guidance;
+            const rs = data.rebalance_summary;
+
+            if (cg) {
+                const styleMap = {
+                    CASH_FLOOR_ALERT: { border: 'border-rose-600', color: 'text-rose-400' },
+                    CASH_LOW:         { border: 'border-orange-400', color: 'text-orange-400' },
+                    STRONG_BUY:       { border: 'border-rose-500', color: 'text-rose-400' },
+                    REBALANCE_BUY:    { border: 'border-amber-400', color: 'text-amber-400' },
+                    VIX_BUY:          { border: 'border-amber-400', color: 'text-amber-400' },
+                    DEPLOYED_WAIT:    { border: 'border-yellow-400', color: 'text-yellow-300' },
+                    HOLD:             { border: 'border-emerald-400', color: 'text-emerald-400' }
+                };
+                const st = styleMap[cg.signal] || styleMap.HOLD;
+                bannerEl.className = `bg-cardbg border-l-4 ${st.border} p-4 sm:p-5 rounded-2xl shadow-lg border border-slate-800 space-y-1.5`;
+
+                const metaLine = `<span class="inline-block text-[11px] font-mono bg-slate-900/80 text-slate-300 border border-slate-700 px-2 py-0.5 rounded-md mt-1 mb-1">현금(SGOV+예수금): <strong>${cg.cash_weight.toFixed(1)}%</strong> / 목표 ${cg.cash_target}% · 방어선 ${cg.cash_floor.toFixed(0)}% · 가용 실탄 <strong>${cg.deployable_cash_pct.toFixed(1)}%p</strong> (약 $${Math.round(cg.deployable_cash_usd).toLocaleString('en-US')})</span>`;
+                const reasonsHtml = (cg.reasons || []).map(r => `• ${r}`).join('<br>');
+
+                let extraAlerts = '';
+                if (rs) {
+                    if (rs.tier1_category_breaches && rs.tier1_category_breaches.length > 0) {
+                        const list = rs.tier1_category_breaches.map(b => `${b.name}(${b.weight_diff >= 0 ? '+' : ''}${b.weight_diff.toFixed(1)}%p)`).join(', ');
+                        extraAlerts += `<div class="mt-1.5 text-rose-300 font-semibold">🔔 [1단계 카테고리 이탈]: ${list}</div>`;
+                    }
+                    if (rs.tier2_stock_breaches && rs.tier2_stock_breaches.length > 0) {
+                        const list = rs.tier2_stock_breaches.map(b => `${b.symbol}(${b.weight_diff >= 0 ? '+' : ''}${b.weight_diff.toFixed(1)}%p)`).join(', ');
+                        extraAlerts += `<div class="mt-1 text-amber-300 font-semibold">📌 [2단계 개별종목 이탈 (3/20)]: ${list}</div>`;
+                    }
+                    if (rs.drawdown_alerts && rs.drawdown_alerts.length > 0) {
+                        const list = rs.drawdown_alerts.map(d => `${d.symbol}(${d.reason || `당일 ${d.change_pct >= 0 ? '+' : ''}${d.change_pct.toFixed(1)}%`})`).join(', ');
+                        extraAlerts += `<div class="mt-1 text-sky-300 font-semibold">📉 [엔진2 가격 급락 감지]: ${list}</div>`;
+                    }
+                }
+
+                textEl.innerHTML = `<span class="${st.color} font-bold">${cg.title}</span><br>${metaLine}<br>${reasonsHtml}${extraAlerts}`;
+                return;
             }
+
+            // 구버전 JSON 하위 호환 폴백
+            const vixVal = data.vix ? data.vix.price : 15.0;
+            const sgov = items.find(i => i.symbol === 'SGOV');
+            const sgovDiff = sgov ? (sgov.weight_diff !== undefined ? sgov.weight_diff : 0) : 0;
+            bannerEl.className = "bg-cardbg border-l-4 border-emerald-400 p-4 sm:p-5 rounded-2xl shadow-lg border border-slate-800 space-y-1.5";
+            textEl.innerHTML = `<span class="text-emerald-400 font-bold">🛡️ [실탄 대기 (HOLD)]</span> VIX ${vixVal.toFixed(2)}, SGOV 이탈 ${sgovDiff >= 0 ? '+' : ''}${sgovDiff.toFixed(1)}%p (단기 국채 이자 수취 중)`;
         }
 
         function renderData(data) {
@@ -1202,7 +1913,150 @@
             renderStockTable(data.items);
             renderCharts(data.items, data.categories);
             renderPerformanceCharts(data);
+            renderPlaybookModal(data);
         }
+
+        function openPlaybookModal(section = 'all') {
+            const modal = document.getElementById('playbook-modal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            switchPlaybookSection(section);
+        }
+
+        function closePlaybookModal() {
+            const modal = document.getElementById('playbook-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function switchPlaybookSection(section) {
+            const tabs = ['all', 'buy', 'sell', 'bands', 'matrix'];
+            const sections = ['buy', 'sell', 'bands', 'matrix'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`pb-tab-${t}`);
+                if (!btn) return;
+                if (t === section) {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold bg-sky-500 text-white whitespace-nowrap transition shadow";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg font-semibold text-slate-400 hover:text-slate-200 whitespace-nowrap transition";
+                }
+            });
+            sections.forEach(s => {
+                const el = document.getElementById(`pb-sec-${s}`);
+                if (!el) return;
+                if (section === 'all' || section === s) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+        }
+
+        function renderPlaybookModal(data) {
+            const liveEl = document.getElementById('playbook-live-status');
+            const bandTbody = document.getElementById('playbook-band-tbody');
+            const matrixTbody = document.getElementById('playbook-matrix-tbody');
+            if (!liveEl || !bandTbody || !matrixTbody) return;
+
+            const cg = data.cash_guidance || {};
+            const activeSignal = cg.signal || 'HOLD';
+            const cashW = cg.cash_weight !== undefined ? cg.cash_weight : 0;
+            const cashT = cg.cash_target !== undefined ? cg.cash_target : 25;
+            const cashF = cg.cash_floor !== undefined ? cg.cash_floor : 15;
+            const depPct = cg.deployable_cash_pct !== undefined ? cg.deployable_cash_pct : Math.max(0, cashW - cashF);
+            const depUsd = cg.deployable_cash_usd !== undefined ? cg.deployable_cash_usd : 0;
+            const vixVal = data.vix ? data.vix.price : (cg.vix_val || 15);
+
+            liveEl.innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="font-bold text-slate-100">📍 현재 내 계좌 상태 (${data.updated_at || ''})</span>
+                    <span class="text-xs font-semibold text-amber-300">${cg.title || '🛡️ [실탄 대기 (HOLD)]'}</span>
+                </div>
+                <div class="flex flex-wrap gap-2 text-[11px] sm:text-xs font-mono text-slate-300 pt-1">
+                    <span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">현금: <strong class="text-sky-400">${cashW.toFixed(1)}%</strong> / 목표 ${cashT}%</span>
+                    <span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">방어선: <strong class="text-rose-300">${cashF.toFixed(0)}%</strong></span>
+                    <span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">가용 실탄: <strong class="text-emerald-400">${depPct.toFixed(1)}%p</strong> (약 $${Math.round(depUsd).toLocaleString('en-US')})</span>
+                    <span class="bg-slate-800 px-2 py-0.5 rounded border border-slate-700">VIX: <strong class="text-amber-300">${vixVal.toFixed(2)}</strong></span>
+                </div>
+            `;
+
+            // 동적 목표·밴드표 생성 (카테고리 + 다중 카테고리 소속 개별 종목)
+            bandTbody.innerHTML = '';
+            const categories = data.categories || {};
+            const items = data.items || [];
+
+            for (const [catName, c] of Object.entries(categories)) {
+                const band = c.band !== undefined ? c.band : 5.0;
+                const low = c.lower_bound !== undefined ? c.lower_bound : Math.max(0, c.target_weight - band);
+                const high = c.upper_bound !== undefined ? c.upper_bound : (c.target_weight + band);
+                const diff = c.weight_diff !== undefined ? c.weight_diff : (c.current_weight - c.target_weight);
+                const badge = buildStatusBadge(c.status || 'NORMAL', diff, band, c.after_breach);
+                const floorNote = (catName === (cg.cash_category || '💵 초단기채/현금')) ? ` <span class="text-[10px] text-rose-300">(방어 ${cashF.toFixed(0)}%)</span>` : '';
+
+                const tr = document.createElement('tr');
+                tr.className = "bg-slate-900/50 text-slate-100 font-semibold";
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3 font-sans">${catName}</td>
+                    <td class="py-2.5 px-3 text-right">${c.target_weight}%</td>
+                    <td class="py-2.5 px-3 text-right text-sky-400">${(c.current_weight || 0).toFixed(1)}%</td>
+                    <td class="py-2.5 px-3 text-right text-slate-300">±${band.toFixed(1)}%p</td>
+                    <td class="py-2.5 px-3 text-center text-slate-300">${low.toFixed(1)}% ~ ${high.toFixed(1)}%${floorNote}</td>
+                    <td class="py-2.5 px-3 text-center">${badge}</td>
+                `;
+                bandTbody.appendChild(tr);
+
+                // 다중 종목 카테고리(빅테크 등)의 하위 종목도 바로 이어서 표시
+                if ((c.non_cash_count || 0) > 1) {
+                    items.filter(it => !it.is_cash && it.category === catName).forEach(it => {
+                        const sBand = it.band !== undefined ? it.band : 3.0;
+                        const sLow = it.lower_bound !== undefined ? it.lower_bound : Math.max(0, it.target_weight - sBand);
+                        const sHigh = it.upper_bound !== undefined ? it.upper_bound : (it.target_weight + sBand);
+                        const sBadge = buildStatusBadge(it.status || 'NORMAL', it.weight_diff || 0, sBand, it.after_breach);
+
+                        const subTr = document.createElement('tr');
+                        subTr.className = "text-slate-300 hover:bg-slate-800/30";
+                        subTr.innerHTML = `
+                            <td class="py-2 px-3 pl-6 font-sans text-xs"><span class="text-slate-500 mr-1">└</span>${it.name} <span class="font-mono text-slate-400">(${it.symbol})</span></td>
+                            <td class="py-2 px-3 text-right text-xs">${it.target_weight}%</td>
+                            <td class="py-2 px-3 text-right text-xs text-sky-300">${(it.current_weight || 0).toFixed(1)}%</td>
+                            <td class="py-2 px-3 text-right text-xs text-slate-400">±${sBand.toFixed(1)}%p</td>
+                            <td class="py-2 px-3 text-center text-xs text-slate-400">${sLow.toFixed(1)}% ~ ${sHigh.toFixed(1)}%</td>
+                            <td class="py-2 px-3 text-center">${sBadge}</td>
+                        `;
+                        bandTbody.appendChild(subTr);
+                    });
+                }
+            }
+
+            // 현금 x VIX 6단계 매트릭스 (현재 해당 구간 자동 하이라이트)
+            const matrixRows = [
+                { key: 'CASH_FLOOR_ALERT', step: '1순위', cond: `현금 비중 ≤ ${cashF.toFixed(0)}% (최소 방어선 침범)`, action: '🛑 <strong>[현금 방어선 경고]</strong> VIX와 무관하게 추가 매수 중단 · 반등 시 현금 회복 우선' },
+                { key: 'CASH_LOW',         step: '2순위', cond: `현금 ${cashF.toFixed(0)}~${(cashT - 5).toFixed(0)}% (하한 이탈) & VIX < 30`, action: '⚠️ <strong>[현금 비중 부족]</strong> 초과 자산 일부 익절 또는 신규 적립금으로 SGOV 보충' },
+                { key: 'STRONG_BUY',       step: '3순위', cond: `VIX ≥ 30 (패닉) & 현금 > ${cashF.toFixed(0)}%`, action: '🔥 <strong>[강력 분할 매수]</strong> 가용 실탄의 30~50% 분할 투입 (미달·급락 우량주 우선)' },
+                { key: 'REBALANCE_BUY',    step: '4순위', cond: `현금 ≥ ${(cashT + 5).toFixed(0)}% 또는 위험자산 카테고리 하한 이탈`, action: '🛒 <strong>[비중 이탈 리밸런싱 매수]</strong> 목표 복귀 금액만큼 미달 자산 분할 매수' },
+                { key: 'VIX_BUY',          step: '5순위 A', cond: `25 ≤ VIX < 30 & 현금 ≥ 목표(${cashT}%)`, action: '🛒 <strong>[1차 전술적 분할 매수]</strong> 가용 실탄의 20~30% 이내 1차 분할 매수' },
+                { key: 'DEPLOYED_WAIT',    step: '5순위 B', cond: `25 ≤ VIX < 30 & ${cashF.toFixed(0)}% < 현금 < 목표(${cashT}%)`, action: '🟡 <strong>[선제 집행 중 — 신중 관망]</strong> 추가 추격 매수 자제 · VIX 30+ 또는 카테고리 -5%p 시 2차 집행' },
+                { key: 'HOLD',             step: '6순위', cond: '그 외 정상 구간', action: '🛡️ <strong>[실탄 대기 (HOLD)]</strong> 현금·변동성 안정 · SGOV 단기 국채 이자 수취 유지' }
+            ];
+
+            matrixTbody.innerHTML = matrixRows.map(r => {
+                const isActive = (r.key === activeSignal);
+                const rowClass = isActive
+                    ? 'bg-sky-500/15 ring-1 ring-inset ring-sky-400/60 text-white font-medium'
+                    : 'hover:bg-slate-800/30 text-slate-300';
+                const activeTag = isActive ? ' <span class="inline-block ml-1 text-[10px] bg-sky-500 text-white px-1.5 py-0.5 rounded font-bold">현재</span>' : '';
+                return `
+                    <tr class="${rowClass}">
+                        <td class="py-2.5 px-3 whitespace-nowrap font-bold text-slate-300">${r.step}${activeTag}</td>
+                        <td class="py-2.5 px-3">${r.cond}</td>
+                        <td class="py-2.5 px-3">${r.action}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePlaybookModal();
+        });
 
         function renderPerformanceCharts(data) {
             // 1. 일별 누적 자산 & 수익 라인 차트
@@ -1295,8 +2149,8 @@
                 }
             });
 
-            // 3. 개별 종목 손익 순위 가로 바 차트
-            const sortedItems = [...data.items].sort((a,b) => (b.profit_pct || 0) - (a.profit_pct || 0));
+            // 3. 개별 종목 손익 순위 가로 바 차트 (예수금 제외)
+            const sortedItems = [...data.items].filter(i => !i.is_cash && i.symbol !== 'USD').sort((a,b) => (b.profit_pct || 0) - (a.profit_pct || 0));
             const stockSymbols = sortedItems.map(i => i.symbol);
             const stockProfits = sortedItems.map(i => i.profit_pct !== undefined ? i.profit_pct : 0);
             const stockColors = stockProfits.map(v => v >= 0 ? '#34d399' : '#f87171');
@@ -1336,6 +2190,41 @@
             });
         }
 
+        function buildStatusBadge(status, diff, band, afterBreach) {
+            let badge = '';
+            if (status === 'CASH') {
+                return `<span class="bg-sky-500/20 text-sky-300 border border-sky-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">💵 예수금</span>`;
+            } else if (status === 'BREACH_OVER' || status === 'BREACH_UNDER') {
+                const label = status === 'BREACH_OVER' ? '초과' : '미달';
+                badge = `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap font-semibold">🔴 ${label} (${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%p)</span>`;
+            } else if (status === 'WATCH_OVER' || status === 'WATCH_UNDER') {
+                badge = `<span class="bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">🟡 주의 (${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%p)</span>`;
+            } else {
+                badge = `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">🟢 정상</span>`;
+            }
+            if (afterBreach && status !== 'BREACH_OVER' && status !== 'BREACH_UNDER') {
+                badge += ` <span class="bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30 px-1.5 py-0.5 rounded text-[10px] whitespace-nowrap">🌙장후이탈</span>`;
+            }
+            return badge;
+        }
+
+        function formatRebalanceCell(rebalanceUsd, rebalanceKrw, rebalanceShares, isSmallTrade) {
+            if (isSmallTrade || rebalanceUsd === undefined) {
+                return `<span class="text-xs text-slate-500">유지 (소액)</span>`;
+            }
+            const isBuy = rebalanceUsd > 0;
+            const color = isBuy ? 'text-sky-400' : 'text-amber-400';
+            const side = isBuy ? '매수' : '매도';
+            const sign = isBuy ? '+' : '-';
+            const shareStr = (rebalanceShares !== undefined && rebalanceShares !== null && rebalanceShares !== 0)
+                ? `<div class="font-bold ${color}">${sign}${Math.abs(rebalanceShares)}주 ${side}</div>`
+                : `<div class="font-bold ${color}">${side} ${Math.round(Math.abs(rebalanceKrw)).toLocaleString('ko-KR')}원</div>`;
+            const amountStr = (rebalanceShares !== undefined && rebalanceShares !== null && rebalanceShares !== 0)
+                ? `<div class="text-[11px] text-slate-400">$${Math.round(Math.abs(rebalanceUsd)).toLocaleString('en-US')} (${Math.round(Math.abs(rebalanceKrw)).toLocaleString('ko-KR')}원)</div>`
+                : `<div class="text-[11px] text-slate-400">약 $${Math.round(Math.abs(rebalanceUsd)).toLocaleString('en-US')}</div>`;
+            return `${shareStr}${amountStr}`;
+        }
+
         function renderCategoryTable(categoryMap, totalEvalKrw, totalAfterEvalKrw) {
             const tbody = document.getElementById('category-table-body');
             const mobileContainer = document.getElementById('category-mobile-cards');
@@ -1344,7 +2233,9 @@
 
             for (const [catName, data] of Object.entries(categoryMap)) {
                 const curWeight = totalEvalKrw > 0 ? (data.eval_krw / totalEvalKrw) * 100 : 0;
-                const diff = curWeight - data.target_weight;
+                const diff = data.weight_diff !== undefined ? data.weight_diff : (curWeight - data.target_weight);
+                const band = data.band !== undefined ? data.band : Math.max(1.0, Math.min(5.0, data.target_weight * 0.25));
+                const status = data.status || (Math.abs(diff) >= band ? (diff > 0 ? 'BREACH_OVER' : 'BREACH_UNDER') : 'NORMAL');
                 const profitKrw = data.profit_krw !== undefined ? data.profit_krw : 0;
                 const profitPct = data.profit_pct !== undefined ? data.profit_pct : 0;
                 const profitColor = profitKrw >= 0 ? 'text-emerald-400' : 'text-rose-400';
@@ -1359,9 +2250,8 @@
                 const afterProfitSign = afterProfitKrw >= 0 ? '+' : '';
                 const afterProfitColor = afterProfitKrw >= 0 ? 'text-emerald-300' : 'text-rose-300';
 
-                const statusBadge = Math.abs(diff) >= 5.0 
-                    ? `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">⚠️ 이탈 (${diff > 0 ? '+' : ''}${diff.toFixed(1)}%)</span>`
-                    : `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">🟢 정상</span>`;
+                const statusBadge = buildStatusBadge(status, diff, band, data.after_breach);
+                const rebalanceCell = formatRebalanceCell(data.rebalance_usd, data.rebalance_krw, null, data.is_small_trade);
 
                 // Desktop Table Row
                 const tr = document.createElement('tr');
@@ -1382,9 +2272,10 @@
                         <div class="text-xs font-semibold ${afterProfitColor}">🌙 ${afterProfitSign}${afterProfitPct.toFixed(1)}%</div>
                     </td>
                     <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
-                        <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <strong class="text-sky-400">${curWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(목표 ${data.target_weight.toFixed(1)}%)</span></div>
+                        <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <strong class="text-sky-400">${curWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(목표 ${data.target_weight}% · ±${band.toFixed(1)}%p)</span></div>
                         <div class="flex items-center gap-1.5 text-xs"><span class="text-[10px] bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded">🌙애프터</span> <strong class="text-indigo-200">${afterWeight.toFixed(1)}%</strong></div>
                     </td>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap">${rebalanceCell}</td>
                     <td class="py-3.5 px-4 whitespace-nowrap">${statusBadge}</td>
                 `;
                 tbody.appendChild(tr);
@@ -1397,7 +2288,7 @@
                         <div class="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
                             <div>
                                 <div class="font-bold text-slate-100 text-sm">${catName}</div>
-                                <div class="text-[11px] text-slate-400 mt-0.5">종목: ${data.symbols.join(', ')} · 목표 비중 ${data.target_weight.toFixed(1)}%</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">종목: ${data.symbols.join(', ')} · 목표 ${data.target_weight}% (±${band.toFixed(1)}%p)</div>
                             </div>
                             ${statusBadge}
                         </div>
@@ -1427,6 +2318,10 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="flex items-center justify-between text-xs bg-slate-800/40 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">⚖️ 목표 복귀 제안</span>
+                            <div class="text-right font-mono">${rebalanceCell}</div>
+                        </div>
                     `;
                     mobileContainer.appendChild(card);
                 }
@@ -1440,16 +2335,19 @@
             if (mobileContainer) mobileContainer.innerHTML = '';
 
             items.forEach(item => {
-                const changePct = item.changePct !== undefined ? item.changePct : item.change_pct;
-                const changeUsd = item.changeUsd !== undefined ? item.changeUsd : item.change_usd;
-                const priceUsd = item.priceUsd !== undefined ? item.priceUsd : item.price_usd;
+                const isCash = Boolean(item.is_cash || item.symbol === 'USD');
+                const changePct = item.changePct !== undefined ? item.changePct : (item.change_pct || 0);
+                const changeUsd = item.changeUsd !== undefined ? item.changeUsd : (item.change_usd || 0);
+                const priceUsd = item.priceUsd !== undefined ? item.priceUsd : (item.price_usd || 0);
                 const buyPrice = item.buy_price !== undefined ? item.buy_price : priceUsd;
                 const profitUsd = item.profit_usd !== undefined ? item.profit_usd : 0;
                 const profitKrw = item.profit_krw !== undefined ? item.profit_krw : 0;
                 const profitPct = item.profit_pct !== undefined ? item.profit_pct : 0;
-                const currentWeight = item.currentWeight !== undefined ? item.currentWeight : item.current_weight;
-                const weightDiff = item.weightDiff !== undefined ? item.weightDiff : item.weight_diff;
-                const evalKrw = item.evalKrw !== undefined ? item.evalKrw : item.eval_krw;
+                const currentWeight = item.currentWeight !== undefined ? item.currentWeight : (item.current_weight || 0);
+                const weightDiff = item.weightDiff !== undefined ? item.weightDiff : (item.weight_diff || 0);
+                const evalKrw = item.evalKrw !== undefined ? item.evalKrw : (item.eval_krw || 0);
+                const band = item.band !== undefined ? item.band : 3.0;
+                const status = item.status || (isCash ? 'CASH' : (Math.abs(weightDiff) >= band ? (weightDiff > 0 ? 'BREACH_OVER' : 'BREACH_UNDER') : 'NORMAL'));
 
                 const afterPriceUsd = item.after_price_usd !== undefined ? item.after_price_usd : priceUsd;
                 const afterChangePct = item.after_change_pct !== undefined ? item.after_change_pct : 0;
@@ -1460,29 +2358,70 @@
                 const afterProfitPct = item.after_profit_pct !== undefined ? item.after_profit_pct : profitPct;
                 const afterWeight = item.after_weight !== undefined ? item.after_weight : currentWeight;
 
+                const statusBadge = buildStatusBadge(status, weightDiff, band, item.after_breach);
+                let ddBadge = '';
+                const ddLabel = item.drawdown_reason || `고점 ${(item.drawdown_pct || 0).toFixed(1)}%`;
+                if (!isCash && item.drawdown_signal === 'STRONG_DIP') {
+                    ddBadge = `<div class="mt-1"><span class="bg-rose-600/25 text-rose-300 border border-rose-500/40 px-1.5 py-0.5 rounded text-[10px] whitespace-nowrap">🔥 투매 (${ddLabel})</span></div>`;
+                } else if (!isCash && item.drawdown_signal === 'DIP') {
+                    ddBadge = `<div class="mt-1"><span class="bg-sky-500/20 text-sky-300 border border-sky-500/40 px-1.5 py-0.5 rounded text-[10px] whitespace-nowrap">📉 급락 (${ddLabel})</span></div>`;
+                }
+
+                // USD 예수금 별도 행 렌더링
+                if (isCash) {
+                    const tr = document.createElement('tr');
+                    tr.className = "border-b border-slate-800/60 bg-sky-950/15 hover:bg-slate-800/40 transition";
+                    tr.innerHTML = `
+                        <td class="py-3.5 px-4 font-semibold text-sky-300 whitespace-nowrap">
+                            <div class="flex items-center gap-1.5">💵 ${item.name} <span class="text-xs font-mono text-sky-300 bg-sky-950/80 border border-sky-500/30 px-1.5 py-0.5 rounded">USD</span></div>
+                        </td>
+                        <td class="py-3.5 px-4 font-mono whitespace-nowrap text-sky-200">$${Number(item.eval_usd || item.quantity).toFixed(2)}</td>
+                        <td class="py-3.5 px-4 font-mono whitespace-nowrap text-slate-500">$1.00</td>
+                        <td class="py-3.5 px-4 font-mono whitespace-nowrap text-slate-400">$1.00</td>
+                        <td class="py-3.5 px-4 font-mono whitespace-nowrap text-slate-500">─ 0.00%</td>
+                        <td class="py-3.5 px-4 font-mono whitespace-nowrap text-slate-500">$0.00</td>
+                        <td class="py-3.5 px-4 font-mono whitespace-nowrap text-slate-500">0.00%</td>
+                        <td class="py-3.5 px-4 font-mono whitespace-nowrap text-sky-200">${Math.round(evalKrw).toLocaleString('ko-KR')}원</td>
+                        <td class="py-3.5 px-4 font-mono whitespace-nowrap"><strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(현금 합산)</span></td>
+                        <td class="py-3.5 px-4 text-xs text-slate-400 whitespace-nowrap">현금 카테고리 합산</td>
+                        <td class="py-3.5 px-4 whitespace-nowrap">${statusBadge}</td>
+                    `;
+                    tbody.appendChild(tr);
+
+                    if (mobileContainer) {
+                        const card = document.createElement('div');
+                        card.className = "bg-sky-950/20 p-3.5 rounded-xl border border-sky-500/30 space-y-2";
+                        card.innerHTML = `
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="font-bold text-sky-300 text-sm">💵 ${item.name}</div>
+                                ${statusBadge}
+                            </div>
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-slate-300">잔액: <strong>$${Number(item.eval_usd || item.quantity).toFixed(2)}</strong> (${Math.round(evalKrw).toLocaleString('ko-KR')}원)</span>
+                                <strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong>
+                            </div>
+                            <div class="text-[11px] text-slate-400">${item.action_guide || '초단기채/현금 카테고리 합산 관리'}</div>
+                        `;
+                        mobileContainer.appendChild(card);
+                    }
+                    return;
+                }
+
                 const changeColor = changePct > 0 ? 'text-rose-400' : (changePct < 0 ? 'text-sky-400' : 'text-slate-400');
                 const changeIcon = changePct > 0 ? '▲' : (changePct < 0 ? '▼' : '─');
                 const afterChangeIcon = afterChangePct > 0 ? '▲' : (afterChangePct < 0 ? '▼' : '─');
                 const afterChangeColor = afterChangePct > 0 ? 'text-rose-300' : (afterChangePct < 0 ? 'text-sky-300' : 'text-indigo-200');
                 
-                const afterChangeSign = afterChangePct > 0 ? '+' : '';
                 const profitColor = profitPct >= 0 ? 'text-emerald-400' : 'text-rose-400';
                 const afterProfitColor = afterProfitPct >= 0 ? 'text-emerald-300' : 'text-rose-300';
                 const profitSign = profitPct >= 0 ? '+' : '';
                 const afterProfitSign = afterProfitPct >= 0 ? '+' : '';
 
-                const statusBadge = Math.abs(weightDiff) >= 5.0 
-                    ? `<span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">⚠️ ${weightDiff > 0 ? '초과' : '미달'}</span>`
-                    : `<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded text-xs whitespace-nowrap">🟢 정상</span>`;
-
                 const priceDisplay = item.market === 'KRX' ? `${Math.round(item.price_krw || item.priceKrw || 0).toLocaleString()}원` : `$${priceUsd.toFixed(2)}`;
-                const cashUsd = item.cash_usd || 0;
-                const qtyDisplay = cashUsd > 0
-                    ? `${item.quantity}주 <div class="text-[11px] text-emerald-400 font-normal mt-0.5">+예수금 $${cashUsd.toFixed(2)}</div>`
-                    : `${item.quantity}주`;
-                const mobileQtyDisplay = cashUsd > 0
-                    ? `${item.quantity}주 보유 (+예수금 $${cashUsd.toFixed(2)})`
-                    : `${item.quantity}주 보유`;
+                const rebalanceCell = formatRebalanceCell(item.rebalance_usd, item.rebalance_krw, item.rebalance_shares, item.is_small_trade);
+                const weightNote = item.is_cash_category_member
+                    ? `(현금합산 목표 ${item.target_weight}% · ±${band.toFixed(1)}%p)`
+                    : `(목표 ${item.target_weight}% · ±${band.toFixed(1)}%p)`;
 
                 // Desktop Table Row
                 const tr = document.createElement('tr');
@@ -1491,7 +2430,7 @@
                     <td class="py-3.5 px-4 font-semibold text-slate-200 whitespace-nowrap">
                         <div class="flex items-center gap-1.5">${item.name} <span class="text-xs font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">${item.symbol}</span></div>
                     </td>
-                    <td class="py-3.5 px-4 font-mono whitespace-nowrap">${qtyDisplay}</td>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap">${item.quantity}주</td>
                     <td class="py-3.5 px-4 font-mono whitespace-nowrap text-slate-400">$${buyPrice.toFixed(2)}</td>
                     <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
                         <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <span class="font-bold text-slate-100">${priceDisplay}</span></div>
@@ -1514,10 +2453,11 @@
                         <div class="text-xs text-indigo-200">🌙 ${Math.round(afterEvalKrw).toLocaleString('ko-KR')}원</div>
                     </td>
                     <td class="py-3.5 px-4 font-mono whitespace-nowrap space-y-1">
-                        <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">(목표 ${item.target_weight}%)</span></div>
+                        <div class="flex items-center gap-1.5"><span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">☀️정규</span> <strong class="text-sky-400">${currentWeight.toFixed(1)}%</strong> <span class="text-xs text-slate-500">${weightNote}</span></div>
                         <div class="flex items-center gap-1.5 text-xs"><span class="text-[10px] bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 px-1.5 py-0.5 rounded">🌙애프터</span> <strong class="text-indigo-200">${afterWeight.toFixed(1)}%</strong></div>
                     </td>
-                    <td class="py-3.5 px-4 whitespace-nowrap">${statusBadge}</td>
+                    <td class="py-3.5 px-4 font-mono whitespace-nowrap" title="${item.action_guide || ''}">${rebalanceCell}</td>
+                    <td class="py-3.5 px-4 whitespace-nowrap">${statusBadge}${ddBadge}</td>
                 `;
                 tbody.appendChild(tr);
 
@@ -1533,9 +2473,9 @@
                                     <span>${item.name}</span>
                                     <span class="text-[11px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">${item.symbol}</span>
                                 </div>
-                                <div class="text-[11px] text-slate-400 mt-0.5">${mobileQtyDisplay} · 평단 $${buyPrice.toFixed(2)} · 목표 비중 ${item.target_weight}%</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">${item.quantity}주 · 평단 $${buyPrice.toFixed(2)} · 목표 ${item.target_weight}% (±${band.toFixed(1)}%p)</div>
                             </div>
-                            ${statusBadge}
+                            <div class="text-right">${statusBadge}${ddBadge}</div>
                         </div>
 
                         <!-- 중단 2열 비교 박스 (정규장 vs 애프터마켓) -->
@@ -1576,6 +2516,12 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- 하단 리밸런싱 제안 -->
+                        <div class="flex items-center justify-between text-xs bg-slate-800/40 px-2.5 py-1.5 rounded-lg border border-slate-800">
+                            <span class="text-slate-400">⚖️ 리밸런싱 제안</span>
+                            <div class="text-right font-mono">${rebalanceCell}</div>
+                        </div>
                     `;
                     mobileContainer.appendChild(card);
                 }
@@ -1583,15 +2529,18 @@
         }
 
         function renderCharts(items, categoryMap) {
-            const palette = ['#38bdf8', '#4ade80', '#facc15', '#f87171', '#c084fc', '#fb923c', '#e879f9'];
+            const palette = ['#38bdf8', '#4ade80', '#facc15', '#f87171', '#c084fc', '#fb923c', '#e879f9', '#94a3b8'];
 
             const catLabels = Object.keys(categoryMap);
+            const catValues = Object.values(categoryMap);
             const totalKrw = items.reduce((a, b) => a + (b.evalKrw !== undefined ? b.evalKrw : b.eval_krw), 0);
             const totalAfterKrw = items.reduce((a, b) => a + (b.after_eval_krw !== undefined ? b.after_eval_krw : (b.evalKrw !== undefined ? b.evalKrw : b.eval_krw)), 0);
 
-            const catTargets = Object.values(categoryMap).map(d => d.target_weight || 0);
-            const catWeights = Object.values(categoryMap).map(d => d.current_weight !== undefined ? d.current_weight : (((d.eval_krw || d.evalKrw) / totalKrw) * 100));
-            const catAfterWeights = Object.values(categoryMap).map((d, idx) => {
+            const catTargets = catValues.map(d => d.target_weight || 0);
+            const catBands = catValues.map(d => d.band !== undefined ? d.band : Math.max(1.0, Math.min(5.0, (d.target_weight || 0) * 0.25)));
+            const catWatchBands = catValues.map((d, idx) => d.watch_band !== undefined ? d.watch_band : catBands[idx] * 0.8);
+            const catWeights = catValues.map(d => d.current_weight !== undefined ? d.current_weight : (((d.eval_krw || d.evalKrw) / totalKrw) * 100));
+            const catAfterWeights = catValues.map((d, idx) => {
                 if (d.after_weight !== undefined) return d.after_weight;
                 const afterEval = d.after_eval_krw !== undefined ? d.after_eval_krw : (d.eval_krw || d.evalKrw);
                 return totalAfterKrw > 0 ? (afterEval / totalAfterKrw) * 100 : catWeights[idx];
@@ -1599,12 +2548,20 @@
             const catDiffs = catWeights.map((w, idx) => Number((w - catTargets[idx]).toFixed(2)));
             const catAfterDiffs = catAfterWeights.map((w, idx) => Number((w - catTargets[idx]).toFixed(2)));
 
-            const stockLabels = items.map(i => i.symbol);
-            const stockTargets = items.map(i => i.target_weight || 0);
-            const stockWeights = items.map(i => i.currentWeight !== undefined ? i.currentWeight : i.current_weight);
-            const stockAfterWeights = items.map((i, idx) => i.after_weight !== undefined ? i.after_weight : stockWeights[idx]);
-            const stockDiffs = stockWeights.map((w, idx) => Number((w - stockTargets[idx]).toFixed(2)));
-            const stockAfterDiffs = stockAfterWeights.map((w, idx) => Number((w - stockTargets[idx]).toFixed(2)));
+            // 목표 비중 비교·이탈 차트는 투자 종목 기준 (USD 예수금은 현금 카테고리에 합산됨)
+            const stockItems = items.filter(i => !i.is_cash && i.symbol !== 'USD');
+            const stockLabels = stockItems.map(i => i.symbol);
+            const stockTargets = stockItems.map(i => i.target_weight || 0);
+            const stockBands = stockItems.map(i => i.band !== undefined ? i.band : 3.0);
+            const stockWatchBands = stockItems.map((i, idx) => i.watch_band !== undefined ? i.watch_band : stockBands[idx] * 0.8);
+            const stockWeights = stockItems.map(i => i.currentWeight !== undefined ? i.currentWeight : i.current_weight);
+            const stockAfterWeights = stockItems.map((i, idx) => i.after_weight !== undefined ? i.after_weight : stockWeights[idx]);
+            const stockDiffs = stockItems.map((i, idx) => Number((i.weight_diff !== undefined ? i.weight_diff : (stockWeights[idx] - stockTargets[idx])).toFixed(2)));
+            const stockAfterDiffs = stockItems.map((i, idx) => Number((i.after_weight_diff !== undefined ? i.after_weight_diff : (stockAfterWeights[idx] - stockTargets[idx])).toFixed(2)));
+
+            // 도넛 차트는 USD 예수금까지 전체 합산 100% 표시
+            const allStockLabels = items.map(i => i.symbol);
+            const allStockWeights = items.map(i => i.currentWeight !== undefined ? i.currentWeight : i.current_weight);
 
             // =========================================================================
             // [탭 1] 목표 대비 이탈도 차트 (Diverging Horizontal Bar: Category & Stock)
@@ -1621,7 +2578,7 @@
                         {
                             label: '☀️ 정규 이탈 (%p)',
                             data: catDiffs,
-                            backgroundColor: catDiffs.map(v => Math.abs(v) >= 5.0 ? '#f43f5e' : (v >= 0 ? '#f59e0b' : '#38bdf8')),
+                            backgroundColor: catDiffs.map((v, idx) => Math.abs(v) >= catBands[idx] ? '#f43f5e' : (Math.abs(v) >= catWatchBands[idx] ? '#f59e0b' : (v >= 0 ? '#34d399' : '#38bdf8'))),
                             borderRadius: 5,
                             barPercentage: 0.75,
                             categoryPercentage: 0.72
@@ -1629,7 +2586,7 @@
                         {
                             label: '🌙 애프터 이탈 (%p)',
                             data: catAfterDiffs,
-                            backgroundColor: catAfterDiffs.map(v => Math.abs(v) >= 5.0 ? '#e879f9' : '#818cf8'),
+                            backgroundColor: catAfterDiffs.map((v, idx) => Math.abs(v) >= catBands[idx] ? '#e879f9' : '#818cf8'),
                             borderRadius: 5,
                             barPercentage: 0.75,
                             categoryPercentage: 0.72
@@ -1652,7 +2609,7 @@
                                     const val = ctx.raw;
                                     const sign = val >= 0 ? '+' : '';
                                     const cur = ctx.datasetIndex === 0 ? catWeights[idx] : catAfterWeights[idx];
-                                    return `${ctx.dataset.label}: ${sign}${val.toFixed(2)}%p (현재 ${cur.toFixed(1)}% / 목표 ${catTargets[idx].toFixed(1)}%)`;
+                                    return `${ctx.dataset.label}: ${sign}${val.toFixed(2)}%p (현재 ${cur.toFixed(1)}% / 목표 ${catTargets[idx]}% / 밴드 ±${catBands[idx].toFixed(1)}%p)`;
                                 }
                             }
                         },
@@ -1698,7 +2655,7 @@
                         {
                             label: '☀️ 정규 이탈 (%p)',
                             data: stockDiffs,
-                            backgroundColor: stockDiffs.map(v => Math.abs(v) >= 5.0 ? '#f43f5e' : (v >= 0 ? '#f59e0b' : '#38bdf8')),
+                            backgroundColor: stockDiffs.map((v, idx) => Math.abs(v) >= stockBands[idx] ? '#f43f5e' : (Math.abs(v) >= stockWatchBands[idx] ? '#f59e0b' : (v >= 0 ? '#34d399' : '#38bdf8'))),
                             borderRadius: 4,
                             barPercentage: 0.8,
                             categoryPercentage: 0.76
@@ -1706,7 +2663,7 @@
                         {
                             label: '🌙 애프터 이탈 (%p)',
                             data: stockAfterDiffs,
-                            backgroundColor: stockAfterDiffs.map(v => Math.abs(v) >= 5.0 ? '#e879f9' : '#818cf8'),
+                            backgroundColor: stockAfterDiffs.map((v, idx) => Math.abs(v) >= stockBands[idx] ? '#e879f9' : '#818cf8'),
                             borderRadius: 4,
                             barPercentage: 0.8,
                             categoryPercentage: 0.76
@@ -1729,7 +2686,7 @@
                                     const val = ctx.raw;
                                     const sign = val >= 0 ? '+' : '';
                                     const cur = ctx.datasetIndex === 0 ? stockWeights[idx] : stockAfterWeights[idx];
-                                    return `${ctx.dataset.label}: ${sign}${val.toFixed(2)}%p (현재 ${cur.toFixed(1)}% / 목표 ${stockTargets[idx].toFixed(1)}%)`;
+                                    return `${ctx.dataset.label}: ${sign}${val.toFixed(2)}%p (현재 ${cur.toFixed(1)}% / 목표 ${stockTargets[idx]}% / 밴드 ±${stockBands[idx].toFixed(1)}%p)`;
                                 }
                             }
                         },
@@ -1929,9 +2886,9 @@
             stockChartInst = new Chart(document.getElementById('stockChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: stockLabels,
+                    labels: allStockLabels,
                     datasets: [{
-                        data: stockWeights,
+                        data: allStockWeights,
                         backgroundColor: palette,
                         borderWidth: 2.5,
                         borderColor: '#0f172a'
@@ -1946,7 +2903,7 @@
                             color: '#ffffff',
                             font: { weight: 'bold', size: 11 },
                             formatter: (val, ctx) => {
-                                const symbol = stockLabels[ctx.dataIndex];
+                                const symbol = allStockLabels[ctx.dataIndex];
                                 return val >= 3.0 ? `${symbol}\n${val.toFixed(1)}%` : '';
                             },
                             textAlign: 'center'
